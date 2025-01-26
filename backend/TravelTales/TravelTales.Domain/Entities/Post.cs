@@ -7,8 +7,10 @@ namespace TravelTales.Domain.Entities
         public long Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public long BlogerId { get; set; }
-        public Bloger Bloger { get; set; }
+        public long BloggerId { get; set; }
+        public Blogger Blogger { get; set; }
+        public ICollection<PostLike>? Likes { get; }
+        public ICollection<Comment>? Comments { get; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public bool IsDeleted { get; set; }

@@ -8,5 +8,6 @@ namespace TravelTales.Domain.Entities
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public bool IsDeleted { get; set; }
+        public Blogger Blogger { get; set; }
     }
 }

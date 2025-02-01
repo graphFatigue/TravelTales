@@ -2,7 +2,7 @@
 
 namespace TravelTales.Persistence.Interfaces
 {
-    public interface IRoleRepository : IGenericRepository<Role, Guid>
+    public interface IBloggerRepository : IGenericRepository<Blogger, long>
     {
     }
 }

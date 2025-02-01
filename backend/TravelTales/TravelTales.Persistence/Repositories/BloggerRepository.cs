@@ -4,9 +4,9 @@ using TravelTales.Persistence.Interfaces;
 
 namespace TravelTales.Persistence.Repositories
 {
-    public class UserRepository : GenericRepository<User, Guid>, IUserRepository
+    public class BloggerRepository : GenericRepository<Blogger, long>, IBloggerRepository
     {
-        public UserRepository(AppDbContext context, ISieveProcessor sieveProcessor)
+        public BloggerRepository(AppDbContext context, ISieveProcessor sieveProcessor)
             : base(context, sieveProcessor)
         {
         }

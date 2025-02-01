@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Sieve" Version="2.5.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\TravelTales.Domain\TravelTales.Domain.csproj" />
   </ItemGroup>
 

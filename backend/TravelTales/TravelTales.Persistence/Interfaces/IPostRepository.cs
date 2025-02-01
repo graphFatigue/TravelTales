@@ -1,6 +1,8 @@
-﻿namespace TravelTales.Persistence.Interfaces
+﻿using TravelTales.Domain.Entities;
+
+namespace TravelTales.Persistence.Interfaces
 {
-    public interface IPostRepository
+    public interface IPostRepository : IGenericRepository<Post, long>
     {
     }
 }

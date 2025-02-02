@@ -8,11 +8,11 @@
 
   <ItemGroup>
     <Folder Include="Authorization\" />
+    <Folder Include="DTOs\Notification\" />
     <Folder Include="Services\" />
     <Folder Include="MappingProfiles\" />
     <Folder Include="Sieve\Configurations\" />
     <Folder Include="Validation\" />
-    <Folder Include="Exceptions\" />
   </ItemGroup>
 
   <ItemGroup>

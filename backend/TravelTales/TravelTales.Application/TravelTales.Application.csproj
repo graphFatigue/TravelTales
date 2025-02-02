@@ -6,4 +6,18 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Authorization\" />
+    <Folder Include="Services\" />
+    <Folder Include="MappingProfiles\" />
+    <Folder Include="Options\" />
+    <Folder Include="Sieve\Configurations\" />
+    <Folder Include="Validation\" />
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Sieve" Version="2.5.5" />
+  </ItemGroup>
+
 </Project>

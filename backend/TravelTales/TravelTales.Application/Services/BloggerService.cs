@@ -1,40 +1,119 @@
-﻿using Sieve.Models;
+﻿using AutoMapper;
+using FluentValidation;
+using Sieve.Models;
 using TravelTales.Application.DTOs.Blogger;
+using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
+using TravelTales.Domain.Entities;
+using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.Repositories;
 using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Services
 {
     public class BloggerService : IBloggerService
     {
-        public Task<BloggerDto> CreateBloggerAsync(CreateBloggerDto createBloggerDto, CancellationToken cancellationToken = default)
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IMapper mapper;
+        private readonly IValidator<CreateBloggerDto> createBloggerDtoValidator;
+        private readonly IValidator<UpdateBloggerDto> updateBloggerDtoValidator;
+        private readonly IContextAccessor contextAccessor;
+        private readonly IStorageService blobStorageService;
+
+        public BloggerService(
+            IUnitOfWork unitOfWork,
+            IMapper mapper,
+            IValidator<CreateBloggerDto> createBloggerDtoValidator,
+            IValidator<UpdateBloggerDto> updateBloggerDtoValidator,
+            IContextAccessor contextAccessor,
+            IStorageService blobStorageService)
         {
-            throw new NotImplementedException();
+            this.unitOfWork = unitOfWork;
+            this.mapper = mapper;
+            this.createBloggerDtoValidator = createBloggerDtoValidator;
+            this.updateBloggerDtoValidator = updateBloggerDtoValidator;
+            this.contextAccessor = contextAccessor;
+            this.blobStorageService = blobStorageService;
         }
 
-        public Task DeleteBloggerAsync(long id, CancellationToken cancellationToken = default)
+        public async Task<BloggerDto> CreateBloggerAsync(CreateBloggerDto createBloggerDto, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            await this.createBloggerDtoValidator.ValidateAndThrowAsync(createBloggerDto, cancellationToken: cancellationToken);
+            var blogger = this.mapper.Map<Blogger>(createBloggerDto);
+
+            await this.unitOfWork.GetRepository<BloggerRepository>().AddAsync(blogger, cancellationToken);
+            await this.unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return this.mapper.Map<BloggerDto>(blogger);
         }
 
-        public Task<BloggerDto?> GetBloggerByIdAsync(long id, CancellationToken cancellationToken = default)
+        public async Task DeleteBloggerAsync(long id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var blogger = await this.unitOfWork
+                .GetRepository<IBloggerRepository>()
+                .GetByIdAsync(id, cancellationToken);
+            if (blogger is null)
+            {
+                throw new NotFoundException($"Blogger with ID {id} was not found.");
+            }
+
+            //this.EnsureUserCanModifyPost(post);
+
+            this.unitOfWork.GetRepository<IBloggerRepository>().Delete(blogger);
+            await this.unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        public Task<IEnumerable<BloggerDto>> GetBloggersAsync(CancellationToken cancellationToken = default)
+        public async Task<BloggerDto?> GetBloggerByIdAsync(long id, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var blogger = await this.unitOfWork
+                .GetRepository<IBloggerRepository>()
+                .GetByIdFullAsync(id, cancellationToken);
+            if (blogger is null)
+            {
+                throw new NotFoundException($"Blogger with ID {id} was not found.");
+            }
+
+            return this.mapper.Map<BloggerDto>(blogger);
         }
 
-        public Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<BloggerDto>> GetBloggersAsync(CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var bloggers = await this.unitOfWork.GetRepository<IBloggerRepository>()
+                .GetAllAsync(cancellationToken);
+            return this.mapper.Map<IEnumerable<BloggerDto>>(bloggers);
         }
 
-        public Task UpdateBloggerAsync(long id, UpdateBloggerDto updateBloggerDto, CancellationToken cancellationToken = default)
+        public async Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var pagedList = await this.unitOfWork.GetRepository<IBloggerRepository>()
+                .GetAllWithFilterAsync(sieveModel, cancellationToken);
+
+            var filteredBloggers = this.mapper.Map<IEnumerable<BloggerDto>>(pagedList.Items);
+
+            var updatedPagedList = PagedList<BloggerDto>.Copy(pagedList, filteredBloggers);
+
+            return updatedPagedList;
+        }
+
+        public async Task UpdateBloggerAsync(long id, UpdateBloggerDto updateBloggerDto, CancellationToken cancellationToken = default)
+        {
+            await this.updateBloggerDtoValidator.ValidateAndThrowAsync(updateBloggerDto, cancellationToken: cancellationToken);
+
+            var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
+                .GetByIdAsync(id, cancellationToken);
+
+            if (blogger is null)
+            {
+                throw new NotFoundException($"Post with ID {id} was not found.");
+            }
+
+            //this.EnsureUserCanModifyPost(post);
+
+            ArgumentNullException.ThrowIfNull(updateBloggerDto);
+
+
+            this.unitOfWork.GetRepository<IBloggerRepository>().Update(blogger);
+            await this.unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

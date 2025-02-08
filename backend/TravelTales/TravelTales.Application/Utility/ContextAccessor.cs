@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 
 namespace TravelTales.Application.Utility

@@ -1,9 +1,9 @@
-﻿using TravelTales.Application.DTOs.User;
+﻿using TravelTales.Domain.Entities;
 
 namespace TravelTales.Application.Interfaces
 {
     public interface IJwtService
     {
-        Task<string> GenerateTokenAsync(UserDto userEntity);
+        Task<string> GenerateTokenAsync(User userEntity);
     }
 }

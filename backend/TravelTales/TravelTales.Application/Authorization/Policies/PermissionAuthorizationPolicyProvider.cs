@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using TravelTales.Application.Authorization.Requirements;
 
 namespace TravelTales.Application.Authorization.Policies
 {

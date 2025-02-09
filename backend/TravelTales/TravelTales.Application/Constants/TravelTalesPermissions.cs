@@ -6,11 +6,11 @@
         {
             public static class App
             {
-                public const string List = "WebApp.List";
-                public const string View = "WebApp.View";
-                public const string Create = "WebApp.Create";
-                public const string Update = "WebApp.Update";
-                public const string Delete = "WebApp.Delete";
+                public const string List = "TravelTales.List";
+                public const string View = "TravelTales.View";
+                public const string Create = "TravelTales.Create";
+                public const string Update = "TravelTales.Update";
+                public const string Delete = "TravelTales.Delete";
             }
         }
     }

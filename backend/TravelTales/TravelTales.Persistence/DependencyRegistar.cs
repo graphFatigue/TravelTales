@@ -11,7 +11,7 @@ namespace TravelTales.Persistence
 {
     public static class DependencyRegistar
     {
-        public static void ConfigureInfrastructureLayerDependencies(
+        public static void ConfigurePersistenceLayerDependencies(
             this IServiceCollection services,
             IConfiguration configuration)
         {

@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <Folder Include="Controllers\" />
+	  <ProjectReference Include="..\TravelTales.Application\TravelTales.Application.csproj" />
   </ItemGroup>
 
 </Project>

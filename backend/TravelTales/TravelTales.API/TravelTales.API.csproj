@@ -21,6 +21,7 @@
 
   <ItemGroup>
 	  <ProjectReference Include="..\TravelTales.Application\TravelTales.Application.csproj" />
+	  <ProjectReference Include="..\TravelTales.Persistence\TravelTales.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

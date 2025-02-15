@@ -1,6 +1,12 @@
-﻿namespace TravelTales.Application.MappingProfiles
+﻿using AutoMapper;
+
+namespace TravelTales.Application.MappingProfiles
 {
-    public class PostLikeMappingProfile
+    public class PostLikeMappingProfile : Profile
     {
+        public PostLikeMappingProfile()
+        {
+            
+        }
     }
 }

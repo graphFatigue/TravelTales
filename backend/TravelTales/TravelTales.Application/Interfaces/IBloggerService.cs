@@ -14,6 +14,8 @@ namespace TravelTales.Application.Interfaces
 
         Task UpdateBloggerAsync(long id, UpdateBloggerDto updateBloggerDto, CancellationToken cancellationToken = default);
 
+        Task UpdateBloggerImageAsync(long id, UpdateBloggerImageDto updateBloggerImageDto, CancellationToken cancellationToken = default);
+
         Task DeleteBloggerAsync(long id, CancellationToken cancellationToken = default);
 
         Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);

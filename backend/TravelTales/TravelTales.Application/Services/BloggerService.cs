@@ -104,12 +104,47 @@ namespace TravelTales.Application.Services
 
             if (blogger is null)
             {
-                throw new NotFoundException($"Post with ID {id} was not found.");
+                throw new NotFoundException($"Blogger with ID {id} was not found.");
             }
+
+            blogger.FirstName = updateBloggerDto.FirstName;
+            blogger.LastName = updateBloggerDto.LastName;
+            blogger.Bio = updateBloggerDto.Bio;
+            blogger.BirthDate = updateBloggerDto.BirthDate;
+            blogger.Sex = (Domain.Enums.Sex)updateBloggerDto.Sex;
 
             //this.EnsureUserCanModifyPost(post);
 
             ArgumentNullException.ThrowIfNull(updateBloggerDto);
+
+
+            this.unitOfWork.GetRepository<IBloggerRepository>().Update(blogger);
+            await this.unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task UpdateBloggerImageAsync(long id, UpdateBloggerImageDto updateBloggerImageDto, CancellationToken cancellationToken = default)
+        {
+            var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
+                .GetByIdAsync(id, cancellationToken);
+
+            if (blogger is null)
+            {
+                throw new NotFoundException($"Blogger with ID {id} was not found.");
+            }
+
+            if (updateBloggerImageDto.ImageBytes != null)
+            {
+                var stream = new MemoryStream(updateBloggerImageDto.ImageBytes);
+
+                var blobUri =
+                    await this.blobStorageService.UploadAsync(stream, "user-photos", blogger!.User!.Email!);
+
+                blogger.Image = blobUri;
+            }
+
+            //this.EnsureUserCanModifyPost(post);
+
+            ArgumentNullException.ThrowIfNull(updateBloggerImageDto);
 
 
             this.unitOfWork.GetRepository<IBloggerRepository>().Update(blogger);

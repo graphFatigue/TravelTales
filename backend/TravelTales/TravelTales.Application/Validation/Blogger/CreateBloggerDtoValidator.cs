@@ -9,7 +9,7 @@ namespace TravelTales.Application.Validation.Blogger
         public const int MaxFirstNameLength = 30;
         public const int MinLastNameLength = 2;
         public const int MaxLastNameLength = 40;
-        public const int MaxBioLength = 500;
+        public const int MaxBioLength = 1000;
 
         public static readonly DateTime MinBirthDate = new DateTime(1900, 1, 1);
         public static readonly DateTime MaxBirthDate = DateTime.UtcNow.AddYears(-13);

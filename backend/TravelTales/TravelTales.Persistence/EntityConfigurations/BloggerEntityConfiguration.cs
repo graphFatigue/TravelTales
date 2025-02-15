@@ -21,14 +21,20 @@ namespace TravelTales.Persistence.EntityConfigurations
             builder
                 .Property(u => u.FirstName)
                 .IsRequired()
-                .HasMaxLength(100)
+                .HasMaxLength(30)
                 .HasColumnName("first_name");
 
             builder
                 .Property(u => u.LastName)
                 .IsRequired()
-                .HasMaxLength(100)
+                .HasMaxLength(40)
                 .HasColumnName("last_name");
+
+            builder
+                .Property(u => u.Bio)
+                .IsRequired()
+                .HasMaxLength(1000)
+                .HasColumnName("bio");
 
             builder
                 .Property(u => u.BirthDate)

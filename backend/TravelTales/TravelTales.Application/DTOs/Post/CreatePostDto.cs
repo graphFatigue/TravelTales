@@ -1,10 +1,12 @@
-﻿namespace TravelTales.Application.DTOs.Post
+﻿using TravelTales.Application.DTOs.Attachment;
+
+namespace TravelTales.Application.DTOs.Post
 {
     public class CreatePostDto
     {
         public string Title { get; set; }
         public string Content { get; set; }
         public long BloggerId { get; set; }
-        public byte[]?[]? FilesBytes { get; set; }
+        public ICollection<UploadAttachmentDto>? Attachments { get; set; }
     }
 }

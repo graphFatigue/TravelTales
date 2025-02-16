@@ -17,28 +17,43 @@ namespace TravelTales.Application.Services
         private readonly IValidator<CreatePostDto> createPostDtoValidator;
         private readonly IValidator<UpdatePostDto> updatePostDtoValidator;
         private readonly IContextAccessor contextAccessor;
+        private readonly IAttachmentService attachmentService;
 
         public PostService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             IValidator<CreatePostDto> createPostDtoValidator,
             IValidator<UpdatePostDto> updatePostDtoValidator,
-            IContextAccessor contextAccessor)
+            IContextAccessor contextAccessor,
+            IAttachmentService attachmentService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.createPostDtoValidator = createPostDtoValidator;
             this.updatePostDtoValidator = updatePostDtoValidator;
             this.contextAccessor = contextAccessor;
+            this.attachmentService = attachmentService;
         }
 
         public async Task<PostDto> CreatePostAsync(CreatePostDto createPostDto, CancellationToken cancellationToken = default)
         {
             await this.createPostDtoValidator.ValidateAndThrowAsync(createPostDto, cancellationToken: cancellationToken);
+
             var post = this.mapper.Map<Post>(createPostDto);
 
             await this.unitOfWork.GetRepository<IPostRepository>().AddAsync(post, cancellationToken);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
+
+            if (createPostDto.Attachments?.Count > 0)
+            {
+                foreach( var attachment in createPostDto.Attachments)
+                {
+                    var attachmentDto = attachment;
+                    attachmentDto.PostId = post.Id; // Ensure correct post ID
+
+                    await this.attachmentService.UploadAttachmentAsync(attachmentDto, cancellationToken);
+                }
+            }
 
             return this.mapper.Map<PostDto>(post);
         }
@@ -104,16 +119,32 @@ namespace TravelTales.Application.Services
             }
 
             this.EnsureUserCanModifyPost(post);
-
             ArgumentNullException.ThrowIfNull(updatePostDto);
 
             post.Title = updatePostDto.Title;
             post.Content = updatePostDto.Content;
-            //post.ImageLink = updatePostDto.ImageLink;
+
+            if (updatePostDto.AttachmentsToDelete?.Any() == true)
+            {
+                foreach (var attachmentId in updatePostDto.AttachmentsToDelete)
+                {
+                    await this.attachmentService.DeleteAttachmentAsync(attachmentId, cancellationToken);
+                }
+            }
+
+            if (updatePostDto.NewAttachments?.Any() == true)
+            {
+                foreach (var newAttachment in updatePostDto.NewAttachments)
+                {
+                    newAttachment.PostId = id;
+                    await this.attachmentService.UploadAttachmentAsync(newAttachment, cancellationToken);
+                }
+            }
 
             this.unitOfWork.GetRepository<IPostRepository>().Update(post);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
         }
+
 
         private void EnsureUserCanModifyPost(Post post)
         {

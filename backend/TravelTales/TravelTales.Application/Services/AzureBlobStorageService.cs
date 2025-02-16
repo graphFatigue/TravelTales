@@ -16,7 +16,7 @@ namespace TravelTales.Application.Services
             IConfiguration configuration)
         {
             _blobServiceClient = blobServiceClient;
-            _blobAccessKey = configuration.GetSection("Azure:Blob:AccessKey").Value!;
+            _blobAccessKey = configuration.GetSection("Azure:Blob:AccountKey").Value!;
         }
 
         public async Task<string> UploadAsync(
@@ -53,9 +53,12 @@ namespace TravelTales.Application.Services
             return Task.FromResult(sasToken);
         }
 
-        public Task DeleteAsync(string blobFilename)
+        public async Task DeleteAsync(string containerName, string blobFilename)
         {
-            throw new NotImplementedException();
+            var blobContainerClient = GetBlobContainerClient(containerName);
+            var blobClient = blobContainerClient.GetBlobClient(blobFilename);
+
+            await blobClient.DeleteIfExistsAsync();
         }
 
         private BlobContainerClient GetBlobContainerClient(string blobContainerName)

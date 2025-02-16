@@ -9,7 +9,8 @@ namespace TravelTales.Application.MappingProfiles
         public PostMappingProfile()
         {
             this.CreateMap<Post, PostDto>();
-            this.CreateMap<CreatePostDto, Post>();
+            this.CreateMap<CreatePostDto, Post>()
+                .ForMember(dest => dest.Attachments, opt => opt.Ignore());
         }
     }
 }

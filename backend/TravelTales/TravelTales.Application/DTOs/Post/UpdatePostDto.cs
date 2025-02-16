@@ -6,6 +6,7 @@ namespace TravelTales.Application.DTOs.Post
     {
         public string Title { get; set; }
         public string Content { get; set; }
-        public ICollection<AttachmentDto>? Attachments { get; }
+        public ICollection<UploadAttachmentDto>? NewAttachments { get; set; }
+        public ICollection<long>? AttachmentsToDelete { get; set; }
     }
 }

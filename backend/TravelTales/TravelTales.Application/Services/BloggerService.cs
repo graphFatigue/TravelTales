@@ -132,23 +132,52 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException($"Blogger with ID {id} was not found.");
             }
 
+            if (updateBloggerImageDto.RemoveExisting && !string.IsNullOrEmpty(blogger.Image))
+            {
+                var (containerName, fileName) = ExtractBlobInfo(blogger.Image);
+                if (!string.IsNullOrEmpty(containerName) && !string.IsNullOrEmpty(fileName))
+                {
+                    await this.blobStorageService.DeleteAsync(containerName, fileName);
+                }
+
+                blogger.Image = null;
+            }
+
             if (updateBloggerImageDto.ImageBytes != null)
             {
                 var stream = new MemoryStream(updateBloggerImageDto.ImageBytes);
 
-                var blobUri =
-                    await this.blobStorageService.UploadAsync(stream, "user-photos", blogger!.User!.Email!);
+                string fileName = $"{blogger.User.Email}-{Guid.NewGuid()}.jpg";
+
+                var blobUri = await this.blobStorageService.UploadAsync(stream, "user-photos", fileName);
 
                 blogger.Image = blobUri;
             }
 
-            //this.EnsureUserCanModifyPost(post);
-
-            ArgumentNullException.ThrowIfNull(updateBloggerImageDto);
-
-
             this.unitOfWork.GetRepository<IBloggerRepository>().Update(blogger);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        private static (string containerName, string fileName) ExtractBlobInfo(string uri)
+        {
+            try
+            {
+                var uriParts = new Uri(uri).AbsolutePath.Trim('/').Split('/');
+
+                if (uriParts.Length < 2)
+                {
+                    return (string.Empty, string.Empty);
+                }
+
+                var containerName = uriParts[0];
+                var fileName = string.Join("/", uriParts.Skip(1));
+
+                return (containerName, fileName);
+            }
+            catch
+            {
+                return (string.Empty, string.Empty);
+            }
         }
     }
 }

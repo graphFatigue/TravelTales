@@ -11,7 +11,7 @@ npm run dev
 ### Markup
 
 - [x] Project setup 
-- [ ]layout (header, sidebar, main content)
+- [ ] layout (header, sidebar, main content)
 - [ ] Registration and authorization forms
 - [ ] Author profile + edit form
 - [ ] Post card on the main page + detailed post page

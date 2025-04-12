@@ -20,6 +20,10 @@ namespace TravelTales.Persistence
 
         public DbSet<PostLike> PostLikes { get; set; }
 
+        public DbSet<Attachment> Attachments { get; set; }
+
+        public DbSet<Category> Categories { get; set; }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return base.SaveChangesAsync(cancellationToken);

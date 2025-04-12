@@ -51,6 +51,11 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .WithMany(u => u.Posts)
                 .HasForeignKey(p => p.BloggerId)
                 .OnDelete(DeleteBehavior.SetNull); // Blogger deletion sets BloggerId in Post to null
+
+            // Configure many-to-many with Category
+            builder.HasMany(p => p.Categories)
+                .WithMany(c => c.Posts)
+                .UsingEntity(j => j.ToTable("posts_categories"));
         }
     }
 }

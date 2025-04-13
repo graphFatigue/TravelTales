@@ -2,9 +2,10 @@
 
 namespace TravelTales.Application.DTOs.Auth
 {
-    public class AuthResponseDto
+    public class ExternalAuthResponseDto
     {
         public string AccessToken { get; set; }
-        public UserDto? User { get; set; }
+        public bool IsNewUser { get; set; }
+        public UserDto User { get; set; }
     }
 }

@@ -5,14 +5,15 @@ using TravelTales.Application.Interfaces;
 
 namespace TravelTales.API.Controllers
 {
-    [Authorize]
     [ApiController, Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService authService;
         private readonly ILogger<AuthController> logger;
 
-        public AuthController(IAuthService authService, ILogger<AuthController> logger)
+        public AuthController(
+                IAuthService authService,
+                ILogger<AuthController> logger)
         {
             this.authService = authService;
             this.logger = logger;
@@ -32,6 +33,23 @@ namespace TravelTales.API.Controllers
             catch (Exception ex)
             {
                 this.logger.LogError(ex, "Error during login attempt for user {Email}", loginDto.Email);
+                throw;
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("signin-google")]
+        public async Task<IActionResult> SignInGoogle([FromBody] GoogleSignInDto googleSignInDto)
+        {
+            try
+            {
+                var response = await authService.LoginWithGoogleAsync(googleSignInDto.Token);
+                logger.LogInformation("Google sign-in successful for user {Email}", response.User?.Email);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error during Google sign-in");
                 throw;
             }
         }

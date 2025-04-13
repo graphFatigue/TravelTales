@@ -2,7 +2,6 @@
 using FluentValidation;
 using Sieve.Models;
 using TravelTales.Application.DTOs.Category;
-using TravelTales.Application.DTOs.Post;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;

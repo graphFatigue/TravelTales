@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +31,7 @@ namespace TravelTales.Application
 
             services.ConfigureServices();
             services.ConfigureAutomapper();
-            services.ConfigureJwtAuthentication();
+            services.ConfigureJwtAuthentication(configuration);
             services.ConfigureOptions();
             services.ConfigureAuthorizationHandlers();
             services.AddContextAccessor();
@@ -154,7 +156,8 @@ namespace TravelTales.Application
         }
 
         private static void ConfigureJwtAuthentication(
-            this IServiceCollection services)
+            this IServiceCollection services,
+            IConfiguration configuration)
         {
             var key = Environment.GetEnvironmentVariable("JWT_SECRET_KEY") ?? "JwtVerySecretKey1111111111111111111";
 
@@ -165,6 +168,38 @@ namespace TravelTales.Application
                     options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddCookie()
+                .AddGoogle(options =>
+                {
+                    var clientId = configuration["Authentication: Google:ClientId"];
+
+                    if (clientId == null)
+                    {
+                        throw new ArgumentException(nameof(clientId));
+                    }
+
+                    var clientSecret = configuration["Authentication: Google:ClientSecret"];
+
+                    if (clientSecret == null)
+                    {
+                        throw new ArgumentException(nameof(clientSecret));
+                    }
+
+                    options.ClientId = clientId;
+                    options.ClientSecret = clientSecret;
+                    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.CallbackPath = "/api/auth/signin-google-callback";
+                    options.SaveTokens = true;
+                    options.Events = new OAuthEvents
+                    {
+                        OnCreatingTicket = context =>
+                        {
+                            // Add custom claims here if needed
+                            return Task.CompletedTask;
+                        }
+                    };
+
                 })
                 .AddJwtBearer(options =>
                 {

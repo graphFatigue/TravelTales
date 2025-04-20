@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using Azure.Storage.Blobs;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -20,6 +21,8 @@ using TravelTales.Application.Sieve;
 using TravelTales.Application.Utility;
 using TravelTales.Application.Validation.Post;
 using TravelTales.Domain.Entities;
+using TravelTales.Domain.Enums;
+using TravelTales.Persistence;
 
 namespace TravelTales.Application
 {
@@ -37,6 +40,7 @@ namespace TravelTales.Application
             services.AddContextAccessor();
             services.AddSieveServices(configuration);
             services.AddValidation();
+            services.ConfigureAzureBlobServiceClient(configuration);
         }
 
         public static async Task CreateUserRolesAsync(IServiceProvider serviceProvider, IConfiguration configuration)
@@ -55,6 +59,7 @@ namespace TravelTales.Application
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+            var context = serviceProvider.GetRequiredService<AppDbContext>();
 
             var roleCheck = await roleManager.RoleExistsAsync("Admin");
             if (!roleCheck)
@@ -101,8 +106,6 @@ namespace TravelTales.Application
                 adminUser = new User
                 {
                     UserName = adminEmail,
-                    //FirstName = "Admin",
-                    //LastName = "Admin",
                     Email = adminEmail,
                     CreatedAt = DateTime.Now,
                     ModifiedAt = DateTime.Now,
@@ -113,6 +116,20 @@ namespace TravelTales.Application
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
+
+                    var blogger = new Blogger
+                    {
+                        UserId = adminUser.Id,
+                        FirstName = "System",
+                        LastName = "Account",
+                        Bio = "Automatically created admin blogger",
+                        BirthDate = DateTime.UtcNow,
+                        Sex = Sex.Other,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    context.Bloggers.Add(blogger);
+                    await context.SaveChangesAsync();
                 }
                 else
                 {
@@ -132,16 +149,14 @@ namespace TravelTales.Application
             services.AddScoped<IJwtService, JwtService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILikeService, LikeService>();
+            services.AddScoped<IAttachmentService, AttachmentService>();
+            services.AddScoped<IStorageService, AzureBlobStorageService>();
             services.AddSignalR();
         }
 
         private static void ConfigureAutomapper(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(UserMappingProfile).Assembly);
-            services.AddAutoMapper(typeof(AuthMappingProfile).Assembly);
-            services.AddAutoMapper(typeof(BloggerMappingProfile).Assembly);
-            services.AddAutoMapper(typeof(PostMappingProfile).Assembly);
-            services.AddAutoMapper(typeof(RoleMappingProfile).Assembly);
         }
 
         private static void AddContextAccessor(this IServiceCollection services)
@@ -153,6 +168,13 @@ namespace TravelTales.Application
         private static void AddValidation(this IServiceCollection services)
         {
             services.AddValidatorsFromAssemblyContaining<CreatePostDtoValidator>();
+        }
+
+        private static void ConfigureAzureBlobServiceClient(
+            this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddScoped(_ => new BlobServiceClient(configuration.GetSection("Azure:Blob:ConnectionString").Value));
         }
 
         private static void ConfigureJwtAuthentication(

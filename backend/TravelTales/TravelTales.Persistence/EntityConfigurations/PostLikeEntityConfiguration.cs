@@ -10,27 +10,30 @@ namespace TravelTales.Persistence.EntityConfigurations
         {
             builder.ToTable("likes");
 
-            ArgumentNullException.ThrowIfNull(builder);
-
             builder.HasKey(l => new { l.BloggerId, l.PostId });
 
             builder.Property(l => l.BloggerId)
-                   .HasColumnName("blogger_id");
+                .HasColumnName("blogger_id");
 
             builder.Property(l => l.PostId)
-                   .HasColumnName("post_id");
+                .HasColumnName("post_id");
 
-            builder
-                .HasOne(l => l.Blogger)
+            // Relationships
+            builder.HasOne(l => l.Blogger)
                 .WithMany()
                 .HasForeignKey(l => l.BloggerId)
-                .OnDelete(DeleteBehavior.SetNull); // Set BloggerId to null when Blogger is deleted
+                .OnDelete(DeleteBehavior.NoAction);
 
-            builder
-                .HasOne(l => l.Post)
+            builder.HasOne(l => l.Post)
                 .WithMany(p => p.Likes)
                 .HasForeignKey(l => l.PostId)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade delete when Post is deleted
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Add inverse navigation
+            builder.HasOne(l => l.Notification)
+                .WithOne(n => n.PostLike)
+                .HasForeignKey<Notification>(n => new { n.LikedPostId, n.LikedBloggerId })
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

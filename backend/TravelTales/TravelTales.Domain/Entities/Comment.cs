@@ -8,7 +8,7 @@ namespace TravelTales.Domain.Entities
         public string Content { get; set; }
         public long PostId { get; set; }
         public Post Post { get; set; }
-        public long BloggerId { get; set; }
+        public long? BloggerId { get; set; }
         public Blogger Blogger { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

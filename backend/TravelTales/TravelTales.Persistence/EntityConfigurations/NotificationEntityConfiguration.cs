@@ -12,61 +12,52 @@ namespace TravelTales.Persistence.EntityConfigurations
 
             builder.HasKey(n => n.Id);
 
-            builder
-                .Property(n => n.Id)
+            builder.Property(n => n.Id)
                 .HasColumnName("notification_id");
 
-            builder
-                .Property(n => n.Message)
+            builder.Property(n => n.Message)
                 .IsRequired()
                 .HasMaxLength(500)
                 .HasColumnName("message");
 
-            builder
-                .Property(n => n.IsRead)
+            builder.Property(n => n.IsRead)
                 .HasDefaultValue(false)
                 .HasColumnName("is_read");
 
-            builder
-                .HasOne(n => n.RecipientBlogger)
+            // Relationships
+            builder.HasOne(n => n.RecipientBlogger)
                 .WithMany()
                 .HasForeignKey(n => n.RecipientBloggerId)
-                .OnDelete(DeleteBehavior.Cascade); // If receiving blogger is deleted, the notification will also be deleted
+                .OnDelete(DeleteBehavior.ClientCascade);
 
-            builder
-                .HasOne(n => n.TriggeredByBlogger)
+            builder.HasOne(n => n.TriggeredByBlogger)
                 .WithMany()
                 .HasForeignKey(n => n.TriggeredByBloggerId)
-                .OnDelete(DeleteBehavior.SetNull); // If sending blogger is deleted, the blogger-related fields in the notification table will be set to null
+                .OnDelete(DeleteBehavior.NoAction);
 
-            builder
-                .HasOne(n => n.Post)
+            builder.HasOne(n => n.Post)
                 .WithMany()
                 .HasForeignKey(n => n.PostId)
-                .OnDelete(DeleteBehavior.Cascade); // If the post is deleted, the notification will also be deleted
+                .OnDelete(DeleteBehavior.ClientCascade);
 
-            builder
-                .HasOne(n => n.Comment)
+            builder.HasOne(n => n.Comment)
                 .WithMany()
                 .HasForeignKey(n => n.CommentId)
-                .OnDelete(DeleteBehavior.Cascade); // If the comment is deleted, the notification will also be deleted
+                .OnDelete(DeleteBehavior.NoAction);
 
-            builder
-                .HasOne(n => n.PostLike)
-                .WithMany()
-                .HasForeignKey(n => n.PostLikeId)
-                .OnDelete(DeleteBehavior.Cascade); // If the like is deleted, the notification will also be deleted
+            // Corrected PostLike relationship
+            builder.HasOne(n => n.PostLike)
+                .WithOne(pl => pl.Notification)
+                .HasForeignKey<PostLike>(pl => new { pl.PostId, pl.BloggerId })
+                .OnDelete(DeleteBehavior.Cascade);
 
-            builder
-                .Property(p => p.CreatedAt)
+            builder.Property(p => p.CreatedAt)
                 .HasColumnName("created_at");
 
-            builder
-                .Property(p => p.ModifiedAt)
+            builder.Property(p => p.ModifiedAt)
                 .HasColumnName("modified_at");
 
-            builder
-                .Property(p => p.IsDeleted)
+            builder.Property(p => p.IsDeleted)
                 .HasColumnName("is_deleted");
         }
     }

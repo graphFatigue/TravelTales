@@ -12,7 +12,11 @@ namespace TravelTales.Persistence.EntityConfigurations
 
             ArgumentNullException.ThrowIfNull(builder);
 
-            builder.HasKey(l => new { l.BloggerId, l.PostId });
+            builder.HasKey(u => u.Id);
+
+            builder
+                .Property(u => u.Id)
+                .HasColumnName("comment_id");
 
             builder.Property(l => l.BloggerId)
                    .HasColumnName("blogger_id");
@@ -38,17 +42,15 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .Property(p => p.IsDeleted)
                 .HasColumnName("is_deleted");
 
-            builder
-                .HasOne(c => c.Blogger)
-                .WithMany()
-                .HasForeignKey(c => c.BloggerId)
-                .OnDelete(DeleteBehavior.SetNull); // Blogger deletion sets BloggerId in Comment to null
-
-            builder
-                .HasOne(c => c.Post)
+            builder.HasOne(c => c.Post)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(c => c.PostId)
-                .OnDelete(DeleteBehavior.Cascade); // Post deletion cascades to Comments
+                .OnDelete(DeleteBehavior.ClientCascade);  // Changed to client-side cascade
+
+            builder.HasOne(c => c.Blogger)
+                .WithMany()
+                .HasForeignKey(c => c.BloggerId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

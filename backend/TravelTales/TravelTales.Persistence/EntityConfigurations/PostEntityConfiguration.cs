@@ -47,10 +47,10 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .HasColumnName("is_deleted");
 
             builder
-                .HasOne(p => p.Blogger)
-                .WithMany(u => u.Posts)
-                .HasForeignKey(p => p.BloggerId)
-                .OnDelete(DeleteBehavior.SetNull); // Blogger deletion sets BloggerId in Post to null
+               .HasOne(p => p.Blogger)
+               .WithMany(u => u.Posts)
+               .HasForeignKey(p => p.BloggerId)
+               .OnDelete(DeleteBehavior.SetNull); // Blogger deletion sets BloggerId in Post to null
 
             // Configure many-to-many with Category
             builder.HasMany(p => p.Categories)

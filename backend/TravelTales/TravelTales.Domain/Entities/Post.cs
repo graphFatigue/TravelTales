@@ -7,7 +7,7 @@ namespace TravelTales.Domain.Entities
         public long Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public long BloggerId { get; set; }
+        public long? BloggerId { get; set; }
         public Blogger Blogger { get; set; }
         public ICollection<Attachment>? Attachments { get; }
         public ICollection<Category>? Categories { get; }

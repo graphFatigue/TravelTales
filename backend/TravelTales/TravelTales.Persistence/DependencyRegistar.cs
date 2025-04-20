@@ -6,6 +6,7 @@ using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Claims;
 using TravelTales.Persistence.Interfaces;
 using TravelTales.Persistence.Repositories;
+using WebApp.DataAccess.Seeding;
 
 namespace TravelTales.Persistence
 {
@@ -19,7 +20,7 @@ namespace TravelTales.Persistence
             services.ConfigureIdentity();
             services.ConfigureRepositories();
             services.ConfigureUnitOfWork();
-            //services.ConfigureDataSeeding();
+            services.ConfigureDataSeeding();
         }
 
         private static void ConfigureDbContext(
@@ -63,9 +64,9 @@ namespace TravelTales.Persistence
             services.AddScoped<IUnitOfWork, UnitOfWork>();
         }
 
-        //private static void ConfigureDataSeeding(this IServiceCollection services)
-        //{
-        //    services.AddHostedService<DataSeeder>();
-        //}
+        private static void ConfigureDataSeeding(this IServiceCollection services)
+        {
+            services.AddHostedService<DataSeeder>();
+        }
     }
 }

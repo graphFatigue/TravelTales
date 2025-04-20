@@ -16,10 +16,6 @@ public class CategoryEntityConfiguration : IEntityTypeConfiguration<Category>
             .HasMaxLength(100)
             .HasColumnName("name");
 
-        //builder.HasMany(p => p.Posts)
-        //    .WithMany(c => c.Categories)
-        //    .UsingEntity(j => j.ToTable("posts_categories"));
-
         builder.Property(c => c.Description)
             .HasMaxLength(500)
             .HasColumnName("description");

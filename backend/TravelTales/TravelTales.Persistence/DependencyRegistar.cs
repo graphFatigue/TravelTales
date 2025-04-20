@@ -57,6 +57,7 @@ namespace TravelTales.Persistence
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
             services.AddScoped<ILikeRepository, LikeRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
         }
 
         private static void ConfigureUnitOfWork(this IServiceCollection services)

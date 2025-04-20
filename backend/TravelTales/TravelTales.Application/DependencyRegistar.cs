@@ -150,6 +150,7 @@ namespace TravelTales.Application
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ILikeService, LikeService>();
             services.AddScoped<IAttachmentService, AttachmentService>();
+            services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IStorageService, AzureBlobStorageService>();
             services.AddSignalR();
         }

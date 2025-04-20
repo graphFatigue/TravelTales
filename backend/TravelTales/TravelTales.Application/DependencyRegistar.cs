@@ -194,14 +194,14 @@ namespace TravelTales.Application
                 .AddCookie()
                 .AddGoogle(options =>
                 {
-                    var clientId = configuration["Authentication: Google:ClientId"];
+                    var clientId = configuration["Authentication:Google:ClientId"];
 
                     if (clientId == null)
                     {
                         throw new ArgumentException(nameof(clientId));
                     }
 
-                    var clientSecret = configuration["Authentication: Google:ClientSecret"];
+                    var clientSecret = configuration["Authentication:Google:ClientSecret"];
 
                     if (clientSecret == null)
                     {
@@ -225,6 +225,7 @@ namespace TravelTales.Application
                 })
                 .AddJwtBearer(options =>
                 {
+                    options.RequireHttpsMetadata = false; // For development only
                     options.SaveToken = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -235,6 +236,7 @@ namespace TravelTales.Application
                         ValidateLifetime = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
                         ValidateIssuerSigningKey = true,
+                        ClockSkew = TimeSpan.Zero
                     };
                     options.Events = new JwtBearerEvents
                     {

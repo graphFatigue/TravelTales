@@ -32,6 +32,7 @@ namespace TravelTales.Application.Services
             {
                 new (ClaimTypes.NameIdentifier, userEntity.Id.ToString()),
                 new (ClaimTypes.Name, userEntity.UserName!),
+                new (ClaimTypes.Email, userEntity.Email),
             };
 
             var roles = await this.userManager.GetRolesAsync(userEntity);

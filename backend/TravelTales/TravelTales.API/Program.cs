@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System.Text.Json.Serialization;
 using TravelTales.API.Hubs;
 using TravelTales.API.Middleware;

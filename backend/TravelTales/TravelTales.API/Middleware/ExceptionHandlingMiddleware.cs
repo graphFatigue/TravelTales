@@ -8,20 +8,23 @@ namespace TravelTales.API.Middleware
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate next;
+        private readonly ILogger<ExceptionHandlingMiddleware> logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next)
+        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
         {
             this.next = next;
+            this.logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
         {
             try
             {
-                await this.next(context);
+                await next(context);
             }
-            catch (ArgumentNullException ex)
+            catch (Exception ex)
             {
+                logger.LogError(ex, "An error occurred");
                 await HandleExceptionAsync(context, ex);
             }
         }
@@ -30,27 +33,25 @@ namespace TravelTales.API.Middleware
         {
             var (code, message) = exception switch
             {
+                InvalidCredentialsAuthException => (HttpStatusCode.Unauthorized, "Invalid email or password"),
                 NotFoundException => (HttpStatusCode.NotFound, exception.Message),
                 BusinessException => (HttpStatusCode.BadRequest, exception.Message),
-                InvalidCredentialsAuthException => (HttpStatusCode.Unauthorized, exception.Message),
                 NotAuthorizedException => (HttpStatusCode.Unauthorized, exception.Message),
                 PermissionsException => (HttpStatusCode.Forbidden, exception.Message),
                 UserCreationException => (HttpStatusCode.BadRequest, exception.Message),
-                ArgumentNullException or ArgumentException => (HttpStatusCode.BadRequest, exception.Message),
-                DbUpdateException => (HttpStatusCode.Conflict, "Database update conflict occurred."),
-                _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred.")
+                ArgumentNullException or ArgumentException => (HttpStatusCode.BadRequest, "Invalid request parameters"),
+                DbUpdateException => (HttpStatusCode.Conflict, "Database update conflict occurred"),
+                _ => (HttpStatusCode.InternalServerError, "An unexpected error occurred")
             };
 
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
 
-            var result = JsonConvert.SerializeObject(new
+            return context.Response.WriteAsync(JsonConvert.SerializeObject(new
             {
                 error = message,
-                statusCode = context.Response.StatusCode,
-            });
-
-            return context.Response.WriteAsync(result);
+                statusCode = context.Response.StatusCode
+            }));
         }
     }
 

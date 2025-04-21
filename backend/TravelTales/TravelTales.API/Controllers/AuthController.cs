@@ -25,34 +25,19 @@ namespace TravelTales.API.Controllers
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             this.logger.LogInformation("Login attempt for user {Email}", loginDto.Email);
-            try
-            {
-                var jwtTokenResponse = await this.authService.LoginAsync(loginDto);
-                this.logger.LogInformation("Login successful for user {Email}", loginDto.Email);
-                return this.Ok(jwtTokenResponse);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "Error during login attempt for user {Email}", loginDto.Email);
-                throw;
-            }
+
+            var jwtTokenResponse = await this.authService.LoginAsync(loginDto);
+            this.logger.LogInformation("Login successful for user {Email}", loginDto.Email);
+            return this.Ok(jwtTokenResponse);
         }
 
         [AllowAnonymous]
         [HttpPost("signin-google")]
         public async Task<IActionResult> SignInGoogle([FromBody] GoogleSignInDto googleSignInDto)
         {
-            try
-            {
-                var response = await authService.LoginWithGoogleAsync(googleSignInDto.Token);
-                logger.LogInformation("Google sign-in successful for user {Email}", response.User?.Email);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error during Google sign-in");
-                throw;
-            }
+            var response = await authService.LoginWithGoogleAsync(googleSignInDto.Token);
+            logger.LogInformation("Google sign-in successful for user {Email}", response.User?.Email);
+            return Ok(response);
         }
 
         [AllowAnonymous]
@@ -60,17 +45,10 @@ namespace TravelTales.API.Controllers
         public async Task<IActionResult> Signup(SignupDto signupDto)
         {
             this.logger.LogInformation("Sign-up attempt for user {Email}", signupDto.Email);
-            try
-            {
-                await this.authService.SignupAsync(signupDto);
-                this.logger.LogInformation("Sign-up successful for user {Email}", signupDto.Email);
-                return this.NoContent();
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "Error during sign-up attempt for user {Email}", signupDto.Email);
-                throw;
-            }
+
+            await this.authService.SignupAsync(signupDto);
+            this.logger.LogInformation("Sign-up successful for user {Email}", signupDto.Email);
+            return this.NoContent();
         }
 
         [Authorize]
@@ -78,53 +56,30 @@ namespace TravelTales.API.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] PasswordChangeDto passwordChangeDto)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            try
-            {
-                await authService.ChangePasswordAsync(userId, passwordChangeDto);
-                logger.LogInformation("Password changed successfully for user {UserId}", userId);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error changing password for user {UserId}", userId);
-                throw;
-            }
+
+            await authService.ChangePasswordAsync(userId, passwordChangeDto);
+            logger.LogInformation("Password changed successfully for user {UserId}", userId);
+            return NoContent();
         }
 
         [AllowAnonymous]
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromQuery] string email)
         {
-            try
-            {
-                var token = await authService.GeneratePasswordResetTokenAsync(email);
-                logger.LogInformation("Password reset token generated for {Email}", email);
+            var token = await authService.GeneratePasswordResetTokenAsync(email);
+            logger.LogInformation("Password reset token generated for {Email}", email);
 
-                // In real implementation: Send email with token
-                return Ok(new { Token = token });
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error generating password reset token for {Email}", email);
-                throw;
-            }
+            // In real implementation: Send email with token
+            return Ok(new { Token = token });
         }
 
         [AllowAnonymous]
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] PasswordResetDto passwordResetDto)
         {
-            try
-            {
-                await authService.ResetPasswordAsync(passwordResetDto);
-                logger.LogInformation("Password reset successful for {Email}", passwordResetDto.Email);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error resetting password for {Email}", passwordResetDto.Email);
-                throw;
-            }
+            await authService.ResetPasswordAsync(passwordResetDto);
+            logger.LogInformation("Password reset successful for {Email}", passwordResetDto.Email);
+            return NoContent();
         }
     }
 }

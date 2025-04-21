@@ -22,17 +22,9 @@ namespace TravelTales.API.Controllers
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             this.logger.LogTrace("Starting GetAll action");
-            try
-            {
-                var roles = await this.roleService.GetAllRolesAsync(cancellationToken);
-                this.logger.LogInformation("Successfully retrieved {Count} roles", roles.Count());
-                return this.Ok(roles);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "An error occurred while retrieving all roles");
-                throw;
-            }
+            var roles = await this.roleService.GetAllRolesAsync(cancellationToken);
+            this.logger.LogInformation("Successfully retrieved {Count} roles", roles.Count());
+            return this.Ok(roles);
         }
 
         [Authorize(Roles = "Admin")]
@@ -40,25 +32,17 @@ namespace TravelTales.API.Controllers
         public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
         {
             this.logger.LogTrace("Starting GetById action for ID {Id}", id);
-            try
+            var role = await this.roleService.GetRoleByIdAsync(id, cancellationToken);
+            if (role == null)
             {
-                var role = await this.roleService.GetRoleByIdAsync(id, cancellationToken);
-                if (role == null)
-                {
-                    this.logger.LogWarning("Role with ID {Id} was not found", id);
-                }
-                else
-                {
-                    this.logger.LogInformation("Role with ID {Id} retrieved successfully", id);
-                }
+                this.logger.LogWarning("Role with ID {Id} was not found", id);
+            }
+            else
+            {
+                this.logger.LogInformation("Role with ID {Id} retrieved successfully", id);
+            }
 
-                return this.Ok(role);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "An error occurred while retrieving the role with ID {Id}", id);
-                throw;
-            }
+            return this.Ok(role);
         }
 
         [Authorize(Roles = "Admin")]
@@ -66,17 +50,9 @@ namespace TravelTales.API.Controllers
         public async Task<IActionResult> Create([FromBody] CreateRoleDto createRoleDto, CancellationToken cancellationToken)
         {
             this.logger.LogTrace("Starting Create action with role name: {Name}", createRoleDto.Name);
-            try
-            {
-                var role = await this.roleService.CreateRoleAsync(createRoleDto, cancellationToken);
-                this.logger.LogInformation("Role created successfully with ID {Id}", role.Id);
-                return this.Ok(role);
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "An error occurred while creating a new role");
-                throw;
-            }
+            var role = await this.roleService.CreateRoleAsync(createRoleDto, cancellationToken);
+            this.logger.LogInformation("Role created successfully with ID {Id}", role.Id);
+            return this.Ok(role);
         }
 
         [Authorize(Roles = "Admin")]
@@ -84,17 +60,9 @@ namespace TravelTales.API.Controllers
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateRoleDto updateRoleDto, CancellationToken cancellationToken)
         {
             this.logger.LogTrace("Starting Update action for role ID {Id}", id);
-            try
-            {
-                await this.roleService.UpdateRoleAsync(id, updateRoleDto, cancellationToken);
-                this.logger.LogInformation("Role with ID {Id} updated successfully", id);
-                return this.NoContent();
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "An error occurred while updating the role with ID {Id}", id);
-                throw;
-            }
+            await this.roleService.UpdateRoleAsync(id, updateRoleDto, cancellationToken);
+            this.logger.LogInformation("Role with ID {Id} updated successfully", id);
+            return this.NoContent();
         }
 
         [Authorize(Roles = "Admin")]
@@ -102,17 +70,9 @@ namespace TravelTales.API.Controllers
         public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
         {
             this.logger.LogTrace("Starting Delete action for role ID {Id}", id);
-            try
-            {
-                await this.roleService.DeleteRoleAsync(id, cancellationToken);
-                this.logger.LogInformation("Role with ID {Id} deleted successfully", id);
-                return this.NoContent();
-            }
-            catch (Exception ex)
-            {
-                this.logger.LogError(ex, "An error occurred while deleting the role with ID {Id}", id);
-                throw;
-            }
+            await this.roleService.DeleteRoleAsync(id, cancellationToken);
+            this.logger.LogInformation("Role with ID {Id} deleted successfully", id);
+            return this.NoContent();
         }
     }
 }

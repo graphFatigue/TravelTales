@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TravelTales.Domain.Entities;
+using TravelTales.Domain.Enums;
 
 namespace TravelTales.Persistence.EntityConfigurations
 {
@@ -32,7 +33,6 @@ namespace TravelTales.Persistence.EntityConfigurations
 
             builder
                 .Property(u => u.Bio)
-                .IsRequired()
                 .HasMaxLength(1000)
                 .HasColumnName("bio");
 
@@ -44,7 +44,8 @@ namespace TravelTales.Persistence.EntityConfigurations
             builder
                 .Property(u => u.Sex)
                 .IsRequired()
-                .HasColumnName("sex");
+                .HasColumnName("sex")
+                .HasDefaultValue(Sex.Other);
 
             builder
                 .Property(u => u.CreatedAt)

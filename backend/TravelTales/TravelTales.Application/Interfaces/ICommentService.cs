@@ -6,16 +6,12 @@ namespace TravelTales.Application.Interfaces
 {
     public interface ICommentService
     {
-        Task<IEnumerable<CommentDto>> GetCommentsByPostIdAsync(long postId, CancellationToken cancellationToken = default);
+        Task<CommentDto> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId);
 
-        Task AddCommentAsync(CreateCommentDto createCommentDto, CancellationToken cancellationToken = default);
+        Task UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId);
 
-        Task<int> CountCommentsByPostIdAsync(long postId);
+        Task DeleteCommentAsync(long commentId, long bloggerId);
 
-        Task UpdateCommentAsync(long id, UpdateCommentDto updateCommentDto, CancellationToken cancellationToken = default);
-
-        Task DeleteCommentAsync(long id, CancellationToken cancellationToken = default);
-
-        Task<PagedList<CommentDto>> GetCommentsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
+        Task<List<CommentDto>> GetCommentsByPostIdAsync(long postId);
     }
 }

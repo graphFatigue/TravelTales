@@ -1,7 +1,4 @@
-﻿using TravelTales.Application.DTOs.Blogger;
-using TravelTales.Application.DTOs.Post;
-
-namespace TravelTales.Application.DTOs.Comment
+﻿namespace TravelTales.Application.DTOs.Comment
 {
     public class CreateCommentDto
     {

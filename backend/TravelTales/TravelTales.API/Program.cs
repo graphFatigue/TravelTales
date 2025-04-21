@@ -86,5 +86,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<LikesHub>("hubs/likes");
+app.MapHub<CommentsHub>("hubs/comments");
 
 app.Run();

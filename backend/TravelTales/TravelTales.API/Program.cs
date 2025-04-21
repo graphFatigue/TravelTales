@@ -42,6 +42,7 @@ builder.Services.AddSwaggerGen(options =>
             Array.Empty<string>()
         },
     });
+    options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
 builder.Services.AddCors(options => options.AddPolicy(

@@ -93,6 +93,57 @@ namespace TravelTales.Application.Services
             };
         }
 
+        public async Task ChangePasswordAsync(string userId, PasswordChangeDto passwordChangeDto)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var result = await userManager.ChangePasswordAsync(
+                user,
+                passwordChangeDto.CurrentPassword,
+                passwordChangeDto.NewPassword
+            );
+
+            if (!result.Succeeded)
+            {
+                throw new IdentityException("Password change failed", result.Errors);
+            }
+        }
+
+        public async Task<string> GeneratePasswordResetTokenAsync(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            return await userManager.GeneratePasswordResetTokenAsync(user);
+        }
+
+        public async Task ResetPasswordAsync(PasswordResetDto passwordResetDto)
+        {
+            var user = await userManager.FindByEmailAsync(passwordResetDto.Email);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found");
+            }
+
+            var result = await userManager.ResetPasswordAsync(
+                user,
+                passwordResetDto.Token,
+                passwordResetDto.NewPassword
+            );
+
+            if (!result.Succeeded)
+            {
+                throw new IdentityException("Password reset failed", result.Errors);
+            }
+        }
+
         private static void ValidateSignupDto(SignupDto signupDto)
         {
             ArgumentNullException.ThrowIfNull(signupDto);

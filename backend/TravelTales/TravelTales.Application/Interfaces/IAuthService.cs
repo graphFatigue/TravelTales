@@ -9,5 +9,11 @@ namespace TravelTales.Application.Interfaces
         Task SignupAsync(SignupDto signupDto);
 
         Task<AuthResponseDto> LoginWithGoogleAsync(string token);
+
+        Task ChangePasswordAsync(string userId, PasswordChangeDto passwordChangeDto);
+
+        Task<string> GeneratePasswordResetTokenAsync(string email);
+
+        Task ResetPasswordAsync(PasswordResetDto passwordResetDto);
     }
 }

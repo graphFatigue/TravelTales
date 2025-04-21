@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using TravelTales.Application.DTOs.Auth;
@@ -6,6 +7,7 @@ using TravelTales.Application.DTOs.User;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
+using TravelTales.Persistence.Interfaces;
 
 namespace TravelTales.Application.Services
 {
@@ -15,17 +17,23 @@ namespace TravelTales.Application.Services
         private readonly SignInManager<User> signInManager;
         private readonly IJwtService jwtService;
         private readonly IMapper mapper;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IValidator<SignupDto> signupDtoValidator;
 
         public AuthService(
             UserManager<User> userManager,
             SignInManager<User> signInManager,
             IJwtService jwtService,
-            IMapper mapper)
+            IMapper mapper,
+            IUnitOfWork unitOfWork,
+            IValidator<SignupDto> signupDtoValidator)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.jwtService = jwtService;
             this.mapper = mapper;
+            this.unitOfWork = unitOfWork;
+            this.signupDtoValidator = signupDtoValidator;
         }
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
@@ -55,15 +63,26 @@ namespace TravelTales.Application.Services
                 {
                     UserName = payload.Email,
                     Email = payload.Email,
-                    //FirstName = payload.GivenName,
-                    //LastName = payload.FamilyName,
-                    //BirthDate = null // Adjust based on your User model
+                    CreatedAt = DateTime.UtcNow
                 };
 
                 var createResult = await userManager.CreateAsync(user);
                 if (!createResult.Succeeded)
                     throw new UserCreationException(createResult.Errors.First().Description);
 
+                // Create Blogger profile
+                var blogger = new Blogger
+                {
+                    UserId = user.Id,
+                    FirstName = payload.GivenName,
+                    LastName = payload.FamilyName,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                await unitOfWork.GetRepository<IBloggerRepository>().AddAsync(blogger);
+                await unitOfWork.SaveChangesAsync();
+
+                // Add Google login
                 var externalLogin = new UserLoginInfo("Google", payload.Subject, "Google");
                 var addLoginResult = await userManager.AddLoginAsync(user, externalLogin);
                 if (!addLoginResult.Succeeded)
@@ -144,9 +163,10 @@ namespace TravelTales.Application.Services
             }
         }
 
-        private static void ValidateSignupDto(SignupDto signupDto)
+        private void ValidateSignupDto(SignupDto signupDto)
         {
             ArgumentNullException.ThrowIfNull(signupDto);
+            this.signupDtoValidator.Validate(signupDto);
         }
 
         private static void ValidateLoginDto(LoginDto loginDto)
@@ -178,7 +198,7 @@ namespace TravelTales.Application.Services
         private async Task PerformSignupAsync(SignupDto signupDto)
         {
             var user = this.mapper.Map<User>(signupDto);
-            await this.CreateUserAsync(user, signupDto.Password);
+            await this.CreateUserAsync(user, signupDto);
         }
 
         private async Task<string> GenerateTokenAsync(User user)
@@ -196,9 +216,9 @@ namespace TravelTales.Application.Services
             }
         }
 
-        private async Task CreateUserAsync(User user, string password)
+        private async Task CreateUserAsync(User user, SignupDto signupDto)
         {
-            var result = await this.userManager.CreateAsync(user, password);
+            var result = await this.userManager.CreateAsync(user, signupDto.Password);
 
             if (!result.Succeeded)
             {
@@ -208,6 +228,18 @@ namespace TravelTales.Application.Services
             if (result.Succeeded)
             {
                 await this.userManager.AddToRoleAsync(user, "User");
+
+                var blogger = new Blogger
+                {
+                    UserId = user.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    FirstName = signupDto.FirstName,
+                    LastName = signupDto.LastName,
+                    BirthDate = signupDto.BirthDate,
+                };
+
+                await this.unitOfWork.GetRepository<IBloggerRepository>().AddAsync(blogger);
+                await this.unitOfWork.SaveChangesAsync();
             }
         }
     }

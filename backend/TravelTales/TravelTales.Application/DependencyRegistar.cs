@@ -85,17 +85,17 @@ namespace TravelTales.Application
                 });
             }
 
-            roleCheck = await roleManager.RoleExistsAsync("Moderator");
-            if (!roleCheck)
-            {
-                await roleManager.CreateAsync(new Role
-                {
-                    Name = "Moderator",
-                    CreatedAt = DateTime.Now,
-                    ModifiedAt = DateTime.Now,
-                    IsDeleted = false,
-                });
-            }
+            //roleCheck = await roleManager.RoleExistsAsync("Moderator");
+            //if (!roleCheck)
+            //{
+            //    await roleManager.CreateAsync(new Role
+            //    {
+            //        Name = "Moderator",
+            //        CreatedAt = DateTime.Now,
+            //        ModifiedAt = DateTime.Now,
+            //        IsDeleted = false,
+            //    });
+            //}
 
             var adminEmail = configuration["UserSettings:AdminEmail"];
             var adminPassword = configuration["UserSettings:AdminPassword"];
@@ -151,6 +151,7 @@ namespace TravelTales.Application
             services.AddScoped<ILikeService, LikeService>();
             services.AddScoped<IAttachmentService, AttachmentService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IStorageService, AzureBlobStorageService>();
             services.AddSignalR();
         }

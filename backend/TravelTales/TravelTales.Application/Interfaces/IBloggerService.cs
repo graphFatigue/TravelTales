@@ -19,5 +19,7 @@ namespace TravelTales.Application.Interfaces
         Task DeleteBloggerAsync(long id, CancellationToken cancellationToken = default);
 
         Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
+        
+        Task<long> GetCurrentBloggerId(CancellationToken cancellationToken = default);
     }
 }

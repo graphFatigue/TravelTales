@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using TravelTales.Application.DTOs.Blogger;
 using TravelTales.Application.Exceptions;
@@ -61,6 +62,21 @@ namespace TravelTales.Application.Services
 
             this.unitOfWork.GetRepository<IBloggerRepository>().Delete(blogger);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<long> GetCurrentBloggerId(CancellationToken cancellationToken = default)
+        {
+            var userId = this.contextAccessor.GetCurrentUserId();
+            var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
+                .AsQueryable()
+                .FirstOrDefaultAsync(b => b.UserId == userId && !b.IsDeleted, cancellationToken);
+
+            if (blogger == null)
+            {
+                throw new NotFoundException("Blogger profile not found for current user.");
+            }
+
+            return blogger.Id;
         }
 
         public async Task<BloggerDto?> GetBloggerByIdAsync(long id, CancellationToken cancellationToken = default)

@@ -9,7 +9,7 @@ namespace TravelTales.Application.MappingProfiles
         public NotificationMappingProfile()
         {
             this.CreateMap<Notification, NotificationDto>();
-            //this.CreateMap<CreateNotificationDto, Notification>();
+            this.CreateMap<CreateNotificationDto, Notification>();
         }
     }
 }

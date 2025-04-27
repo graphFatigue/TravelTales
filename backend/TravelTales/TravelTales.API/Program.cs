@@ -87,5 +87,6 @@ app.MapControllers();
 
 app.MapHub<LikesHub>("hubs/likes");
 app.MapHub<CommentsHub>("hubs/comments");
+app.MapHub<NotificationsHub>("hubs/notifications");
 
 app.Run();

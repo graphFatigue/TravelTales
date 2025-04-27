@@ -153,6 +153,7 @@ namespace TravelTales.Application
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IBloggerBlockService, BloggerBlockService>();
+            services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<IStorageService, AzureBlobStorageService>();
             services.AddSignalR();
         }

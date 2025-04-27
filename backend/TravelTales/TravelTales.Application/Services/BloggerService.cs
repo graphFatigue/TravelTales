@@ -6,6 +6,7 @@ using TravelTales.Application.DTOs.Blogger;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
+using TravelTales.Persistence;
 using TravelTales.Persistence.Interfaces;
 using TravelTales.Persistence.Repositories;
 using TravelTales.Persistence.SharedFiles;
@@ -79,36 +80,99 @@ namespace TravelTales.Application.Services
             return blogger.Id;
         }
 
+        //public async Task<BloggerDto?> GetBloggerByIdAsync(long id, CancellationToken cancellationToken = default)
+        //{
+        //    var blogger = await this.unitOfWork
+        //        .GetRepository<IBloggerRepository>()
+        //        .GetByIdFullAsync(id, cancellationToken);
+        //    if (blogger is null)
+        //    {
+        //        throw new NotFoundException($"Blogger with ID {id} was not found.");
+        //    }
+
+        //    return this.mapper.Map<BloggerDto>(blogger);
+        //}
+
         public async Task<BloggerDto?> GetBloggerByIdAsync(long id, CancellationToken cancellationToken = default)
         {
-            var blogger = await this.unitOfWork
-                .GetRepository<IBloggerRepository>()
+            var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
                 .GetByIdFullAsync(id, cancellationToken);
-            if (blogger is null)
-            {
-                throw new NotFoundException($"Blogger with ID {id} was not found.");
-            }
 
-            return this.mapper.Map<BloggerDto>(blogger);
+            if (blogger is null || blogger.IsDeleted)
+                throw new NotFoundException($"Blogger with ID {id} was not found.");
+
+            var currentBloggerId = await GetCurrentBloggerIdSafeAsync(cancellationToken);
+            var isBlocked = currentBloggerId != -1 &&
+                await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+                    .ExistsAsync(blogger.Id, currentBloggerId, cancellationToken);
+
+            var dto = this.mapper.Map<BloggerDto>(blogger);
+
+            if (isBlocked)
+                MaskBloggerDetails(dto);
+
+            return dto;
         }
+
+        //public async Task<IEnumerable<BloggerDto>> GetBloggersAsync(CancellationToken cancellationToken = default)
+        //{
+        //    var bloggers = await this.unitOfWork.GetRepository<IBloggerRepository>()
+        //        .GetAllAsync(cancellationToken);
+        //    return this.mapper.Map<IEnumerable<BloggerDto>>(bloggers);
+        //}
 
         public async Task<IEnumerable<BloggerDto>> GetBloggersAsync(CancellationToken cancellationToken = default)
         {
             var bloggers = await this.unitOfWork.GetRepository<IBloggerRepository>()
                 .GetAllAsync(cancellationToken);
-            return this.mapper.Map<IEnumerable<BloggerDto>>(bloggers);
+
+            var currentBloggerId = await GetCurrentBloggerIdSafeAsync(cancellationToken);
+            var blockerIds = currentBloggerId != -1
+                ? await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+                    .GetBlockerIdsAsync(currentBloggerId, cancellationToken)
+                : new List<long>();
+
+            return bloggers.Select(blogger =>
+            {
+                var dto = this.mapper.Map<BloggerDto>(blogger);
+                if (blockerIds.Contains(blogger.Id))
+                    MaskBloggerDetails(dto);
+                return dto;
+            }).ToList();
         }
+
+        //public async Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
+        //{
+        //    var pagedList = await this.unitOfWork.GetRepository<IBloggerRepository>()
+        //        .GetAllWithFilterAsync(sieveModel, cancellationToken);
+
+        //    var filteredBloggers = this.mapper.Map<IEnumerable<BloggerDto>>(pagedList.Items);
+
+        //    var updatedPagedList = PagedList<BloggerDto>.Copy(pagedList, filteredBloggers);
+
+        //    return updatedPagedList;
+        //}
 
         public async Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
         {
             var pagedList = await this.unitOfWork.GetRepository<IBloggerRepository>()
                 .GetAllWithFilterAsync(sieveModel, cancellationToken);
 
-            var filteredBloggers = this.mapper.Map<IEnumerable<BloggerDto>>(pagedList.Items);
+            var currentBloggerId = await GetCurrentBloggerIdSafeAsync(cancellationToken);
+            var blockerIds = currentBloggerId != -1
+                ? await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+                    .GetBlockerIdsAsync(currentBloggerId, cancellationToken)
+                : new List<long>();
 
-            var updatedPagedList = PagedList<BloggerDto>.Copy(pagedList, filteredBloggers);
+            var filteredDtos = pagedList?.Items?.Select(blogger =>
+            {
+                var dto = this.mapper.Map<BloggerDto>(blogger);
+                if (blockerIds.Contains(blogger.Id))
+                    MaskBloggerDetails(dto);
+                return dto;
+            }).ToList();
 
-            return updatedPagedList;
+            return PagedList<BloggerDto>.Copy(pagedList, filteredDtos);
         }
 
         public async Task UpdateBloggerAsync(long id, UpdateBloggerDto updateBloggerDto, CancellationToken cancellationToken = default)
@@ -172,6 +236,28 @@ namespace TravelTales.Application.Services
 
             this.unitOfWork.GetRepository<IBloggerRepository>().Update(blogger);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        private void MaskBloggerDetails(BloggerDto dto)
+        {
+            dto.FirstName = "Restricted";
+            dto.LastName = "User";
+            dto.Bio = null;
+            dto.BirthDate = null;
+            dto.Sex = null;
+            dto.Image = null;
+        }
+
+        private async Task<long> GetCurrentBloggerIdSafeAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                return await GetCurrentBloggerId(cancellationToken);
+            }
+            catch (NotFoundException)
+            {
+                return -1; // Return invalid ID if user has no blogger profile
+            }
         }
 
         private static (string containerName, string fileName) ExtractBlobInfo(string uri)

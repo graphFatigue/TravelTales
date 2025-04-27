@@ -14,6 +14,8 @@ namespace TravelTales.Domain.Entities
         public string? Image { get; set; }
         public Guid UserId { get; set; }
         public User User { get; set; }
+        public ICollection<BloggerBlock>? BlockedBloggers { get; }
+        public ICollection<BloggerBlock>? BlockedByBloggers { get; }
         public ICollection<Post>? Posts { get; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

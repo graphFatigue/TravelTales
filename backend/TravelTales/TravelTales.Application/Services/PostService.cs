@@ -14,6 +14,7 @@ namespace TravelTales.Application.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
+        private readonly IBloggerService bloggerService;
         private readonly IValidator<CreatePostDto> createPostDtoValidator;
         private readonly IValidator<UpdatePostDto> updatePostDtoValidator;
         private readonly IContextAccessor contextAccessor;
@@ -22,6 +23,7 @@ namespace TravelTales.Application.Services
         public PostService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
+            IBloggerService bloggerService,
             IValidator<CreatePostDto> createPostDtoValidator,
             IValidator<UpdatePostDto> updatePostDtoValidator,
             IContextAccessor contextAccessor,
@@ -29,6 +31,7 @@ namespace TravelTales.Application.Services
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.bloggerService = bloggerService;
             this.createPostDtoValidator = createPostDtoValidator;
             this.updatePostDtoValidator = updatePostDtoValidator;
             this.contextAccessor = contextAccessor;
@@ -74,37 +77,104 @@ namespace TravelTales.Application.Services
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
+        //public async Task<PostDto?> GetPostByIdAsync(long id, CancellationToken cancellationToken = default)
+        //{
+        //    var post = await this.unitOfWork
+        //        .GetRepository<IPostRepository>()
+        //        .GetByIdFullAsync(id, cancellationToken);
+        //    if (post is null)
+        //    {
+        //        throw new NotFoundException($"Post with ID {id} was not found.");
+        //    }
+
+        //    return this.mapper.Map<PostDto>(post);
+        //}
+
         public async Task<PostDto?> GetPostByIdAsync(long id, CancellationToken cancellationToken = default)
         {
             var post = await this.unitOfWork
                 .GetRepository<IPostRepository>()
                 .GetByIdFullAsync(id, cancellationToken);
-            if (post is null)
+            if (post is null || post.IsDeleted)
             {
                 throw new NotFoundException($"Post with ID {id} was not found.");
+            }
+
+            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
+            if (currentBloggerId != -1)
+            {
+                var isBlocked = await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+                    .ExistsAsync(post.BloggerId, currentBloggerId, cancellationToken);
+                if (isBlocked)
+                {
+                    throw new NotFoundException($"Post with ID {id} was not found.");
+                }
             }
 
             return this.mapper.Map<PostDto>(post);
         }
 
+        //public async Task<IEnumerable<PostDto>> GetPostsAsync(CancellationToken cancellationToken = default)
+        //{
+        //    var posts = await this.unitOfWork.GetRepository<IPostRepository>()
+        //        .GetAllAsync(cancellationToken);
+        //    return this.mapper.Map<IEnumerable<PostDto>>(posts);
+        //}
+
         public async Task<IEnumerable<PostDto>> GetPostsAsync(CancellationToken cancellationToken = default)
         {
+            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
+
+            var blockerIds = (await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+                .GetBlockerIdsAsync(currentBloggerId, cancellationToken))
+                .ToList();
+
             var posts = await this.unitOfWork.GetRepository<IPostRepository>()
                 .GetAllAsync(cancellationToken);
-            return this.mapper.Map<IEnumerable<PostDto>>(posts);
+
+            var filteredPosts = posts
+                .Where(p => !p.IsDeleted && p.BloggerId!=null && !blockerIds.Contains(Convert.ToInt64(p.BloggerId)))
+                .ToList();
+
+            return this.mapper.Map<IEnumerable<PostDto>>(filteredPosts);
         }
+
+        //public async Task<PagedList<PostDto>> GetPostsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
+        //{
+        //    var pagedList = await this.unitOfWork.GetRepository<IPostRepository>()
+        //        .GetAllWithFilterAsync(sieveModel, cancellationToken);
+
+        //    var filteredPosts = this.mapper.Map<IEnumerable<PostDto>>(pagedList.Items);
+
+        //    var updatedPagedList = PagedList<PostDto>.Copy(pagedList, filteredPosts);
+
+        //    return updatedPagedList;
+        //}
 
         public async Task<PagedList<PostDto>> GetPostsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
         {
+            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
+            var blockerIds = (await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+            .GetBlockerIdsAsync(currentBloggerId, cancellationToken))
+            .ToList();
+
+            var sieveModelClone = this.CloneSieveModel(sieveModel);
+
+            if (blockerIds.Any())
+            {
+                sieveModelClone.Filters.Concat($",BloggerId!={string.Join(",", blockerIds)}");
+            }
+
             var pagedList = await this.unitOfWork.GetRepository<IPostRepository>()
-                .GetAllWithFilterAsync(sieveModel, cancellationToken);
+                .GetAllWithFilterAsync(sieveModelClone, cancellationToken);
 
-            var filteredPosts = this.mapper.Map<IEnumerable<PostDto>>(pagedList.Items);
+            var filteredPosts = this.mapper.Map<IEnumerable<PostDto>>(pagedList.Items)
+                .Where(p => !blockerIds.Contains(p.BloggerId))
+                .ToList();
 
-            var updatedPagedList = PagedList<PostDto>.Copy(pagedList, filteredPosts);
-
-            return updatedPagedList;
+            return PagedList<PostDto>.Copy(pagedList, filteredPosts);
         }
+
 
         public async Task UpdatePostAsync(long id, UpdatePostDto updatePostDto, CancellationToken cancellationToken = default)
         {
@@ -155,6 +225,17 @@ namespace TravelTales.Application.Services
             //{
             //    throw new PermissionsException();
             //}
+        }
+
+        private SieveModel CloneSieveModel(SieveModel original)
+        {
+            return new SieveModel
+            {
+                Filters = original.Filters,
+                Sorts = original.Sorts,
+                Page = original.Page,
+                PageSize = original.PageSize
+            };
         }
     }
 }

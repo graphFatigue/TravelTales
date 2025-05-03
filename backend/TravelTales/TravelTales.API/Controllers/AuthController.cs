@@ -42,13 +42,13 @@ namespace TravelTales.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("signup")]
-        public async Task<IActionResult> Signup(SignupDto signupDto)
+        public async Task<IActionResult> Signup([FromBody] SignupDto signupDto)
         {
             this.logger.LogInformation("Sign-up attempt for user {Email}", signupDto.Email);
 
-            await this.authService.SignupAsync(signupDto);
+            var response = await this.authService.SignupAsync(signupDto);
             this.logger.LogInformation("Sign-up successful for user {Email}", signupDto.Email);
-            return this.NoContent();
+            return this.Ok(response);
         }
 
         [Authorize]

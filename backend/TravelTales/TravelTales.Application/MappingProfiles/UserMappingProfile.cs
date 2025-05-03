@@ -8,7 +8,9 @@ namespace TravelTales.Application.MappingProfiles
     {
         public UserMappingProfile()
         {
-            this.CreateMap<User, UserDto>();
+            //this.CreateMap<User, UserDto>();
+            this.CreateMap<User, UserDto>()
+                .ForMember(dest => dest.Blogger, opt => opt.MapFrom(src => src.Blogger));
         }
     }
 }

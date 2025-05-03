@@ -205,7 +205,7 @@ namespace TravelTales.Application.Services
         public async Task UpdateBloggerImageAsync(long id, UpdateBloggerImageDto updateBloggerImageDto, CancellationToken cancellationToken = default)
         {
             var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
-                .GetByIdAsync(id, cancellationToken);
+                .GetByIdFullAsync(id, cancellationToken);
 
             if (blogger is null)
             {

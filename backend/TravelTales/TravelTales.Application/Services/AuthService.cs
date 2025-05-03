@@ -2,6 +2,7 @@
 using FluentValidation;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using TravelTales.Application.DTOs.Auth;
 using TravelTales.Application.DTOs.User;
 using TravelTales.Application.Exceptions;
@@ -42,10 +43,20 @@ namespace TravelTales.Application.Services
             return await this.PerformLoginAsync(loginDto);
         }
 
-        public async Task SignupAsync(SignupDto signupDto)
+        public async Task<AuthResponseDto> SignupAsync(SignupDto signupDto)
         {
             ValidateSignupDto(signupDto);
-            await this.PerformSignupAsync(signupDto);
+            var user = await this.PerformSignupAsync(signupDto);
+
+            // Generate token for the new user
+            var jwtAccessToken = await this.GenerateTokenAsync(user);
+            var userDto = this.mapper.Map<UserDto>(user);
+
+            return new AuthResponseDto
+            {
+                AccessToken = jwtAccessToken,
+                User = userDto
+            };
         }
 
         public async Task<AuthResponseDto> LoginWithGoogleAsync(string token)
@@ -176,7 +187,9 @@ namespace TravelTales.Application.Services
 
         private async Task<AuthResponseDto> PerformLoginAsync(LoginDto loginDto)
         {
-            var user = await this.userManager.FindByEmailAsync(loginDto.Email);
+            var user = await userManager.Users
+                .Include(u => u.Blogger)
+                .FirstOrDefaultAsync(u => u.Email == loginDto.Email);
             if (user is null)
             {
                 throw new InvalidCredentialsAuthException();
@@ -195,10 +208,13 @@ namespace TravelTales.Application.Services
             };
         }
 
-        private async Task PerformSignupAsync(SignupDto signupDto)
+        private async Task<User> PerformSignupAsync(SignupDto signupDto)
         {
             var user = this.mapper.Map<User>(signupDto);
             await this.CreateUserAsync(user, signupDto);
+            return await this.userManager.Users
+                .Include(u => u.Blogger)
+                .FirstOrDefaultAsync(u => u.Id == user.Id);
         }
 
         private async Task<string> GenerateTokenAsync(User user)

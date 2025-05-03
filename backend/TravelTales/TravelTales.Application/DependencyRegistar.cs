@@ -85,18 +85,6 @@ namespace TravelTales.Application
                 });
             }
 
-            //roleCheck = await roleManager.RoleExistsAsync("Moderator");
-            //if (!roleCheck)
-            //{
-            //    await roleManager.CreateAsync(new Role
-            //    {
-            //        Name = "Moderator",
-            //        CreatedAt = DateTime.Now,
-            //        ModifiedAt = DateTime.Now,
-            //        IsDeleted = false,
-            //    });
-            //}
-
             var adminEmail = configuration["UserSettings:AdminEmail"];
             var adminPassword = configuration["UserSettings:AdminPassword"];
 

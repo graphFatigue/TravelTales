@@ -6,7 +6,7 @@ namespace TravelTales.Application.Interfaces
     {
         Task<AuthResponseDto> LoginAsync(LoginDto loginDto);
 
-        Task SignupAsync(SignupDto signupDto);
+        Task<AuthResponseDto> SignupAsync(SignupDto signupDto);
 
         Task<AuthResponseDto> LoginWithGoogleAsync(string token);
 

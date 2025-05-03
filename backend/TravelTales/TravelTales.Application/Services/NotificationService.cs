@@ -13,24 +13,24 @@ namespace TravelTales.Application.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
-        private readonly IValidator<CreateNotificationDto> validator;
+        //private readonly IValidator<CreateNotificationDto> validator;
         private readonly IBloggerBlockRepository blockerRepository;
 
         public NotificationService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            IValidator<CreateNotificationDto> validator,
+            //IValidator<CreateNotificationDto> validator,
             IBloggerBlockRepository blockerRepository)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
-            this.validator = validator;
+            //this.validator = validator;
             this.blockerRepository = blockerRepository;
         }
 
         public async Task<NotificationDto> CreateNotificationAsync(CreateNotificationDto notificationDto, CancellationToken cancellationToken = default)
         {
-            await validator.ValidateAndThrowAsync(notificationDto, cancellationToken);
+            //await validator.ValidateAndThrowAsync(notificationDto, cancellationToken);
 
             var notification = mapper.Map<Notification>(notificationDto);
             await unitOfWork.GetRepository<INotificationRepository>().AddAsync(notification, cancellationToken);

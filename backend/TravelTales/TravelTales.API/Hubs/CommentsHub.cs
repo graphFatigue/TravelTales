@@ -10,18 +10,36 @@ namespace TravelTales.API.Hubs
     {
         private readonly ICommentService commentService;
         private readonly IBloggerService bloggerService;
+        private readonly IHubContext<NotificationsHub> notificationsHub;
 
-        public CommentsHub(ICommentService commentService, IBloggerService bloggerService)
+        public CommentsHub(ICommentService commentService, IBloggerService bloggerService, IHubContext<NotificationsHub> notificationsHub)
         {
             this.commentService = commentService;
             this.bloggerService = bloggerService;
+            this.notificationsHub = notificationsHub;
         }
+
+        //public async Task SendComment(CreateCommentDto commentDto)
+        //{
+        //    var bloggerId = await this.bloggerService.GetCurrentBloggerId();
+        //    var createdComment = await commentService.CreateCommentAsync(commentDto, bloggerId);
+        //    await Clients.Group(commentDto.PostId.ToString()).SendAsync("ReceiveComment", createdComment);
+        //}
 
         public async Task SendComment(CreateCommentDto commentDto)
         {
-            var bloggerId = await this.bloggerService.GetCurrentBloggerId();
+            var bloggerId = await bloggerService.GetCurrentBloggerId();
             var createdComment = await commentService.CreateCommentAsync(commentDto, bloggerId);
-            await Clients.Group(commentDto.PostId.ToString()).SendAsync("ReceiveComment", createdComment);
+
+            if (createdComment.Post?.BloggerId != null && createdComment.Post.BloggerId != bloggerId)
+            {
+                await this.notificationsHub.Clients
+                    .Group(createdComment.Post.BloggerId.ToString())
+                    .SendAsync("ReceiveNotification", "New comment received!");
+            }
+
+            await Clients.Group(commentDto.PostId.ToString())
+                .SendAsync("ReceiveComment", createdComment);
         }
 
         public async Task EditComment(long commentId, UpdateCommentDto commentDto, long postId)

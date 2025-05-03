@@ -1,78 +1,108 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using TravelTales.Application.DTOs.Comment;
+using TravelTales.Application.DTOs.Notification;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.Repositories;
 
 namespace TravelTales.Application.Services
 {
     public class CommentService : ICommentService
     {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly IValidator<CreateCommentDto> _createValidator;
-        private readonly IValidator<UpdateCommentDto> _updateValidator;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IMapper mapper;
+        private readonly INotificationService notificationService;
+        private readonly IValidator<CreateCommentDto> createValidator;
+        private readonly IValidator<UpdateCommentDto> updateValidator;
 
         public CommentService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
+            INotificationService notificationService,
             IValidator<CreateCommentDto> createValidator,
             IValidator<UpdateCommentDto> updateValidator)
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _createValidator = createValidator;
-            _updateValidator = updateValidator;
+            this.unitOfWork = unitOfWork;
+            this.mapper = mapper;
+            this.notificationService = notificationService;
+            this.createValidator = createValidator;
+            this.updateValidator = updateValidator;
         }
 
-        public async Task<CommentDto> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId)
+        public async Task<CommentDto> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
         {
-            await _createValidator.ValidateAndThrowAsync(commentDto);
+            await createValidator.ValidateAndThrowAsync(commentDto);
 
-            var comment = _mapper.Map<Comment>(commentDto);
+            var comment = mapper.Map<Comment>(commentDto);
             comment.BloggerId = bloggerId;
             comment.CreatedAt = DateTime.UtcNow;
 
-            await _unitOfWork.GetRepository<ICommentRepository>().AddAsync(comment);
-            await _unitOfWork.SaveChangesAsync();
+            await this.unitOfWork.GetRepository<ICommentRepository>().AddAsync(comment);
+            await this.unitOfWork.SaveChangesAsync();
 
-            return _mapper.Map<CommentDto>(comment);
+            var post = await this.unitOfWork.GetRepository<IPostRepository>().GetByIdAsync(commentDto.PostId);
+            if (post != null && post.BloggerId != bloggerId)
+            {
+                var isBlocked = await this.unitOfWork.GetRepository<IBloggerBlockRepository>().ExistsAsync(post.BloggerId, bloggerId, cancellationToken);
+                if (!isBlocked)
+                {
+                    var notificationDto = new CreateNotificationDto
+                    {
+                        Message = "New comment on your post",
+                        RecipientBloggerId = (long)post.BloggerId,
+                        TriggeredByBloggerId = bloggerId,
+                        PostId = post.Id,
+                        CommentId = comment.Id
+                    };
+                    var notification = await this.notificationService.CreateNotificationAsync(notificationDto);
+
+                    // Access the blogger name through the DTO
+                    var triggeredByName = notification.TriggeredByBlogger != null
+                        ? $"{notification.TriggeredByBlogger.FirstName} {notification.TriggeredByBlogger.LastName}"
+                        : "Anonymous";
+
+                    // Use this name in your real-time notification if needed
+                }
+            }
+
+            return mapper.Map<CommentDto>(comment);
         }
 
-        public async Task UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId)
+        public async Task UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
         {
-            await _updateValidator.ValidateAndThrowAsync(commentDto);
+            await updateValidator.ValidateAndThrowAsync(commentDto);
 
             var comment = await GetCommentWithAuthorization(commentId, bloggerId);
 
             comment.Content = commentDto.Content;
             comment.ModifiedAt = DateTime.UtcNow;
 
-            _unitOfWork.GetRepository<ICommentRepository>().Update(comment);
-            await _unitOfWork.SaveChangesAsync();
+            unitOfWork.GetRepository<ICommentRepository>().Update(comment);
+            await unitOfWork.SaveChangesAsync();
         }
 
-        public async Task DeleteCommentAsync(long commentId, long bloggerId)
+        public async Task DeleteCommentAsync(long commentId, long bloggerId, CancellationToken cancellationToken = default)
         {
             var comment = await GetCommentWithAuthorization(commentId, bloggerId);
 
-            _unitOfWork.GetRepository<ICommentRepository>().Delete(comment);
-            await _unitOfWork.SaveChangesAsync();
+            unitOfWork.GetRepository<ICommentRepository>().Delete(comment);
+            await unitOfWork.SaveChangesAsync();
         }
 
-        public async Task<List<CommentDto>> GetCommentsByPostIdAsync(long postId)
+        public async Task<List<CommentDto>> GetCommentsByPostIdAsync(long postId, CancellationToken cancellationToken = default)
         {
-            var comments = await _unitOfWork.GetRepository<ICommentRepository>()
+            var comments = await unitOfWork.GetRepository<ICommentRepository>()
                 .GetCommentsByPostIdAsync(postId);
 
-            return _mapper.Map<List<CommentDto>>(comments);
+            return mapper.Map<List<CommentDto>>(comments);
         }
 
-        private async Task<Comment> GetCommentWithAuthorization(long commentId, long bloggerId)
+        private async Task<Comment> GetCommentWithAuthorization(long commentId, long bloggerId, CancellationToken cancellationToken = default)
         {
-            var comment = await _unitOfWork.GetRepository<ICommentRepository>()
+            var comment = await unitOfWork.GetRepository<ICommentRepository>()
                 .GetByIdAsync(commentId);
 
             if (comment == null)

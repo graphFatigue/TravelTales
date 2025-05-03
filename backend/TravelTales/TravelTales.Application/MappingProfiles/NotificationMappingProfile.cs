@@ -8,8 +8,12 @@ namespace TravelTales.Application.MappingProfiles
     {
         public NotificationMappingProfile()
         {
-            this.CreateMap<Notification, NotificationDto>();
-            this.CreateMap<CreateNotificationDto, Notification>();
+            CreateMap<Notification, NotificationDto>()
+                .ForMember(dest => dest.TriggeredByBlogger, opt => opt.MapFrom(src => src.TriggeredByBlogger))
+                .ForMember(dest => dest.RecipientBlogger, opt => opt.MapFrom(src => src.RecipientBlogger));
+
+            CreateMap<CreateNotificationDto, Notification>()
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
         }
     }
 }

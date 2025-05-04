@@ -59,16 +59,16 @@ namespace TravelTales.Application.Services
             if (uploadAttachmentDto.AttachmentBytes != null)
             {
                 var stream = new MemoryStream(uploadAttachmentDto.AttachmentBytes);
-                var blobUri =
-                    await this.blobStorageService.UploadAsync(stream, "attachments", "file-attachment"+uploadAttachmentDto.PostId.ToString(CultureInfo.InvariantCulture)+"-num"+ uploadAttachmentDto.Number.ToString(CultureInfo.InvariantCulture));
+
+                // Generate unique filename with GUID
+                string fileName = $"post-{uploadAttachmentDto.PostId}-{Guid.NewGuid()}.jpg";
+
+                var blobUri = await this.blobStorageService.UploadAsync(stream, "attachments", fileName);
 
                 createAttachmentDto.Uri = blobUri;
                 createAttachmentDto.PostId = uploadAttachmentDto.PostId;
+                createAttachmentDto.Number = uploadAttachmentDto.Number; // Ensure Number is set
             }
-
-            //this.EnsureUserCanModifyPost(post);
-
-            ArgumentNullException.ThrowIfNull(uploadAttachmentDto);
 
             var attachment = this.mapper.Map<Attachment>(createAttachmentDto);
 

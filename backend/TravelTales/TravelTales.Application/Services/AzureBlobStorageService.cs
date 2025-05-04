@@ -67,5 +67,28 @@ namespace TravelTales.Application.Services
             containerClient.CreateIfNotExists();
             return containerClient;
         }
+
+        private static (string containerName, string fileName) ExtractBlobInfo(string uri)
+        {
+            try
+            {
+                var uriObj = new Uri(uri);
+                var pathParts = uriObj.AbsolutePath.Trim('/').Split('/');
+
+                if (pathParts.Length < 2)
+                {
+                    return (string.Empty, string.Empty);
+                }
+
+                var containerName = pathParts[0];
+                var fileName = Uri.UnescapeDataString(string.Join("/", pathParts.Skip(1)));
+
+                return (containerName, fileName);
+            }
+            catch
+            {
+                return (string.Empty, string.Empty);
+            }
+        }
     }
 }

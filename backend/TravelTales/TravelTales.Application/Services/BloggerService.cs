@@ -227,7 +227,8 @@ namespace TravelTales.Application.Services
             {
                 var stream = new MemoryStream(updateBloggerImageDto.ImageBytes);
 
-                string fileName = $"{blogger.User.Email}-{Guid.NewGuid()}.jpg";
+                string sanitizedEmail = blogger.User.Email!.Replace("@", "-"); // Replace @ with -
+                string fileName = $"{sanitizedEmail}-{Guid.NewGuid()}.jpg";
 
                 var blobUri = await this.blobStorageService.UploadAsync(stream, "user-photos", fileName);
 

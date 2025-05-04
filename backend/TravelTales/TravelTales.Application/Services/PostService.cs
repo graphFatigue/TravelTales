@@ -71,7 +71,7 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException($"Post with ID {id} was not found.");
             }
 
-            this.EnsureUserCanModifyPost(post);
+            await this.EnsureUserCanModifyPostAsync(post);
 
             this.unitOfWork.GetRepository<IPostRepository>().Delete(post);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
@@ -188,7 +188,7 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException($"Post with ID {id} was not found.");
             }
 
-            this.EnsureUserCanModifyPost(post);
+            await this.EnsureUserCanModifyPostAsync(post);
             ArgumentNullException.ThrowIfNull(updatePostDto);
 
             post.Title = updatePostDto.Title;
@@ -216,15 +216,15 @@ namespace TravelTales.Application.Services
         }
 
 
-        private void EnsureUserCanModifyPost(Post post)
+        private async Task EnsureUserCanModifyPostAsync(Post post)
         {
-            var userId = this.contextAccessor.GetCurrentUserId();
+            var bloggerId = await this.bloggerService.GetCurrentBloggerId();
             var userRoles = this.contextAccessor.GetCurrentUserRoles();
 
-            //if (post.UserId != userId && !userRoles.Contains("Admin") && !userRoles.Contains("Moderator"))
-            //{
-            //    throw new PermissionsException();
-            //}
+            if (post.BloggerId != bloggerId && !userRoles.Contains("Admin"))
+            {
+                throw new PermissionsException();
+            }
         }
 
         private SieveModel CloneSieveModel(SieveModel original)

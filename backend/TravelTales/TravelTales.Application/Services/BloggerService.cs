@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Sieve.Models;
 using TravelTales.Application.DTOs.Blogger;
 using TravelTales.Application.DTOs.BloggerFollow;
+using TravelTales.Application.DTOs.Post;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
@@ -199,6 +201,27 @@ namespace TravelTales.Application.Services
             blogger.Bio = updateBloggerDto.Bio;
             blogger.BirthDate = updateBloggerDto.BirthDate;
             blogger.Sex = (Domain.Enums.Sex)updateBloggerDto.Sex;
+
+            if (updateBloggerDto.CountryId.HasValue)
+            {
+                var country = await this.unitOfWork.GetRepository<ICountryRepository>()
+                    .GetByIdAsync(updateBloggerDto.CountryId.Value, cancellationToken);
+
+                if (country == null)
+                    throw new ValidationException("Invalid country ID");
+                blogger.CountryId = updateBloggerDto.CountryId;
+            }
+
+            if (updateBloggerDto.CityId.HasValue && blogger.CountryId.HasValue)
+            {
+                var city = await this.unitOfWork.GetRepository<ICityRepository>()
+                    .GetByIdAsync(updateBloggerDto.CityId.Value, cancellationToken);
+
+                if (city == null)
+                    throw new ValidationException("Invalid city ID");
+
+                blogger.CityId = updateBloggerDto.CityId;
+            }
 
             //this.EnsureUserCanModifyPost(post);
 

@@ -10,6 +10,8 @@ namespace TravelTales.Application.DTOs.Blogger
         public Sex Sex { get; set; }
         public string? Bio { get; set; }
         public string? Image { get; set; }
+        public long? CityId { get; set; }
+        public long? CountryId { get; set; }
         public Guid UserId { get; set; }
     }
 }

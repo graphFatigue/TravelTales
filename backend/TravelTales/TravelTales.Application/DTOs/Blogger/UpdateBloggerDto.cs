@@ -9,5 +9,7 @@ namespace TravelTales.Application.DTOs.Blogger
         public DateTime BirthDate { get; set; }
         public Sex Sex { get; set; }
         public string? Bio { get; set; }
+        public long? CityId { get; set; }
+        public long? CountryId { get; set; }
     }
 }

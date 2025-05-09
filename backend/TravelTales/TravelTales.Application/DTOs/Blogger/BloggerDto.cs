@@ -1,4 +1,6 @@
-﻿using TravelTales.Application.DTOs.Enums;
+﻿using TravelTales.Application.DTOs.City;
+using TravelTales.Application.DTOs.Country.TravelTales.Application.DTOs.Location;
+using TravelTales.Application.DTOs.Enums;
 using TravelTales.Application.DTOs.Post;
 using TravelTales.Application.DTOs.User;
 
@@ -18,6 +20,10 @@ namespace TravelTales.Application.DTOs.Blogger
         public int FollowingCount { get; set; }
         public bool IsFollowing { get; set; }
         //public UserDto User { get; set; }
+        public long? CityId { get; set; }
+        public CityDto City { get; set; }
+        public long? CountryId { get; set; }
+        public CountryDto Country { get; set; }
         public ICollection<PostDto>? Posts { get; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

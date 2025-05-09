@@ -255,6 +255,28 @@ namespace TravelTales.Application.Services
                 }
             }
 
+            if (updatePostDto.CountryId.HasValue)
+            {
+                var country = await this.unitOfWork.GetRepository<ICountryRepository>()
+                    .GetByIdAsync(updatePostDto.CountryId.Value, cancellationToken);
+
+                if (country == null)
+                    throw new ValidationException("Invalid country ID");
+
+                post.CountryId = updatePostDto.CountryId;
+            }
+
+            if (updatePostDto.CityId.HasValue && post.CountryId.HasValue)
+            {
+                var city = await this.unitOfWork.GetRepository<ICityRepository>()
+                    .GetByIdAsync(updatePostDto.CityId.Value, cancellationToken);
+
+                if (city == null)
+                    throw new ValidationException("Invalid city ID");
+
+                post.CityId = updatePostDto.CityId;
+            }
+
             var existingCategoryIds = post.Categories.Select(c => c.Id).ToList();
             var categoriesToAdd = updatePostDto.CategoryIds.Except(existingCategoryIds);
             var categoriesToRemove = existingCategoryIds.Except(updatePostDto.CategoryIds);

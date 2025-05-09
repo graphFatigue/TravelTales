@@ -26,6 +26,8 @@ namespace TravelTales.Persistence
 
         public DbSet<BloggerBlock> BloggerBlocks { get; set; }
 
+        public DbSet<BloggerFollow> BloggerFollows { get; set; }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return base.SaveChangesAsync(cancellationToken);

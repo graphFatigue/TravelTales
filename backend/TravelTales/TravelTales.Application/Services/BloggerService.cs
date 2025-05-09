@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using TravelTales.Application.DTOs.Blogger;
+using TravelTales.Application.DTOs.BloggerFollow;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
@@ -107,6 +108,12 @@ namespace TravelTales.Application.Services
                     .ExistsAsync(blogger.Id, currentBloggerId, cancellationToken);
 
             var dto = this.mapper.Map<BloggerDto>(blogger);
+
+            if (currentBloggerId != -1)
+            {
+                dto.IsFollowing = await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                    .ExistsAsync(currentBloggerId, id, cancellationToken);
+            }
 
             if (isBlocked)
                 MaskBloggerDetails(dto);
@@ -237,6 +244,66 @@ namespace TravelTales.Application.Services
 
             this.unitOfWork.GetRepository<IBloggerRepository>().Update(blogger);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task FollowBloggerAsync(long followingId, CancellationToken cancellationToken = default)
+        {
+            var followerId = await GetCurrentBloggerId(cancellationToken);
+
+            if (followerId == followingId)
+                throw new ValidationException("Cannot follow yourself");
+
+            if (await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                .ExistsAsync(followerId, followingId, cancellationToken))
+            {
+                throw new ValidationException("Already following this blogger");
+            }
+
+            var follow = new BloggerFollow
+            {
+                FollowerId = followerId,
+                FollowingId = followingId
+            };
+
+            await unitOfWork.GetRepository<IBloggerFollowRepository>().AddAsync(follow, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task UnfollowBloggerAsync(long followingId, CancellationToken cancellationToken = default)
+        {
+            var followerId = await GetCurrentBloggerId(cancellationToken);
+
+            if (followerId == followingId)
+                throw new ValidationException("Cannot unfollow yourself");
+
+            var follow = await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                .GetAllAsync(bf =>
+                    bf.FollowerId == followerId &&
+                    bf.FollowingId == followingId &&
+                    !bf.IsDeleted, cancellationToken);
+
+            if (!follow.Any())
+                throw new NotFoundException("Follow relationship not found");
+
+            await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                .RemoveFollowAsync(followerId, followingId, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<BloggerFollowDto>> GetFollowersAsync(long bloggerId, CancellationToken cancellationToken = default)
+        {
+            var followers = await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                .GetAllAsync(bf => bf.FollowingId == bloggerId && !bf.IsDeleted, cancellationToken);
+
+            return mapper.Map<IEnumerable<BloggerFollowDto>>(followers);
+        }
+
+        public async Task<IEnumerable<BloggerFollowDto>> GetFollowingAsync(long bloggerId, CancellationToken cancellationToken = default)
+        {
+            var following = await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                .GetAllAsync(bf => bf.FollowerId == bloggerId && !bf.IsDeleted, cancellationToken);
+
+            return mapper.Map<IEnumerable<BloggerFollowDto>>(following);
         }
 
         private void MaskBloggerDetails(BloggerDto dto)

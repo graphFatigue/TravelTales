@@ -14,6 +14,9 @@ namespace TravelTales.Application.DTOs.Blogger
         public string? Bio { get; set; }
         public string? Image { get; set; }
         public Guid UserId { get; set; }
+        public int FollowerCount { get; set; }
+        public int FollowingCount { get; set; }
+        public bool IsFollowing { get; set; }
         //public UserDto User { get; set; }
         public ICollection<PostDto>? Posts { get; }
         public DateTime? CreatedAt { get; set; }

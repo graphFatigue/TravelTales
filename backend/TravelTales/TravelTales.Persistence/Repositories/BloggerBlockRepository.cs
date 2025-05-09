@@ -13,14 +13,14 @@ namespace TravelTales.Persistence.Repositories
         }
 
         // Retrieves a specific block relationship, or null if none
-        public async Task<BloggerBlock> GetAsync(long blockerId, long blockedId)
+        public async Task<BloggerBlock> GetAsync(long blockerId, long blockedId, CancellationToken cancellationToken = default)
         {
             return await this.context.Set<BloggerBlock>()
                                  .FindAsync(blockerId, blockedId);
         }
 
         // Returns all IDs that the given user has blocked
-        public async Task<IEnumerable<long>> GetBlockedBloggerIdsAsync(long blockerId)
+        public async Task<IEnumerable<long>> GetBlockedBloggerIdsAsync(long blockerId, CancellationToken cancellationToken = default)
         {
             return await this.context.Set<BloggerBlock>()
                                  .Where(bb => bb.BlockerId == blockerId)
@@ -38,7 +38,7 @@ namespace TravelTales.Persistence.Repositories
             context.Set<BloggerBlock>().Remove(block);
         }
 
-        public async Task<IEnumerable<long>> GetBlockerIdsAsync(long blockedId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<long>> GetBlockerIdsAsync(long blockedId, CancellationToken cancellationToken = default)
         {
             return await context.Set<BloggerBlock>()
                 .Where(bb => bb.BlockedId == blockedId)
@@ -46,15 +46,7 @@ namespace TravelTales.Persistence.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<long>> GetBlockedBloggerIdsAsync(long blockerId, CancellationToken cancellationToken)
-        {
-            return await context.Set<BloggerBlock>()
-                .Where(bb => bb.BlockerId == blockerId)
-                .Select(bb => bb.BlockedId)
-                .ToListAsync(cancellationToken);
-        }
-
-        public async Task<bool> ExistsAsync(long? blockerId, long? blockedId, CancellationToken cancellationToken)
+        public async Task<bool> ExistsAsync(long? blockerId, long? blockedId, CancellationToken cancellationToken = default)
         {
             return await context.Set<BloggerBlock>()
                 .AnyAsync(bb => bb.BlockerId == blockerId && bb.BlockedId == blockedId, cancellationToken);

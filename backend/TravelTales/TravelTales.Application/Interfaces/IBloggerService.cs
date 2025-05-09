@@ -1,5 +1,6 @@
 ﻿using Sieve.Models;
 using TravelTales.Application.DTOs.Blogger;
+using TravelTales.Application.DTOs.BloggerFollow;
 using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Interfaces
@@ -21,5 +22,13 @@ namespace TravelTales.Application.Interfaces
         Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
         
         Task<long> GetCurrentBloggerId(CancellationToken cancellationToken = default);
+
+        Task FollowBloggerAsync(long followingId, CancellationToken cancellationToken = default);
+
+        Task UnfollowBloggerAsync(long followingId, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<BloggerFollowDto>> GetFollowersAsync(long bloggerId, CancellationToken cancellationToken = default);
+
+        Task<IEnumerable<BloggerFollowDto>> GetFollowingAsync(long bloggerId, CancellationToken cancellationToken = default);
     }
 }

@@ -8,7 +8,9 @@ namespace TravelTales.Application.MappingProfiles
     {
         public PostMappingProfile()
         {
-            this.CreateMap<Post, PostDto>();
+            this.CreateMap<Post, PostDto>()
+                .ForMember(dest => dest.CategoryIds, opt =>
+                    opt.MapFrom(src => src.Categories!.Select(c => c.Id)));
             this.CreateMap<CreatePostDto, Post>()
                 .ForMember(dest => dest.Attachments, opt => opt.Ignore());
         }

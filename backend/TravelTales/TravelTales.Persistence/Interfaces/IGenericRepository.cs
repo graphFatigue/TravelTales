@@ -1,4 +1,5 @@
 ﻿using Sieve.Models;
+using System.Linq.Expressions;
 using TravelTales.Domain.Entities.Abstract;
 using TravelTales.Persistence.SharedFiles;
 
@@ -21,5 +22,7 @@ namespace TravelTales.Persistence.Interfaces
         void Delete(TEntity entity);
 
         Task<PagedList<TEntity>> GetAllWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
+
+        Task<List<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken = default);
     }
 }

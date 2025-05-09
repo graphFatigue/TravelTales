@@ -4,6 +4,14 @@ namespace TravelTales.Domain.Entities
 {
     public class Post : IEntityBase<long>
     {
+        public Post()
+        {
+            Categories = new List<Category>();
+            Attachments = new List<Attachment>();
+            Likes = new List<PostLike>();
+            Comments = new List<Comment>();
+        }
+
         public long Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }

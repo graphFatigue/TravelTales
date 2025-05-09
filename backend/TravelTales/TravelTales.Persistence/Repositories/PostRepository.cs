@@ -17,6 +17,7 @@ namespace TravelTales.Persistence.Repositories
             return await this.DbSet.Where(x => !x.IsDeleted)
                 .Include(x => x.Likes)
                 .Include(s => s.Blogger)
+                .Include(p => p.Categories)
                 .ToListAsync(cancellationToken);
         }
 
@@ -25,6 +26,9 @@ namespace TravelTales.Persistence.Repositories
             return await this.DbSet
                 .Include(x => x.Likes)
                 .Include(s => s.Blogger)
+                .Include(p => p.Categories)
+                .Include(p => p.Comments)
+                .Include(p => p.Attachments)
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken);
         }
     }

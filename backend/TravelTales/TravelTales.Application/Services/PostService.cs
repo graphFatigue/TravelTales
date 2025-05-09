@@ -5,6 +5,7 @@ using TravelTales.Application.DTOs.Post;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
+using TravelTales.Persistence;
 using TravelTales.Persistence.Interfaces;
 using TravelTales.Persistence.SharedFiles;
 
@@ -44,6 +45,24 @@ namespace TravelTales.Application.Services
 
             var post = this.mapper.Map<Post>(createPostDto);
 
+            // Clear existing categories and add new ones
+            post.Categories.Clear();
+            if (createPostDto.CategoryIds?.Count > 0)
+            {
+                var categories = await this.unitOfWork.GetRepository<ICategoryRepository>()
+                    .GetAllAsync(c => createPostDto.CategoryIds.Contains(c.Id), cancellationToken);
+
+                if (categories.Count != createPostDto.CategoryIds.Count)
+                {
+                    throw new ValidationException("One or more category IDs are invalid");
+                }
+
+                foreach (var category in categories)
+                {
+                    post.Categories.Add(category);
+                }
+            }
+
             await this.unitOfWork.GetRepository<IPostRepository>().AddAsync(post, cancellationToken);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -57,6 +76,9 @@ namespace TravelTales.Application.Services
                     await this.attachmentService.UploadAttachmentAsync(attachmentDto, cancellationToken);
                 }
             }
+
+            post = await this.unitOfWork.GetRepository<IPostRepository>()
+                .GetByIdFullAsync(post.Id, cancellationToken);
 
             return this.mapper.Map<PostDto>(post);
         }
@@ -209,6 +231,26 @@ namespace TravelTales.Application.Services
                     newAttachment.PostId = id;
                     await this.attachmentService.UploadAttachmentAsync(newAttachment, cancellationToken);
                 }
+            }
+
+            var existingCategoryIds = post.Categories.Select(c => c.Id).ToList();
+            var categoriesToAdd = updatePostDto.CategoryIds.Except(existingCategoryIds);
+            var categoriesToRemove = existingCategoryIds.Except(updatePostDto.CategoryIds);
+
+            // Remove old categories
+            foreach (var categoryId in categoriesToRemove)
+            {
+                var category = post.Categories.First(c => c.Id == categoryId);
+                post.Categories.Remove(category);
+            }
+
+            // Add new categories
+            var newCategories = await this.unitOfWork.GetRepository<ICategoryRepository>()
+                .GetAllAsync(c => categoriesToAdd.Contains(c.Id), cancellationToken);
+
+            foreach (var category in newCategories)
+            {
+                post.Categories.Add(category);
             }
 
             this.unitOfWork.GetRepository<IPostRepository>().Update(post);

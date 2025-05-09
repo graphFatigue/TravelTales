@@ -6,7 +6,6 @@ namespace TravelTales.Application.DTOs.Attachment
     {
         public long Id { get; set; }
         public long PostId { get; set; }
-        public PostDto Post { get; set; }
         public int Number { get; set; }
         public string? Uri { get; set; }
         public DateTime? CreatedAt { get; set; }

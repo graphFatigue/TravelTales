@@ -28,6 +28,10 @@ namespace TravelTales.Persistence
 
         public DbSet<BloggerFollow> BloggerFollows { get; set; }
 
+        public DbSet<Country> Countries { get; set; }
+
+        public DbSet<City> Cities { get; set; }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return base.SaveChangesAsync(cancellationToken);

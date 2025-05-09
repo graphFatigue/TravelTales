@@ -1,9 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
+using Newtonsoft.Json;
 using TravelTales.Domain.Entities;
-using TravelTales.Domain.Enums;
 using TravelTales.Persistence;
 
 namespace WebApp.DataAccess.Seeding;
@@ -32,6 +31,31 @@ public class DataSeeder : IHostedService
 
     private static async Task SeedDataAsync(AppDbContext context)
     {
+        if (!await context.Countries.AnyAsync())
+        {
+            using var client = new HttpClient();
+            var response = await client.GetAsync("https://countriesnow.space/api/v0.1/countries");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                var countriesData = JsonConvert.DeserializeObject<ApiCountryResponse>(content);
+
+                foreach (var countryData in countriesData.Data)
+                {
+                    var country = new Country
+                    {
+                        Name = countryData.Country,
+                        Iso2 = countryData.Iso2,
+                        Iso3 = countryData.Iso3,
+                        Cities = countryData.Cities.Select(c => new City { Name = c }).ToList()
+                    };
+
+                    context.Countries.Add(country);
+                }
+                await context.SaveChangesAsync();
+            }
+        }
         if (!await context.Categories.AnyAsync())
         {
             context.Categories.AddRange(
@@ -81,5 +105,19 @@ public class DataSeeder : IHostedService
         }
 
         await context.SaveChangesAsync();
+    }
+    private class ApiCountryResponse
+    {
+        public bool Error { get; set; }
+        public string Msg { get; set; }
+        public List<CountryData> Data { get; set; }
+    }
+
+    private class CountryData
+    {
+        public string Iso2 { get; set; }
+        public string Iso3 { get; set; }
+        public string Country { get; set; }
+        public List<string> Cities { get; set; }
     }
 }

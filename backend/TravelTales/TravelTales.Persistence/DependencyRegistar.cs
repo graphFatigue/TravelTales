@@ -62,6 +62,8 @@ namespace TravelTales.Persistence
             services.AddScoped<IBloggerFollowRepository, BloggerFollowRepository>();
             services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
+            services.AddScoped<ICountryRepository, CountryRepository>();
+            services.AddScoped<ICityRepository, CityRepository>();
             services.AddScoped<IAttachmentRepository, AttachmentRepository>();
         }
 

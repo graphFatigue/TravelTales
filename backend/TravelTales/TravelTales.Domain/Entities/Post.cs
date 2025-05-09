@@ -17,6 +17,10 @@ namespace TravelTales.Domain.Entities
         public string Content { get; set; }
         public long? BloggerId { get; set; }
         public Blogger Blogger { get; set; }
+        public long? CityId { get; set; }
+        public City? City { get; set; }
+        public long? CountryId { get; set; }
+        public Country? Country { get; set; }
         public ICollection<Attachment>? Attachments { get; }
         public ICollection<Category>? Categories { get; }
         public ICollection<PostLike>? Likes { get; }

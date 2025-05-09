@@ -46,6 +46,16 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .Property(p => p.IsDeleted)
                 .HasColumnName("is_deleted");
 
+            builder.HasOne(p => p.City)
+                .WithMany()
+                .HasForeignKey(p => p.CityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.Country)
+                .WithMany()
+                .HasForeignKey(p => p.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder
                .HasOne(p => p.Blogger)
                .WithMany(u => u.Posts)

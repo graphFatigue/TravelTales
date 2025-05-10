@@ -237,6 +237,7 @@ namespace TravelTales.Application.Services
 
             post.Title = updatePostDto.Title;
             post.Content = updatePostDto.Content;
+            post.Budget = updatePostDto.Budget;
 
             if (updatePostDto.AttachmentsToDelete?.Any() == true)
             {

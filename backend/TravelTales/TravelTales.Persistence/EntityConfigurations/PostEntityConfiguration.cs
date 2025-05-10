@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using TravelTales.Domain.Entities;
+using TravelTales.Domain.Enums;
 
 namespace TravelTales.Persistence.EntityConfigurations
 {
@@ -33,6 +34,13 @@ namespace TravelTales.Persistence.EntityConfigurations
             builder
                 .Property(p => p.BloggerId)
                 .HasColumnName("blogger_id");
+
+            builder
+                .Property(p => p.Budget)
+                .HasColumnName("budget_level")
+                .HasConversion<string>()
+                .HasColumnType("integer")
+                .HasDefaultValue(BudgetLevel.NotSpecified);
 
             builder
                 .Property(p => p.CreatedAt)

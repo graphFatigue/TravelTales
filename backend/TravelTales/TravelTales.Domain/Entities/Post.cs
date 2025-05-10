@@ -1,4 +1,5 @@
 ﻿using TravelTales.Domain.Entities.Abstract;
+using TravelTales.Domain.Enums;
 
 namespace TravelTales.Domain.Entities
 {
@@ -21,6 +22,7 @@ namespace TravelTales.Domain.Entities
         public City? City { get; set; }
         public long? CountryId { get; set; }
         public Country? Country { get; set; }
+        public BudgetLevel? Budget { get; set; }
         public ICollection<Attachment>? Attachments { get; }
         public ICollection<Category>? Categories { get; }
         public ICollection<PostLike>? Likes { get; }

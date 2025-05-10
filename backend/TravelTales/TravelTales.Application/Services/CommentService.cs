@@ -6,7 +6,6 @@ using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
-using TravelTales.Persistence.Repositories;
 
 namespace TravelTales.Application.Services
 {

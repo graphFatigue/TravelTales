@@ -4,6 +4,7 @@ using TravelTales.Application.DTOs.City;
 using TravelTales.Application.DTOs.Comment;
 using TravelTales.Application.DTOs.Country.TravelTales.Application.DTOs.Location;
 using TravelTales.Application.DTOs.PostLike;
+using TravelTales.Domain.Enums;
 
 namespace TravelTales.Application.DTOs.Post
 {
@@ -19,6 +20,7 @@ namespace TravelTales.Application.DTOs.Post
         public CityDto City { get; set; }
         public long? CountryId { get; set; }
         public CountryDto Country { get; set; }
+        public BudgetLevel? Budget { get; set; }
         public ICollection<AttachmentDto>? Attachments { get; set; }
         public ICollection<PostLikeDto>? Likes { get; set; }
         public ICollection<CommentDto>? Comments { get; set; }

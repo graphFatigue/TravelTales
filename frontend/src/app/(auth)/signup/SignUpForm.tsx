@@ -9,14 +9,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
+import { CardContent, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -25,147 +18,162 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
+import axios from 'axios';
+import https from 'https';
 
 export default function RegistrationForm() {
 	const [date, setDate] = useState<Date>();
+	const [formData, setFormData] = useState({
+		email: '',
+		firstName: '',
+		lastName: '',
+		birthDate: '',
+		password: '',
+	});
+	const [error, setError] = useState('');
+	const router = useRouter();
 
-	const handleSubmit = (e: React.FormEvent) => {
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const { name, value } = e.target;
+		setFormData(prev => ({ ...prev, [name]: value }));
+	};
+
+	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Handle form submission
-		localStorage.setItem(
-			'user',
-			JSON.stringify({
-				email: 'example@gmail.com',
-				password: '12345',
-				username: 'unknown',
-			})
-		);
-		toast("You've successfully registered.");
-		redirect('/');
+		setError('');
+
+		try {
+
+			// optimize it
+			await axios.post(
+				'https://localhost:7132/api/Auth/signup',
+				{
+					...formData,
+					birthDate: date?.toISOString(),
+				},
+				{
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+				},
+			);
+
+			const signInResponse = await signIn('credentials', {
+				email: formData.email,
+				password: formData.password,
+				redirect: false,
+			});
+
+			if (signInResponse?.error) {
+				router.push('/login');
+			} else {
+				toast("You've successfully registered.");
+				router.push('/');
+			}
+		} catch (err: unknown) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const error = err as any;
+			setError(error?.response?.data);
+			console.log('Signup error:', err);
+		}
 	};
 
 	return (
-		<div className="flex justify-center items-center min-h-screen p-4">
-			<Card className="w-full max-w-md">
-				<CardHeader className="space-y-1">
-					<CardTitle className="text-2xl font-bold">
-						Create an account
-					</CardTitle>
-					<CardDescription>
-						Enter your information to register
-					</CardDescription>
-				</CardHeader>
-				<form onSubmit={handleSubmit}>
-					<CardContent className="space-y-4">
-						{/* Full Name */}
-						<div className="space-y-2">
-							<Label htmlFor="fullname">Full Name</Label>
-							<Input
-								id="fullname"
-								placeholder="John Doe"
-								required
+		<form onSubmit={handleSubmit}>
+			<CardContent className='space-y-4'>
+				{error && <div className='error-message'>{error}</div>}
+				<div className='space-y-2'>
+					<Label htmlFor='firstname'>First Name</Label>
+					<Input
+						id='firstname'
+						placeholder='John'
+						required
+						name='firstName'
+						value={formData.firstName}
+						onChange={handleChange}
+					/>
+				</div>
+
+				<div className='space-y-2'>
+					<Label htmlFor='lastname'>Last Name</Label>
+					<Input
+						id='lastname'
+						placeholder='Doe'
+						name='lastName'
+						value={formData.lastName}
+						onChange={handleChange}
+						required
+					/>
+				</div>
+
+				{/* Date of Birth */}
+				<div className='space-y-2'>
+					<Label htmlFor='dob'>Date of Birth</Label>
+					<Popover>
+						<PopoverTrigger asChild>
+							<Button
+								variant='outline'
+								className={cn(
+									'w-full justify-start text-left font-normal',
+									!date && 'text-muted-foreground',
+								)}
+								id='dob'
+							>
+								<CalendarIcon className='mr-2 h-4 w-4' />
+								{date ? format(date, 'PPP') : 'Pick a date'}
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent className='w-auto p-0'>
+							<Calendar
+								mode='single'
+								selected={date}
+								onSelect={setDate}
+								initialFocus
+								disabled={date => date > new Date()}
 							/>
-						</div>
+						</PopoverContent>
+					</Popover>
+				</div>
 
-						{/* Gender */}
-						<div className="space-y-2">
-							<Label htmlFor="gender">Gender</Label>
-							<Select required>
-								<SelectTrigger id="gender">
-									<SelectValue placeholder="Select gender" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="male">Male</SelectItem>
-									<SelectItem value="female">
-										Female
-									</SelectItem>
-									<SelectItem value="non-binary">
-										Non-binary
-									</SelectItem>
-									<SelectItem value="other">Other</SelectItem>
-									<SelectItem value="prefer-not-to-say">
-										Prefer not to say
-									</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
+				{/* Email */}
+				<div className='space-y-2'>
+					<Label htmlFor='email'>Email</Label>
+					<Input
+						id='email'
+						type='email'
+						name='email'
+						value={formData.email}
+						onChange={handleChange}
+						placeholder='example@example.com'
+						required
+					/>
+				</div>
 
-						{/* Date of Birth */}
-						<div className="space-y-2">
-							<Label htmlFor="dob">Date of Birth</Label>
-							<Popover>
-								<PopoverTrigger asChild>
-									<Button
-										variant="outline"
-										className={cn(
-											'w-full justify-start text-left font-normal',
-											!date && 'text-muted-foreground'
-										)}
-										id="dob"
-									>
-										<CalendarIcon className="mr-2 h-4 w-4" />
-										{date
-											? format(date, 'PPP')
-											: 'Pick a date'}
-									</Button>
-								</PopoverTrigger>
-								<PopoverContent className="w-auto p-0">
-									<Calendar
-										mode="single"
-										selected={date}
-										onSelect={setDate}
-										initialFocus
-										disabled={(date) => date > new Date()}
-									/>
-								</PopoverContent>
-							</Popover>
-						</div>
-
-						{/* Location */}
-						<div className="space-y-2">
-							<Label htmlFor="location">Location</Label>
-							<Input
-								id="location"
-								placeholder="Enter your location"
-								required
-							/>
-						</div>
-
-						{/* Email */}
-						<div className="space-y-2">
-							<Label htmlFor="email">Email</Label>
-							<Input
-								id="email"
-								type="email"
-								placeholder="example@example.com"
-								required
-							/>
-						</div>
-
-						{/* Password */}
-						<div className="space-y-2">
-							<Label htmlFor="password">Password</Label>
-							<Input id="password" type="password" required />
-							<p className="text-xs text-muted-foreground">
-								Password must be at least 8 characters long
-							</p>
-						</div>
-					</CardContent>
-					<CardFooter>
-						<Button type="submit" className="w-full">
-							Register
-						</Button>
-					</CardFooter>
-				</form>
-			</Card>
-		</div>
+				{/* Password */}
+				<div className='space-y-2'>
+					<Label htmlFor='password'>Password</Label>
+					<Input
+						id='password'
+						type='password'
+						required
+						name='password'
+						placeholder='*******'
+						value={formData.password}
+						onChange={handleChange}
+					/>
+					<p className='text-xs text-muted-foreground'>
+						Password must be at least 8 characters long
+					</p>
+				</div>
+			</CardContent>
+			<CardFooter>
+				<Button type='submit' className='w-full'>
+					Register
+				</Button>
+			</CardFooter>
+		</form>
 	);
 }

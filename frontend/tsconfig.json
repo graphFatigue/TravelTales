@@ -28,7 +28,9 @@
 		"**/*.tsx",
 		".next/types/**/*.ts",
 		"postcss.config.js",
-		"src/app/sx"
+		"src/app/sx",
+		"types",
+		"next-env.d.ts"
 	],
 	"exclude": ["node_modules"]
 }

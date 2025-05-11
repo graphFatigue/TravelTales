@@ -15,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import UserAvatar from '@/components/UserAvatar';
+import { useSession } from 'next-auth/react';
 
 const userData = {
 	fullName: 'Iryna Bibik',
@@ -105,6 +106,8 @@ const getTravelerRating = (citiesCount: number) => {
 export default function UserProfile() {
 	const [activeTab, setActiveTab] = useState('overview');
 	const travelerRating = getTravelerRating(userData.cities.length);
+	const { data: session } = useSession();
+	console.log(session);
 
 	return (
 		<div className="container mx-auto py-8 px-4 max-w-5xl">

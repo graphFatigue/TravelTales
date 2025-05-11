@@ -1,6 +1,5 @@
 import Navbar from './Navbar';
 import MenuBar from './MenuBar';
-import { redirect } from 'next/navigation';
 
 export default async function RootLayout({
 	children,
@@ -8,12 +7,6 @@ export default async function RootLayout({
 	children: React.ReactNode;
 	}) {
 	
-	const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-	if (!user) {
-		redirect('/login');
-	}
-
 	return (
 		<div className="flex min-h-screen flex-col">
 			<Navbar />

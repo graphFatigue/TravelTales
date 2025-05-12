@@ -2,7 +2,7 @@ import NextAuth, { NextAuthOptions, SessionStrategy } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import api from '@/lib/api';
 
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
 	providers: [
 		CredentialsProvider({
 			name: 'Credentials',

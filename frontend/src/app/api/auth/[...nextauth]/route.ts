@@ -16,6 +16,7 @@ export const authOptions: NextAuthOptions = {
 					console.log(data);
 
 					if (!data?.accessToken) return null;
+					
 
 					return {
 						id: data.user.id,
@@ -28,7 +29,6 @@ export const authOptions: NextAuthOptions = {
 				} catch (err: unknown) {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					const error = err as any;
-					console.error('Login error:', error?.response?.data || error.message);
 					throw new Error(
 						error?.response?.data.error || error.message || 'Login failed',
 					);

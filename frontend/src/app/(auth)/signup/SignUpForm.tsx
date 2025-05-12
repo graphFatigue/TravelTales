@@ -20,11 +20,11 @@ import {
 } from '@/components/ui/popover';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import axios from 'axios';
-import https from 'https';
+import api from '@/lib/api';
 
 export default function RegistrationForm() {
 	const [date, setDate] = useState<Date>();
+	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		email: '',
 		firstName: '',
@@ -32,7 +32,6 @@ export default function RegistrationForm() {
 		birthDate: '',
 		password: '',
 	});
-	const [error, setError] = useState('');
 	const router = useRouter();
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,24 +41,13 @@ export default function RegistrationForm() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setError('');
+		setIsLoading(true);
 
 		try {
-
-			// optimize it
-			await axios.post(
-				'https://localhost:7132/api/Auth/signup',
-				{
-					...formData,
-					birthDate: date?.toISOString(),
-				},
-				{
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-				},
-			);
+			await api.post('/api/Auth/signup', {
+				...formData,
+				birthDate: date?.toISOString(),
+			});
 
 			const signInResponse = await signIn('credentials', {
 				email: formData.email,
@@ -67,24 +55,26 @@ export default function RegistrationForm() {
 				redirect: false,
 			});
 
+			//errors for sign in
 			if (signInResponse?.error) {
-				router.push('/login');
+				toast.error(signInResponse?.error);
 			} else {
-				toast("You've successfully registered.");
+				toast.success("You've successfully registered.");
 				router.push('/');
 			}
 		} catch (err: unknown) {
+			//errors for sign up
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const error = err as any;
-			setError(error?.response?.data);
-			console.log('Signup error:', err);
+			toast.error(error.message.split(':')[1]);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
 	return (
 		<form onSubmit={handleSubmit}>
 			<CardContent className='space-y-4'>
-				{error && <div className='error-message'>{error}</div>}
 				<div className='space-y-2'>
 					<Label htmlFor='firstname'>First Name</Label>
 					<Input
@@ -170,8 +160,8 @@ export default function RegistrationForm() {
 				</div>
 			</CardContent>
 			<CardFooter>
-				<Button type='submit' className='w-full'>
-					Register
+				<Button type='submit' className='w-full' disabled={isLoading}>
+					{isLoading ? 'Signing up...' : 'Sign up'}
 				</Button>
 			</CardFooter>
 		</form>

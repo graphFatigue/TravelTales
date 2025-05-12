@@ -2,7 +2,7 @@ import axios from 'axios';
 import https from 'https';
 
 const api = axios.create({
-	baseURL: process.env.API_BASE_URL,
+	baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
 	headers: {
 		'Content-Type': 'application/json',
 	},
@@ -14,7 +14,7 @@ api.interceptors.response.use(
 	error => {
 		if (error.response) {
 			return Promise.reject({
-				message: error.response.data?.message || 'Request failed',
+				message: error.response.data?.error || 'Request failed',
 				status: error.response.status,
 				data: error.response.data,
 			});

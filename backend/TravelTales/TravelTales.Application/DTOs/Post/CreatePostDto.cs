@@ -13,5 +13,6 @@ namespace TravelTales.Application.DTOs.Post
         public BudgetLevel? Budget { get; set; }
         public ICollection<long> CategoryIds { get; set; }
         public ICollection<UploadAttachmentDto>? Attachments { get; set; }
+        public ICollection<string> Tags { get; set; } = new List<string>();
     }
 }

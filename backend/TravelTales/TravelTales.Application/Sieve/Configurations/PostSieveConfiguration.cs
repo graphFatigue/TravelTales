@@ -15,7 +15,19 @@ namespace TravelTales.Application.Sieve.Configurations
 
             mapper.Property<Post>(x => x.BloggerId)
                 .CanFilter();
-                //.CanSort();
+            //.CanSort();
+
+            mapper.Property<Post>(x => x.Tags)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<Post>(x => x.CountryId)
+            .CanFilter()
+            .CanSort();
+
+            mapper.Property<Post>(x => x.CityId)
+                .CanFilter()
+                .CanSort();
 
             mapper.Property<Post>(x => x.CreatedAt)
                 .CanFilter()

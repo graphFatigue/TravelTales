@@ -13,5 +13,6 @@ namespace TravelTales.Application.DTOs.Post
         public ICollection<long> CategoryIds { get; set; }
         public ICollection<UploadAttachmentDto>? NewAttachments { get; set; }
         public ICollection<long>? AttachmentsToDelete { get; set; }
+        public ICollection<string> Tags { get; set; } = new List<string>();
     }
 }

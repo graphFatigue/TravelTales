@@ -24,6 +24,7 @@ namespace TravelTales.Application.DTOs.Post
         public ICollection<AttachmentDto>? Attachments { get; set; }
         public ICollection<PostLikeDto>? Likes { get; set; }
         public ICollection<CommentDto>? Comments { get; set; }
+        public ICollection<string> Tags { get; set; } = new List<string>();
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public bool IsDeleted { get; set; }

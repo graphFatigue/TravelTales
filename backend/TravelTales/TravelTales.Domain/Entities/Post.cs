@@ -11,6 +11,7 @@ namespace TravelTales.Domain.Entities
             Attachments = new List<Attachment>();
             Likes = new List<PostLike>();
             Comments = new List<Comment>();
+            Tags = new List<string>();
         }
 
         public long Id { get; set; }
@@ -27,6 +28,7 @@ namespace TravelTales.Domain.Entities
         public ICollection<Category>? Categories { get; }
         public ICollection<PostLike>? Likes { get; }
         public ICollection<Comment>? Comments { get; }
+        public ICollection<string> Tags { get; set; } = new List<string>();
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
         public bool IsDeleted { get; set; }

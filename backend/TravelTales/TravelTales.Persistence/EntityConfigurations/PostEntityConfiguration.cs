@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using TravelTales.Domain.Entities;
 using TravelTales.Domain.Enums;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace TravelTales.Persistence.EntityConfigurations
 {
@@ -41,6 +43,20 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .HasConversion<string>()
                 .HasColumnType("integer")
                 .HasDefaultValue(BudgetLevel.NotSpecified);
+
+            builder.Property(p => p.Tags)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => JsonSerializer.Deserialize<ICollection<string>>(v, (JsonSerializerOptions)null) ?? new List<string>(),
+                    new ValueComparer<ICollection<string>>(
+                        (c1, c2) => c1.SequenceEqual(c2),
+                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                        c => c.ToList()
+                    )
+                )
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("tags")
+                .HasDefaultValue(new List<string>());
 
             builder
                 .Property(p => p.CreatedAt)

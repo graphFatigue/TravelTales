@@ -29,6 +29,16 @@ namespace TravelTales.Application.Sieve.Configurations
                 .CanFilter()
                 .CanSort();
 
+            mapper.Property<Post>(p => p.Country.Name)
+            .CanFilter()
+            .CanSort()
+            .HasName("CountryName");
+
+            mapper.Property<Post>(p => p.City.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("CityName");
+
             mapper.Property<Post>(x => x.CreatedAt)
                 .CanFilter()
                 .CanSort();

@@ -6,7 +6,7 @@ using TravelTales.Application.Interfaces;
 
 namespace TravelTales.API.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [ApiController, Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
@@ -57,6 +57,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(post);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto, CancellationToken cancellationToken)
         {
@@ -67,6 +68,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(post);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(long id, [FromBody] UpdatePostDto updatePostDto, CancellationToken cancellationToken)
         {
@@ -77,6 +79,7 @@ namespace TravelTales.API.Controllers
             return this.NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {

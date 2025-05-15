@@ -5,7 +5,6 @@ using TravelTales.Application.DTOs.Post;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
-using TravelTales.Persistence;
 using TravelTales.Persistence.Interfaces;
 using TravelTales.Persistence.SharedFiles;
 
@@ -121,104 +120,107 @@ namespace TravelTales.Application.Services
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        //public async Task<PostDto?> GetPostByIdAsync(long id, CancellationToken cancellationToken = default)
-        //{
-        //    var post = await this.unitOfWork
-        //        .GetRepository<IPostRepository>()
-        //        .GetByIdFullAsync(id, cancellationToken);
-        //    if (post is null)
-        //    {
-        //        throw new NotFoundException($"Post with ID {id} was not found.");
-        //    }
-
-        //    return this.mapper.Map<PostDto>(post);
-        //}
-
         public async Task<PostDto?> GetPostByIdAsync(long id, CancellationToken cancellationToken = default)
         {
             var post = await this.unitOfWork
                 .GetRepository<IPostRepository>()
                 .GetByIdFullAsync(id, cancellationToken);
+
             if (post is null || post.IsDeleted)
             {
                 throw new NotFoundException($"Post with ID {id} was not found.");
             }
 
-            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
-            if (currentBloggerId != -1)
+            try
             {
+                var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
                 var isBlocked = await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
                     .ExistsAsync(post.BloggerId, currentBloggerId, cancellationToken);
+
                 if (isBlocked)
                 {
                     throw new NotFoundException($"Post with ID {id} was not found.");
                 }
             }
+            catch (NotAuthorizedException)
+            {
+                // For unauthorized users, return post without block check
+                // You might want to add additional public visibility checks here
+            }
 
             return this.mapper.Map<PostDto>(post);
         }
 
-        //public async Task<IEnumerable<PostDto>> GetPostsAsync(CancellationToken cancellationToken = default)
-        //{
-        //    var posts = await this.unitOfWork.GetRepository<IPostRepository>()
-        //        .GetAllAsync(cancellationToken);
-        //    return this.mapper.Map<IEnumerable<PostDto>>(posts);
-        //}
-
         public async Task<IEnumerable<PostDto>> GetPostsAsync(CancellationToken cancellationToken = default)
         {
-            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
+            try
+            {
+                // Try to get current blogger ID if authorized
+                var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
 
-            var blockerIds = (await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
-                .GetBlockerIdsAsync(currentBloggerId, cancellationToken))
-                .ToList();
+                // Get list of users who blocked current user
+                var blockerIds = (await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+                    .GetBlockerIdsAsync(currentBloggerId, cancellationToken))
+                    .ToList();
 
-            var posts = await this.unitOfWork.GetRepository<IPostRepository>()
-                .GetAllAsync(cancellationToken);
+                // Get all posts and filter them
+                var posts = await this.unitOfWork.GetRepository<IPostRepository>()
+                    .GetAllAsync(cancellationToken);
 
-            var filteredPosts = posts
-                .Where(p => !p.IsDeleted && p.BloggerId!=null && !blockerIds.Contains(Convert.ToInt64(p.BloggerId)))
-                .ToList();
+                var filteredPosts = posts
+                    .Where(p => !p.IsDeleted &&
+                                p.BloggerId != null &&
+                                !blockerIds.Contains(Convert.ToInt64(p.BloggerId)))
+                    .ToList();
 
-            return this.mapper.Map<IEnumerable<PostDto>>(filteredPosts);
+                return this.mapper.Map<IEnumerable<PostDto>>(filteredPosts);
+            }
+            catch (NotAuthorizedException)
+            {
+                // If user is not authorized, return all non-deleted posts without blocking filter
+                var posts = await this.unitOfWork.GetRepository<IPostRepository>()
+                    .GetAllAsync(cancellationToken);
+
+                var filteredPosts = posts
+                    .Where(p => !p.IsDeleted && p.BloggerId != null)
+                    .ToList();
+
+                return this.mapper.Map<IEnumerable<PostDto>>(filteredPosts);
+            }
         }
-
-        //public async Task<PagedList<PostDto>> GetPostsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
-        //{
-        //    var pagedList = await this.unitOfWork.GetRepository<IPostRepository>()
-        //        .GetAllWithFilterAsync(sieveModel, cancellationToken);
-
-        //    var filteredPosts = this.mapper.Map<IEnumerable<PostDto>>(pagedList.Items);
-
-        //    var updatedPagedList = PagedList<PostDto>.Copy(pagedList, filteredPosts);
-
-        //    return updatedPagedList;
-        //}
 
         public async Task<PagedList<PostDto>> GetPostsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
         {
-            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
-            var blockerIds = (await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
-            .GetBlockerIdsAsync(currentBloggerId, cancellationToken))
-            .ToList();
-
             var sieveModelClone = this.CloneSieveModel(sieveModel);
+            List<long> blockerIds = new();
 
-            if (blockerIds.Any())
+            try
             {
-                sieveModelClone.Filters.Concat($",BloggerId!={string.Join(",", blockerIds)}");
+                var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
+                blockerIds = (await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+                    .GetBlockerIdsAsync(currentBloggerId, cancellationToken))
+                    .ToList();
+
+                if (blockerIds.Any())
+                {
+                    sieveModelClone.Filters += $",BloggerId!={string.Join(",", blockerIds)}";
+                }
+            }
+            catch (NotAuthorizedException)
+            {
+                // No block filtering for unauthorized users
             }
 
             var pagedList = await this.unitOfWork.GetRepository<IPostRepository>()
                 .GetAllWithFilterAsync(sieveModelClone, cancellationToken);
 
             var filteredPosts = this.mapper.Map<IEnumerable<PostDto>>(pagedList.Items)
-                .Where(p => !blockerIds.Contains(p.BloggerId))
+                .Where(p => !p.IsDeleted &&
+                           (blockerIds.Count == 0 || !blockerIds.Contains(p.BloggerId)))
                 .ToList();
 
             return PagedList<PostDto>.Copy(pagedList, filteredPosts);
         }
-
 
         public async Task UpdatePostAsync(long id, UpdatePostDto updatePostDto, CancellationToken cancellationToken = default)
         {

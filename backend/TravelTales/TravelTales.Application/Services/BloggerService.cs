@@ -83,19 +83,6 @@ namespace TravelTales.Application.Services
             return blogger.Id;
         }
 
-        //public async Task<BloggerDto?> GetBloggerByIdAsync(long id, CancellationToken cancellationToken = default)
-        //{
-        //    var blogger = await this.unitOfWork
-        //        .GetRepository<IBloggerRepository>()
-        //        .GetByIdFullAsync(id, cancellationToken);
-        //    if (blogger is null)
-        //    {
-        //        throw new NotFoundException($"Blogger with ID {id} was not found.");
-        //    }
-
-        //    return this.mapper.Map<BloggerDto>(blogger);
-        //}
-
         public async Task<BloggerDto?> GetBloggerByIdAsync(long id, CancellationToken cancellationToken = default)
         {
             var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
@@ -123,13 +110,6 @@ namespace TravelTales.Application.Services
             return dto;
         }
 
-        //public async Task<IEnumerable<BloggerDto>> GetBloggersAsync(CancellationToken cancellationToken = default)
-        //{
-        //    var bloggers = await this.unitOfWork.GetRepository<IBloggerRepository>()
-        //        .GetAllAsync(cancellationToken);
-        //    return this.mapper.Map<IEnumerable<BloggerDto>>(bloggers);
-        //}
-
         public async Task<IEnumerable<BloggerDto>> GetBloggersAsync(CancellationToken cancellationToken = default)
         {
             var bloggers = await this.unitOfWork.GetRepository<IBloggerRepository>()
@@ -141,26 +121,16 @@ namespace TravelTales.Application.Services
                     .GetBlockerIdsAsync(currentBloggerId, cancellationToken)
                 : new List<long>();
 
-            return bloggers.Select(blogger =>
-            {
-                var dto = this.mapper.Map<BloggerDto>(blogger);
-                if (blockerIds.Contains(blogger.Id))
-                    MaskBloggerDetails(dto);
-                return dto;
-            }).ToList();
+            return bloggers
+                .Where(b => !b.IsDeleted)
+                .Select(blogger =>
+                {
+                    var dto = this.mapper.Map<BloggerDto>(blogger);
+                    if (blockerIds.Contains(blogger.Id))
+                        MaskBloggerDetails(dto);
+                    return dto;
+                }).ToList();
         }
-
-        //public async Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
-        //{
-        //    var pagedList = await this.unitOfWork.GetRepository<IBloggerRepository>()
-        //        .GetAllWithFilterAsync(sieveModel, cancellationToken);
-
-        //    var filteredBloggers = this.mapper.Map<IEnumerable<BloggerDto>>(pagedList.Items);
-
-        //    var updatedPagedList = PagedList<BloggerDto>.Copy(pagedList, filteredBloggers);
-
-        //    return updatedPagedList;
-        //}
 
         public async Task<PagedList<BloggerDto>> GetBloggersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
         {
@@ -173,13 +143,15 @@ namespace TravelTales.Application.Services
                     .GetBlockerIdsAsync(currentBloggerId, cancellationToken)
                 : new List<long>();
 
-            var filteredDtos = pagedList?.Items?.Select(blogger =>
-            {
-                var dto = this.mapper.Map<BloggerDto>(blogger);
-                if (blockerIds.Contains(blogger.Id))
-                    MaskBloggerDetails(dto);
-                return dto;
-            }).ToList();
+            var filteredDtos = pagedList?.Items?
+                .Where(b => !b.IsDeleted)
+                .Select(blogger =>
+                {
+                    var dto = this.mapper.Map<BloggerDto>(blogger);
+                    if (blockerIds.Contains(blogger.Id))
+                        MaskBloggerDetails(dto);
+                    return dto;
+                }).ToList();
 
             return PagedList<BloggerDto>.Copy(pagedList, filteredDtos);
         }
@@ -269,27 +241,57 @@ namespace TravelTales.Application.Services
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
+        //public async Task FollowBloggerAsync(long followingId, CancellationToken cancellationToken = default)
+        //{
+        //    var followerId = await GetCurrentBloggerId(cancellationToken);
+
+        //    if (followerId == followingId)
+        //        throw new ValidationException("Cannot follow yourself");
+
+        //    if (await unitOfWork.GetRepository<IBloggerFollowRepository>()
+        //        .ExistsAsync(followerId, followingId, cancellationToken))
+        //    {
+        //        throw new ValidationException("Already following this blogger");
+        //    }
+
+        //    var follow = new BloggerFollow
+        //    {
+        //        FollowerId = followerId,
+        //        FollowingId = followingId
+        //    };
+
+        //    await unitOfWork.GetRepository<IBloggerFollowRepository>().AddAsync(follow, cancellationToken);
+        //    await unitOfWork.SaveChangesAsync(cancellationToken);
+        //}
+
         public async Task FollowBloggerAsync(long followingId, CancellationToken cancellationToken = default)
         {
-            var followerId = await GetCurrentBloggerId(cancellationToken);
-
-            if (followerId == followingId)
-                throw new ValidationException("Cannot follow yourself");
-
-            if (await unitOfWork.GetRepository<IBloggerFollowRepository>()
-                .ExistsAsync(followerId, followingId, cancellationToken))
+            try
             {
-                throw new ValidationException("Already following this blogger");
+                var followerId = await GetCurrentBloggerId(cancellationToken);
+
+                if (followerId == followingId)
+                    throw new ValidationException("Cannot follow yourself");
+
+                if (await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                    .ExistsAsync(followerId, followingId, cancellationToken))
+                {
+                    throw new ValidationException("Already following this blogger");
+                }
+
+                var follow = new BloggerFollow
+                {
+                    FollowerId = followerId,
+                    FollowingId = followingId
+                };
+
+                await unitOfWork.GetRepository<IBloggerFollowRepository>().AddAsync(follow, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
             }
-
-            var follow = new BloggerFollow
+            catch (NotAuthorizedException)
             {
-                FollowerId = followerId,
-                FollowingId = followingId
-            };
-
-            await unitOfWork.GetRepository<IBloggerFollowRepository>().AddAsync(follow, cancellationToken);
-            await unitOfWork.SaveChangesAsync(cancellationToken);
+                throw new PermissionsException("Authentication required for this operation");
+            }
         }
 
         public async Task UnfollowBloggerAsync(long followingId, CancellationToken cancellationToken = default)
@@ -343,11 +345,20 @@ namespace TravelTales.Application.Services
         {
             try
             {
-                return await GetCurrentBloggerId(cancellationToken);
+                var userId = this.contextAccessor.GetCurrentUserId();
+                var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
+                    .AsQueryable()
+                    .FirstOrDefaultAsync(b => b.UserId == userId && !b.IsDeleted, cancellationToken);
+
+                return blogger?.Id ?? -1;
+            }
+            catch (NotAuthorizedException)
+            {
+                return -1;
             }
             catch (NotFoundException)
             {
-                return -1; // Return invalid ID if user has no blogger profile
+                return -1;
             }
         }
 

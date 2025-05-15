@@ -6,7 +6,6 @@ using TravelTales.Application.Interfaces;
 
 namespace TravelTales.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BloggerController : ControllerBase
@@ -20,6 +19,7 @@ namespace TravelTales.API.Controllers
             this.logger = logger;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
         {
@@ -30,6 +30,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(bloggers);
         }
 
+        [AllowAnonymous]
         [HttpGet("filter")]
         public async Task<IActionResult> GetAllWithFilter([FromQuery] SieveModel sieveModel, CancellationToken cancellationToken = default)
         {
@@ -40,6 +41,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(bloggers);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(long id, CancellationToken cancellationToken)
         {
@@ -56,6 +58,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(blogger);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateBloggerDto createBloggerDto, CancellationToken cancellationToken)
         {
@@ -66,6 +69,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(blogger);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(long id, [FromBody] UpdateBloggerDto updateBloggerDto, CancellationToken cancellationToken)
         {
@@ -76,6 +80,7 @@ namespace TravelTales.API.Controllers
             return this.NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {
@@ -86,6 +91,7 @@ namespace TravelTales.API.Controllers
             return this.NoContent();
         }
 
+        [Authorize]
         [HttpPut("{id}/image")]
         public async Task<IActionResult> UpdateImage(long id, [FromBody] UpdateBloggerImageDto imageDto, CancellationToken cancellationToken)
         {

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid;
 using Sieve.Models;
 using Sieve.Services;
 using System.Text;
@@ -170,6 +171,8 @@ namespace TravelTales.Application
             IConfiguration configuration)
         {
             services.AddScoped(_ => new BlobServiceClient(configuration.GetSection("Azure:Blob:ConnectionString").Value));
+            services.AddSingleton<ISendGridClient>(sp =>
+                new SendGridClient(configuration["SendGrid:ApiKey"]));
         }
 
         private static void ConfigureJwtAuthentication(

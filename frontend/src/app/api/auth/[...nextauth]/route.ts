@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions, SessionStrategy } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import api from '@/lib/api';
+import GoogleProvider from 'next-auth/providers/google';
 
 export const authOptions: NextAuthOptions = {
 	providers: [
@@ -16,7 +17,6 @@ export const authOptions: NextAuthOptions = {
 					console.log(data);
 
 					if (!data?.accessToken) return null;
-					
 
 					return {
 						id: data.user.id,
@@ -35,12 +35,37 @@ export const authOptions: NextAuthOptions = {
 				}
 			},
 		}),
+		GoogleProvider({
+			clientId: process.env.GOOGLE_CLIENT_ID!,
+			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+		}),
 	],
 	callbacks: {
-		async jwt({ token, user }) {
+		async jwt({ token, account, user }) {
+			if (account?.provider === 'google') {
+				// Get your API token using Google access token
+				const googleAccessToken = account.access_token;
+
+				console.log(googleAccessToken);
+
+				try {
+					const { data } = await api.post('/api/Auth/login/google', {
+						accessToken: googleAccessToken,
+					});
+
+					token.accessToken = data.accessToken;
+					token.blogger = data.user.blogger;
+					token.sub = data.user.id;
+				} catch (error) {
+					console.error('Failed to login via Google to your backend', error);
+					throw new Error('Login failed');
+				}
+			}
+
 			if (user) {
 				token.accessToken = user.accessToken;
 				token.blogger = user.blogger;
+				token.sub = user.id;
 			}
 			return token;
 		},

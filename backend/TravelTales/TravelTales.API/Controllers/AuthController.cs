@@ -66,11 +66,9 @@ namespace TravelTales.API.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromQuery] string email)
         {
-            var token = await authService.GeneratePasswordResetTokenAsync(email);
-            logger.LogInformation("Password reset token generated for {Email}", email);
-
-            // In real implementation: Send email with token
-            return Ok(new { Token = token });
+            await authService.ForgotPasswordAsync(email);
+            logger.LogInformation("Password reset requested for {Email}", email);
+            return Ok(new { Message = "If an account exists, a password reset email has been sent" });
         }
 
         [AllowAnonymous]

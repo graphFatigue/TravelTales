@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -144,6 +145,7 @@ namespace TravelTales.Application
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IStorageService, AzureBlobStorageService>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddSignalR();
         }
 
@@ -204,7 +206,11 @@ namespace TravelTales.Application
                     options.ClientId = clientId;
                     options.ClientSecret = clientSecret;
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.CallbackPath = "/api/auth/signin-google-callback";
+                    options.CallbackPath = new PathString("/api/auth/callback/google");
+
+                    // For development with HTTPS
+                    //options.AuthorizationEndpoint += "?prompt=consent";
+                    //options.AccessType = "offline";
                     options.SaveTokens = true;
                     options.Events = new OAuthEvents
                     {

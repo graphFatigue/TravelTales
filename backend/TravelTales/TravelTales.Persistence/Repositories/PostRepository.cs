@@ -45,6 +45,7 @@ namespace TravelTales.Persistence.Repositories
                 .Where(x => !x.IsDeleted)
                 .Include(p => p.Country)  // Include Country
                 .Include(p => p.City)     // Include City
+                .Include(p => p.Categories)     // Include City
                 .AsQueryable();
 
             // Apply Sieve filters/sorts

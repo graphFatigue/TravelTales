@@ -40,8 +40,6 @@ namespace TravelTales.Persistence.EntityConfigurations
             builder
                 .Property(p => p.Budget)
                 .HasColumnName("budget_level")
-                .HasConversion<string>()
-                .HasColumnType("integer")
                 .HasDefaultValue(BudgetLevel.NotSpecified);
 
             builder.Property(p => p.Tags)

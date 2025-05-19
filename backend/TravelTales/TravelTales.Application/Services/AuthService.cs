@@ -20,6 +20,7 @@ namespace TravelTales.Application.Services
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
         private readonly IValidator<SignupDto> signupDtoValidator;
+        private readonly IEmailService emailService;
 
         public AuthService(
             UserManager<User> userManager,
@@ -27,7 +28,8 @@ namespace TravelTales.Application.Services
             IJwtService jwtService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
-            IValidator<SignupDto> signupDtoValidator)
+            IValidator<SignupDto> signupDtoValidator,
+            IEmailService emailService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -35,6 +37,7 @@ namespace TravelTales.Application.Services
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
             this.signupDtoValidator = signupDtoValidator;
+            this.emailService = emailService;
         }
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
@@ -121,6 +124,15 @@ namespace TravelTales.Application.Services
                 AccessToken = accessToken,
                 User = userDto
             };
+        }
+
+        public async Task ForgotPasswordAsync(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null) return; // Don't reveal if user exists
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            await this.emailService.SendPasswordResetEmailAsync(email, token);
         }
 
         public async Task ChangePasswordAsync(string userId, PasswordChangeDto passwordChangeDto)

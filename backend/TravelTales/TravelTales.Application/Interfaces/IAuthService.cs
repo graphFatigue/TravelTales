@@ -15,5 +15,7 @@ namespace TravelTales.Application.Interfaces
         Task<string> GeneratePasswordResetTokenAsync(string email);
 
         Task ResetPasswordAsync(PasswordResetDto passwordResetDto);
+
+        Task ForgotPasswordAsync(string email);
     }
 }

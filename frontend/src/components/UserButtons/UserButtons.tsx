@@ -3,22 +3,21 @@
 import { useSession } from 'next-auth/react';
 import UserButton from './UserButton';
 import { Button } from '../ui/button';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function UserButtons() {
-    const { data: session } = useSession();
-    const router = useRouter();
+	const { data: session } = useSession();
 	return (
 		<>
 			{session ? (
 				<UserButton user={session.user} />
 			) : (
 				<div className='flex gap-4'>
-					<Button variant='default' onClick={() => router.push('/login')}>
-						Login
+					<Button variant='default'>
+						<Link href={'/login'}>Login</Link>
 					</Button>
-					<Button variant='outline' onClick={() => router.push('/signup')}>
-						Sign Up
+					<Button variant='outline'>
+						<Link href={'/signup'}>Sign Up</Link>
 					</Button>
 				</div>
 			)}

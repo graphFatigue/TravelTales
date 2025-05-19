@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { CardContent, CardFooter } from '@/components/ui/card';
 import { signIn } from 'next-auth/react';
 import GoogleButton from './GoogleButton';
+import Link from 'next/link';
 
 export default function LoginForm() {
 	const [email, setEmail] = useState('');
@@ -84,16 +85,14 @@ export default function LoginForm() {
 					</Button>
 					<div className='mt-4 text-center text-sm'>
 						Don&apos;t have an account?{' '}
-						<Button
-							variant='link'
-							className='h-auto p-0'
-							type='button'
-							onClick={() => router.push('/signup')}
+						<Link
+							href={'/signup'}
+							className='h-auto p-0 text-primary hover:underline'
 						>
 							Sign up
-						</Button>
+						</Link>
 					</div>
-					<div className='flex w-full items-center gap-3 my-3'>
+					<div className='my-3 flex w-full items-center gap-3'>
 						<div className='h-px flex-1 bg-black' />
 						<span>OR</span>
 						<div className='h-px flex-1 bg-black' />

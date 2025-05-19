@@ -11,12 +11,25 @@ export interface Blogger {
 	firstName: string;
 	lastName: string;
 	birthDate: string;
-	sex: string;
+	sex: Sex;
 	bio: string;
 	image: string | null;
 	userId: string;
-	posts: any; // If you want more strict typing, define Post[]
+	posts: string[] | null; // Ideally Post[] or null
 	createdAt: string;
 	modifiedAt: string | null;
 	isDeleted: boolean;
+	followerCount: number;
+	followingCount: number;
+	isFollowing: boolean;
+	cityId: number | null;
+	city: string | null;
+	countryId: number | null;
+	country: string | null;
+}
+
+export enum Sex {
+	Male = 1,
+	Female = 2,
+	Other = 3, // etc.
 }

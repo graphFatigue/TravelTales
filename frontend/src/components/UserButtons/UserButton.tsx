@@ -43,7 +43,7 @@ export default function UserButton({ user, className }: UserButtonProps) {
 						user.blogger?.lastName || 'unknown'}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<Link href={`/users/${user.id}`}>
+				<Link href={`/blogger/${user.blogger?.id}`}>
 					<DropdownMenuItem>
 						<UserIcon className='mr-2 size-4' /> Profile
 					</DropdownMenuItem>

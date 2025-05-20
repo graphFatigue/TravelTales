@@ -3,7 +3,7 @@ import { City, Country, fetchCitiesByCountry, fetchCountries } from '@/lib/api/l
 import { useQuery } from '@tanstack/react-query';
 
 
-export const useLocationInfo = (countryId: number | null) => {
+export const useLocationInfo = (countryId: number | undefined | null) => {
 	const {
 		data: countries,
 		isLoading: loadingCountries,
@@ -28,6 +28,8 @@ export const useLocationInfo = (countryId: number | null) => {
 	return {
 		countries,
 		cities,
+		loadingCountries,
+		loadingCities,
 		loading: loadingCountries || loadingCities,
 		error: countriesError || citiesError,
 	};

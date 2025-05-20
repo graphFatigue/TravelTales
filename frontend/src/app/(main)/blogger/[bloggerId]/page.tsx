@@ -1,4 +1,3 @@
-import React, { cache } from 'react';
 import { notFound } from 'next/navigation';
 import api from '@/lib/api/api';
 import UserAvatar from '@/components/UserAvatar';
@@ -7,24 +6,23 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import UserProfile from './Profile';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import EditProfileButton from './EditProfileButton';
+import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
 
-interface PageProps {
-	params: {
-		bloggerId: string;
-	};
-}
-
-const getBlogger = cache(async (bloggerId: string) => {
+const getBlogger = async (bloggerId: string) => {
 	const { data: blogger } = await api.get(`/api/Blogger/${bloggerId}`);
 
 	if (!blogger) notFound();
 
 	return blogger;
-});
+};
 
-export default async function Page({ params }: PageProps) {
-	const bloggerId = params.bloggerId;
+export default async function Page({
+	params,
+}: {
+	params: Promise<{ bloggerId: string }>;
+}) {
+	const { bloggerId } = await params;
 	const blogger: Blogger = await getBlogger(bloggerId);
 
 	const session = await getServerSession(authOptions);
@@ -35,9 +33,7 @@ export default async function Page({ params }: PageProps) {
 				<div className='flex flex-col items-center gap-2'>
 					<UserAvatar size={150} avatarUrl={blogger.image} />
 					{blogger.id === session?.user.blogger?.id ? (
-						<Button variant='outline' size='sm'>
-							Edit Profile
-						</Button>
+						<EditProfileButton blogger={blogger} />
 					) : (
 						<Button variant='outline' size='sm'>
 							{blogger.isFollowing ? 'Unfollow' : 'Follow'}

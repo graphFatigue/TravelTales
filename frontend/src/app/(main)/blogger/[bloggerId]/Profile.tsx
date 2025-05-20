@@ -13,7 +13,6 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useSession } from 'next-auth/react';
 import { Blogger } from '@/types/user';
 import { useLocationInfo } from '@/hooks/useLocationInfo';
 
@@ -106,8 +105,6 @@ const getTravelerRating = (citiesCount: number) => {
 export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const [activeTab, setActiveTab] = useState('overview');
 	const travelerRating = getTravelerRating(userData.cities.length);
-	const { data: session } = useSession();
-	console.log('Session ', session);
 
 	const { countries, cities, loading } = useLocationInfo(blogger.countryId);
 
@@ -144,7 +141,7 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 									<h3 className='text-sm font-medium text-muted-foreground'>
 										Gender
 									</h3>
-									<p>{blogger.sex}</p>
+									<p>{blogger.sex === 1 ? 'Female' : (blogger.sex === 2 ? 'Other' : 'Male')}</p>
 								</div>
 								<div>
 									<h3 className='text-sm font-medium text-muted-foreground'>

@@ -1,6 +1,4 @@
-import NextAuth from 'next-auth';
-import { JWT } from 'next-auth/jwt';
-import { Blogger } from './user';
+import { Blogger } from './types';
 
 declare module 'next-auth' {
 	interface Session {
@@ -31,4 +29,3 @@ declare module 'next-auth/jwt' {
 		sub: string;
 	}
 }
-

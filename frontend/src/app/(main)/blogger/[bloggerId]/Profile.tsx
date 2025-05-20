@@ -13,7 +13,7 @@ import {
 	CardTitle,
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Blogger } from '@/types/user';
+import { Blogger } from '@/types/types';
 import { useLocationInfo } from '@/hooks/useLocationInfo';
 
 const userData = {
@@ -141,7 +141,13 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 									<h3 className='text-sm font-medium text-muted-foreground'>
 										Gender
 									</h3>
-									<p>{blogger.sex === 1 ? 'Female' : (blogger.sex === 2 ? 'Other' : 'Male')}</p>
+									<p>
+										{blogger.sex === 1
+											? 'Female'
+											: blogger.sex === 2
+												? 'Other'
+												: 'Male'}
+									</p>
 								</div>
 								<div>
 									<h3 className='text-sm font-medium text-muted-foreground'>

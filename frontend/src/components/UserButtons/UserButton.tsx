@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import UserAvatar from '../UserAvatar';
 import { signOut } from 'next-auth/react';
-import { User } from '@/types/user';
+import { User } from '@/types/types';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface UserButtonProps {

@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import api from '@/lib/api/api';
 import UserAvatar from '@/components/UserAvatar';
-import { Blogger } from '@/types/user';
+import { Blogger } from '@/types/types';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import UserProfile from './Profile';

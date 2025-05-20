@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { Blogger } from '@/types/user';
+import { Blogger } from '@/types/types';
 import EditBloggerProfileDialog from './EditProfileDIalog';
 
 interface EditProfileButtonProps {

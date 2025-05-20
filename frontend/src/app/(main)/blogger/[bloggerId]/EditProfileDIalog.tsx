@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
 import avatarPlaceholder from '@/assets/avatar-placeholder.png';
-import { Blogger } from '@/types/user';
+import { Blogger } from '@/types/types';
 import { CalendarIcon, Camera } from 'lucide-react';
 import Image, { StaticImageData } from 'next/image';
 import { useRef, useState } from 'react';

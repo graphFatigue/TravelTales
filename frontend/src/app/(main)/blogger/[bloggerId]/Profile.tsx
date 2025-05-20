@@ -15,6 +15,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSession } from 'next-auth/react';
 import { Blogger } from '@/types/user';
+import { useLocationInfo } from '@/hooks/useLocationInfo';
 
 const userData = {
 	fullName: 'Iryna Bibik',
@@ -102,12 +103,13 @@ const getTravelerRating = (citiesCount: number) => {
 	};
 };
 
-export default function UserProfile({blogger}: {blogger: Blogger}) {
+export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const [activeTab, setActiveTab] = useState('overview');
 	const travelerRating = getTravelerRating(userData.cities.length);
 	const { data: session } = useSession();
-	console.log('Session ',session);
-	console.log('Blogger ', blogger);
+	console.log('Session ', session);
+
+	const { countries, cities, loading } = useLocationInfo(blogger.countryId);
 
 	return (
 		<div className='container mx-auto max-w-5xl px-4 py-8'>
@@ -157,7 +159,11 @@ export default function UserProfile({blogger}: {blogger: Blogger}) {
 									<h3 className='text-sm font-medium text-muted-foreground'>
 										Location
 									</h3>
-									<p>{`${blogger.cityId} ${blogger.countryId}`}</p>
+									<p>
+										{loading
+											? 'Loading...'
+											: `${cities?.find(c => c.id === blogger.cityId)?.name}, ${countries?.find(c => c.id === blogger.countryId)?.name}`}
+									</p>
 								</div>
 							</div>
 
@@ -165,7 +171,7 @@ export default function UserProfile({blogger}: {blogger: Blogger}) {
 								<h3 className='mb-2 text-sm font-medium text-muted-foreground'>
 									Bio
 								</h3>
-								<p>{ blogger.bio}</p>
+								<p>{blogger.bio}</p>
 							</div>
 						</CardContent>
 					</Card>

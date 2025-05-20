@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import api from '@/lib/api/api';
 import UserAvatar from '@/components/UserAvatar';
 import { Blogger } from '@/types/user';
-import { MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import UserProfile from './Profile';
@@ -24,10 +23,12 @@ const getBlogger = cache(async (bloggerId: string) => {
 	return blogger;
 });
 
-export default async function page({ params: { bloggerId } }: PageProps) {
+export default async function Page({ params }: PageProps) {
+	const bloggerId = params.bloggerId;
 	const blogger: Blogger = await getBlogger(bloggerId);
 
 	const session = await getServerSession(authOptions);
+
 	return (
 		<div className='container mx-auto max-w-5xl px-4 py-8'>
 			<div className='flex flex-col items-start gap-6 md:flex-row'>
@@ -50,10 +51,6 @@ export default async function page({ params: { bloggerId } }: PageProps) {
 						<h1 className='text-3xl font-bold'>
 							{`${blogger.firstName} ${blogger.lastName}`}
 						</h1>
-						<div className='mt-1 flex items-center gap-2 text-muted-foreground'>
-							<MapPin className='h-4 w-4' />
-							<span>{`${blogger.cityId} ${blogger.countryId}`}</span>
-						</div>
 					</div>
 
 					{/* Stats */}

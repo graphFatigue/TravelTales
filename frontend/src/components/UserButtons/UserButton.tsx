@@ -18,8 +18,9 @@ import { Check, LogOutIcon, Monitor, Moon, Sun, UserIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import UserAvatar from '../UserAvatar';
-import { signOut} from 'next-auth/react';
+import { signOut } from 'next-auth/react';
 import { User } from '@/types/user';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface UserButtonProps {
 	user: User;
@@ -28,6 +29,7 @@ interface UserButtonProps {
 
 export default function UserButton({ user, className }: UserButtonProps) {
 	const { theme, setTheme } = useTheme();
+	const queryClient = useQueryClient();
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -38,9 +40,7 @@ export default function UserButton({ user, className }: UserButtonProps) {
 			<DropdownMenuContent>
 				<DropdownMenuLabel>
 					Logged in as{' '}
-					{user.blogger?.firstName +
-						' ' +
-						user.blogger?.lastName || 'unknown'}
+					{user.blogger?.firstName + ' ' + user.blogger?.lastName || 'unknown'}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<Link href={`/blogger/${user.blogger?.id}`}>
@@ -73,7 +73,12 @@ export default function UserButton({ user, className }: UserButtonProps) {
 					</DropdownMenuPortal>
 				</DropdownMenuSub>
 				<DropdownMenuSeparator />
-				<DropdownMenuItem onClick={() => signOut()}>
+				<DropdownMenuItem
+					onClick={() => {
+						queryClient.clear();
+						signOut();
+					}}
+				>
 					<LogOutIcon className='mr-2 size-4' /> Logout
 				</DropdownMenuItem>
 			</DropdownMenuContent>

@@ -32,12 +32,14 @@
 //}
 
 // Updated LikesHub.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using TravelTales.Application.DTOs.PostLike;
 using TravelTales.Application.Interfaces;
 
 namespace TravelTales.API.Hubs
 {
+    [Authorize]
     public class LikesHub : Hub
     {
         private readonly ILikeService likeService;

@@ -16,7 +16,7 @@ namespace TravelTales.Persistence.Repositories
         {
             return await this.DbSet
                 .Include(x => x.User)
-                .Include(s => s.Posts)
+                //.Include(s => s.Posts)
                 .Include(x => x.VisitedCities)
                 .Include(x => x.VisitedCountries)
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken);

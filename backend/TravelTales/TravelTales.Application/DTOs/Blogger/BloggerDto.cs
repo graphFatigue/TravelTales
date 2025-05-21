@@ -24,7 +24,7 @@ namespace TravelTales.Application.DTOs.Blogger
         public CityDto City { get; set; }
         public long? CountryId { get; set; }
         public CountryDto Country { get; set; }
-        public ICollection<PostDto>? Posts { get; }
+        public ICollection<PostDto>? Posts { get; set; }
         public ICollection<CityDto> VisitedCities { get; set; } = new List<CityDto>();
         public ICollection<CountryDto> VisitedCountries { get; set; } = new List<CountryDto>();
         public DateTime? CreatedAt { get; set; }

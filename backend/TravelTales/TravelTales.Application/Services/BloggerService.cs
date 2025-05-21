@@ -98,6 +98,13 @@ namespace TravelTales.Application.Services
 
             var dto = this.mapper.Map<BloggerDto>(blogger);
 
+            // Get posts separately
+            var posts = await this.unitOfWork.GetRepository<IPostRepository>().GetAllAsync(
+                p => p.BloggerId == id && !p.IsDeleted,
+                cancellationToken);
+
+            dto.Posts = this.mapper.Map<List<PostDto>>(posts);
+
             if (currentBloggerId != -1)
             {
                 dto.IsFollowing = await unitOfWork.GetRepository<IBloggerFollowRepository>()

@@ -31,6 +31,7 @@ const formatDate = (dateString?: string) => {
 };
 
 export function PostCard({ post }: { post: Post }) {
+	console.log(post);
 	const { data: categories, isLoading: categoriesLoading } = useCategories();
 	const {
 		cities,

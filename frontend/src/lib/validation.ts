@@ -24,3 +24,27 @@ export const registrationSchema = z.object({
 	// 	'You must be at least 13 years old',
 	// ),
 });
+
+export const postFormSchema = z.object({
+	title: z.string().min(1, 'Title is required').max(100),
+	content: z.string().min(1, 'Content is required').max(5000),
+	bloggerId: z.number().int().positive(),
+	cityId: z.number().int().positive().optional(),
+	countryId: z.number().int().positive().optional(),
+	budget: z.number().int().min(0).max(4).default(0),
+	categoryIds: z
+		.array(z.number().int().positive())
+		.min(1, 'At least one category is required'),
+	tags: z.array(z.string().min(1)).optional(),
+	attachments: z
+		.array(
+			z.object({
+				number: z.number().int().positive(),
+				file: z.instanceof(File).optional(),
+				previewUrl: z.string().optional(),
+			}),
+		)
+		.optional(),
+});
+
+export type PostFormValues = z.infer<typeof postFormSchema>;

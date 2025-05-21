@@ -195,6 +195,28 @@ namespace TravelTales.Application.Services
                 blogger.CityId = updateBloggerDto.CityId;
             }
 
+            // Update visited cities
+            blogger.VisitedCities.Clear();
+            foreach (var cityId in updateBloggerDto.VisitedCityIds)
+            {
+                var city = await unitOfWork.GetRepository<ICityRepository>()
+                    .GetByIdAsync(cityId, cancellationToken);
+                if (city == null)
+                    throw new ValidationException($"City with ID {cityId} not found.");
+                blogger.VisitedCities.Add(city);
+            }
+
+            // Update visited countries
+            blogger.VisitedCountries.Clear();
+            foreach (var countryId in updateBloggerDto.VisitedCountryIds)
+            {
+                var country = await unitOfWork.GetRepository<ICountryRepository>()
+                    .GetByIdAsync(countryId, cancellationToken);
+                if (country == null)
+                    throw new ValidationException($"Country with ID {countryId} not found.");
+                blogger.VisitedCountries.Add(country);
+            }
+
             //this.EnsureUserCanModifyPost(post);
 
             ArgumentNullException.ThrowIfNull(updateBloggerDto);

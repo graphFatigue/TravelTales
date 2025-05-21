@@ -22,6 +22,8 @@ namespace TravelTales.Domain.Entities
         public ICollection<BloggerBlock>? BlockedByBloggers { get; }
         public ICollection<BloggerFollow> Followers { get; } = new List<BloggerFollow>();
         public ICollection<BloggerFollow> Following { get; } = new List<BloggerFollow>();
+        public ICollection<City> VisitedCities { get; } = new List<City>();
+        public ICollection<Country> VisitedCountries { get; } = new List<Country>();
         public ICollection<Post>? Posts { get; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

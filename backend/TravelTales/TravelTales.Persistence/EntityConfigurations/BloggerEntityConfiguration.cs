@@ -71,6 +71,14 @@ namespace TravelTales.Persistence.EntityConfigurations
                .HasForeignKey<Blogger>(b => b.UserId)
                .OnDelete(DeleteBehavior.NoAction); // Blogger deletion does not delete User
 
+            builder.HasMany(b => b.VisitedCities)
+               .WithMany()
+               .UsingEntity(j => j.ToTable("blogger_visited_cities"));
+
+            builder.HasMany(b => b.VisitedCountries)
+                .WithMany()
+                .UsingEntity(j => j.ToTable("blogger_visited_countries"));
+
             builder.HasMany(b => b.Followers)
                 .WithOne(bf => bf.Following)
                 .HasForeignKey(bf => bf.FollowingId);

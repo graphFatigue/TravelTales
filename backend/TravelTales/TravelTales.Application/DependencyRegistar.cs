@@ -147,6 +147,7 @@ namespace TravelTales.Application
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IStorageService, AzureBlobStorageService>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ICommentService, CommentService>();
             services.AddSignalR();
         }
 

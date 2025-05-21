@@ -32,7 +32,7 @@ namespace TravelTales.Application.Services
 
         public async Task<UserDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var user = await this.unitOfWork.GetRepository<IUserRepository>().GetByIdAsync(id, cancellationToken);
+            var user = await this.unitOfWork.GetRepository<IUserRepository>().GetByIdFullAsync(id, cancellationToken);
             if (user is null)
             {
                 throw new NotFoundException($"User with ID {id} was not found.");

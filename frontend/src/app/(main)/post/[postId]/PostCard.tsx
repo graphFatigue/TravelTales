@@ -19,19 +19,10 @@ import UserAvatar from '@/components/UserAvatar';
 import { redirect } from 'next/navigation';
 import { useLocationInfo } from '@/hooks/useLocationInfo';
 import { Skeleton } from '@/components/ui/skeleton';
-
-const formatDate = (dateString?: string) => {
-	if (!dateString) return 'N/A';
-	const date = new Date(dateString);
-	return date.toLocaleDateString('en-US', {
-		year: 'numeric',
-		month: 'short',
-		day: 'numeric',
-	});
-};
+import { CommentsSection } from '@/components/comments/Comments';
+import { formatDate } from '@/lib/utils';
 
 export function PostCard({ post }: { post: Post }) {
-	console.log(post);
 	const { data: categories, isLoading: categoriesLoading } = useCategories();
 	const {
 		cities,
@@ -40,7 +31,6 @@ export function PostCard({ post }: { post: Post }) {
 	} = useLocationInfo(post.countryId);
 	const bloggerName = `${post.blogger.firstName} ${post.blogger.lastName}`;
 
-	// Get file type from URI
 	const getFileType = (uri: string) => {
 		const extension = uri.split('.').pop()?.toLowerCase();
 		if (!extension) return 'unknown';
@@ -225,18 +215,8 @@ export function PostCard({ post }: { post: Post }) {
 						{post.comments?.length || 0} comments
 					</div>
 				</div>
-
-				{post.comments?.slice(0, 3).map(comment => (
-					<div key={comment.id} className='rounded-md bg-muted/50 p-3'>
-						<div className='mb-2 flex items-center justify-between'>
-							<p className='font-medium'>{comment.userName}</p>
-							<p className='text-xs text-muted-foreground'>
-								{formatDate(comment.createdAt)}
-							</p>
-						</div>
-						<p className='text-sm'>{comment.content}</p>
-					</div>
-				))}
+				{/* <CommentsSection  post={post} /> */}
+				<CommentsSection post={post} />
 			</CardFooter>
 		</Card>
 	);

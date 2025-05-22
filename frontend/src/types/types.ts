@@ -64,16 +64,49 @@ interface Attachment {
 }
 
 export interface PostLike {
+	postId: number;
+	bloggerId: number;
+}
+
+export interface CreatePostLike {
+	postId: number;
+	bloggerId: number;
+}
+
+
+export interface Notification {
 	id: number;
-	userId: number;
+	message: string;
+	recipientBloggerId: number;
+	recipientBlogger: Blogger;
+	triggeredByBloggerId?: number;
+	triggeredByBlogger?: Blogger;
+	postId?: number;
+	commentId?: number;
+	isRead: boolean;
+	createdAt: string;
 }
 
 export interface Comment {
 	id: number;
 	content: string;
-	userId: number;
-	userName: string;
-	createdAt: string;
+	postId: number;
+	post: Post | null;
+	bloggerId: number;
+	blogger: Blogger | null;
+	createdAt?: string;
+	modifiedAt?: string;
+	isDeleted: boolean;
+}
+
+export interface CreateComment {
+	content: string;
+	postId: number;
+	bloggerId: number;
+}
+
+export interface UpdateComment {
+	content: string;
 }
 
 export interface Post {

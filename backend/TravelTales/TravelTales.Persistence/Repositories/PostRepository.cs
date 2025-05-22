@@ -30,6 +30,9 @@ namespace TravelTales.Persistence.Repositories
                 .Include(s => s.Blogger)
                 .Include(p => p.Categories)
                 .Include(p => p.Comments)
+                .Include(p => p.Country)
+                .Include(p => p.City)
+                //.Include(p => p.Tags)
                 .Include(p => p.Attachments)
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken);
         }

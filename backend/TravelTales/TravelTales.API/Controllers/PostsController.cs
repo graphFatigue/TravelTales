@@ -74,9 +74,9 @@ namespace TravelTales.API.Controllers
         {
             this.logger.LogTrace("Starting Update action in PostsController for post ID {Id}", id);
 
-            await this.postService.UpdatePostAsync(id, updatePostDto, cancellationToken);
+            var post = await this.postService.UpdatePostAsync(id, updatePostDto, cancellationToken);
             this.logger.LogInformation("Post with ID {Id} updated successfully", id);
-            return this.NoContent();
+            return this.Ok(post);
         }
 
         [Authorize]

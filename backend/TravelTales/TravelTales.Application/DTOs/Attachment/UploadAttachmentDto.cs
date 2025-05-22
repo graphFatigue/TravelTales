@@ -4,7 +4,8 @@ namespace TravelTales.Application.DTOs.Attachment
 {
     public class UploadAttachmentDto
     {
-        public long PostId { get; set; }
+        [JsonIgnore]
+        public long PostId { get; set; } = 0;
 
         public int Number { get; set; }
 

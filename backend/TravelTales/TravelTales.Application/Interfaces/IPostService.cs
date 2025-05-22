@@ -12,7 +12,7 @@ namespace TravelTales.Application.Interfaces
 
         Task<PostDto> CreatePostAsync(CreatePostDto createPostDto, CancellationToken cancellationToken = default);
 
-        Task UpdatePostAsync(long id, UpdatePostDto updatePostDto, CancellationToken cancellationToken = default);
+        Task<PostDto> UpdatePostAsync(long id, UpdatePostDto updatePostDto, CancellationToken cancellationToken = default);
 
         Task DeletePostAsync(long id, CancellationToken cancellationToken = default);
 

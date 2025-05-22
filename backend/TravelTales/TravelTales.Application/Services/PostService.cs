@@ -222,12 +222,12 @@ namespace TravelTales.Application.Services
             return PagedList<PostDto>.Copy(pagedList, filteredPosts);
         }
 
-        public async Task UpdatePostAsync(long id, UpdatePostDto updatePostDto, CancellationToken cancellationToken = default)
+        public async Task<PostDto> UpdatePostAsync(long id, UpdatePostDto updatePostDto, CancellationToken cancellationToken = default)
         {
             await this.updatePostDtoValidator.ValidateAndThrowAsync(updatePostDto, cancellationToken: cancellationToken);
 
             var post = await this.unitOfWork.GetRepository<IPostRepository>()
-                .GetByIdAsync(id, cancellationToken);
+                .GetByIdFullAsync(id, cancellationToken);
 
             if (post is null)
             {
@@ -303,6 +303,8 @@ namespace TravelTales.Application.Services
 
             this.unitOfWork.GetRepository<IPostRepository>().Update(post);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return this.mapper.Map<PostDto>(post);
         }
 
 

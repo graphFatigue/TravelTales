@@ -36,7 +36,6 @@ export const useComments = ({postId, initialComments}:{postId: number, initialCo
 	}, [postId]);
 
 	const send = async (newComment: CreateComment) => {
-		console.log(newComment);
 		await sendComment(newComment);
 	};
 

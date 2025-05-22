@@ -53,7 +53,7 @@ export interface Country {
 	name: string;
 }
 
-interface Attachment {
+export interface Attachment {
 	id: number;
 	postId: number;
 	number: number;
@@ -109,6 +109,7 @@ export interface Post {
 	title: string;
 	content: string;
 	blogger: Blogger;
+	bloggerId?: number;
 	categoryIds?: number[];
 	cityId?: number;
 	city?: City | null;
@@ -121,6 +122,7 @@ export interface Post {
 	comments?: Comment[];
 	createdAt?: string;
 	modifiedAt?: string;
+	isDeleted?: false;
 }
 
 export type BudgetLevel = 0 | 1 | 2 | 3 | 4;

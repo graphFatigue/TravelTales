@@ -13,10 +13,12 @@ import { Textarea } from '../ui/textarea';
 
 export const CommentsSection = ({ post }: { post: Post }) => {
 	const { data: session } = useSession();
+
 	const { comments, send, edit, remove } = useComments({
 		postId: post.id,
 		initialComments: post.comments || [],
 	});
+	
 	const [content, setContent] = useState('');
 
 	const handleSend = async () => {
@@ -29,8 +31,6 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 		await send(comment);
 		setContent('');
 	};
-
-	console.log(comments);
 
 	return (
 		<div>

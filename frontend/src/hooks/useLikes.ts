@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getLikesHubConnection } from '@/lib/signalr/likesHub';
+import { useSession } from 'next-auth/react';
 
 export function useLikes(
 	postId: number,
@@ -10,23 +11,23 @@ export function useLikes(
 ) {
 	const [likesCount, setLikesCount] = useState(initialLikes);
 	const [isLiked, setIsLiked] = useState(initialIsLiked);
+	const { data: session } = useSession();
 
 	useEffect(() => {
+		if (!session) return;
 		let isMounted = true;
 
 		const setupConnection = async () => {
 			try {
 				const connection = await getLikesHubConnection();
-
-				// Subscribe to like updates
 				const handler = (
 					numOfLikes: number,
-					liked: boolean,
+					isLiked: boolean,
 					updatedPostId: number,
 				) => {
 					if (updatedPostId === postId && isMounted) {
 						setLikesCount(numOfLikes);
-						setIsLiked(liked);
+						setIsLiked(isLiked);
 					}
 				};
 
@@ -44,10 +45,13 @@ export function useLikes(
 
 		return () => {
 			isMounted = false;
-			// Clean up after connection is initialized
 			cleanupPromise.then(cleanup => cleanup?.());
 		};
-	}, [postId]);
+	}, [postId, session]);
+
+	useEffect(() => {
+		setIsLiked(initialIsLiked);
+	}, [initialIsLiked]);
 
 	const toggleLike = async () => {
 		try {

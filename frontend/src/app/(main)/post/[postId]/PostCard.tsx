@@ -9,10 +9,8 @@ import {
 	CardHeader,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Heart, MessageCircle, Paperclip } from 'lucide-react';
-import Link from 'next/link';
+import { Calendar, Heart, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import Image from 'next/image';
 import { Post } from '@/types/types';
 import { BudgetIndicator } from '@/components/Post/BudgetIndicator';
 import UserAvatar from '@/components/UserAvatar';
@@ -23,34 +21,32 @@ import { CommentsSection } from '@/components/comments/Comments';
 import { formatDate } from '@/lib/utils';
 import { useLikes } from '@/hooks/useLikes';
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import RestrictedDialog from '@/components/RestrictedDialog';
+import PostAttachments from '@/components/Post/PostAttachments';
 
 export function PostCard({ post }: { post: Post }) {
+	const { data: session, status } = useSession();
 	const { data: categories, isLoading: categoriesLoading } = useCategories();
 	const {
 		cities,
 		countries,
 		loading: locationsLoading,
 	} = useLocationInfo(post.countryId);
+
 	const bloggerName = `${post.blogger.firstName} ${post.blogger.lastName}`;
 
 	const { likesCount, isLiked, toggleLike } = useLikes(
 		post.id,
 		post.likes?.length || 0,
-		post.likes?.some(like => like.bloggerId === post.blogger.id) || false,
+		post.likes?.some(like => like.bloggerId === session?.user.blogger?.id) ||
+			false,
 	);
 
 	const [openComments, setOpenComments] = useState(false);
-	const getFileType = (uri: string) => {
-		const extension = uri.split('.').pop()?.toLowerCase();
-		if (!extension) return 'unknown';
+	const [openLikes, setOpenLikes] = useState(false);
 
-		const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-		if (imageTypes.includes(extension)) return 'image';
-
-		return extension;
-	};
-
-	if (categoriesLoading || locationsLoading) {
+	if (categoriesLoading || locationsLoading || status === 'loading') {
 		return (
 			<Card className='mx-auto'>
 				<CardHeader className='space-y-4'>
@@ -166,42 +162,11 @@ export function PostCard({ post }: { post: Post }) {
 					<p>{post.content}</p>
 				</div>
 
-				{post.attachments?.map(attachment => {
-					const fileType = getFileType(attachment.uri);
-
-					return (
-						<div key={attachment.id} className='space-y-3'>
-							{fileType === 'image' ? (
-								<div className='overflow-hidden rounded-md'>
-									<Image
-										src={attachment.uri}
-										alt={`Attachment ${attachment.number}`}
-										width={800}
-										height={400}
-										className='h-auto w-full object-cover'
-									/>
-								</div>
-							) : (
-								<div className='flex items-center space-x-3 rounded-md border p-3'>
-									<Paperclip className='h-8 w-8 text-muted-foreground' />
-									<div className='overflow-hidden'>
-										<p className='truncate font-medium'>
-											Attachment {attachment.number} ({fileType})
-										</p>
-										<Link
-											href={attachment.uri}
-											className='text-sm text-blue-600 hover:underline'
-											target='_blank'
-											rel='noopener noreferrer'
-										>
-											Download
-										</Link>
-									</div>
-								</div>
-							)}
-						</div>
-					);
-				})}
+				<PostAttachments
+					attachments={post.attachments}
+					width={200}
+					height={200}
+				/>
 			</CardContent>
 
 			<Separator />
@@ -210,7 +175,13 @@ export function PostCard({ post }: { post: Post }) {
 				<div className='flex w-full items-center justify-between'>
 					<div className='flex items-center space-x-2'>
 						<Button
-							onClick={toggleLike}
+							onClick={() => {
+								if (session) {
+									toggleLike();
+								} else {
+									setOpenLikes(true);
+								}
+							}}
 							variant='ghost'
 							className='flex items-center space-x-1 text-muted-foreground hover:text-foreground'
 						>
@@ -234,6 +205,9 @@ export function PostCard({ post }: { post: Post }) {
 				</div>
 				{openComments && <CommentsSection post={post} />}
 			</CardFooter>
+			{openLikes && (
+				<RestrictedDialog open={openLikes} setOpen={setOpenLikes} />
+			)}
 		</Card>
 	);
 }

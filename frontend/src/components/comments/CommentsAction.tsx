@@ -13,19 +13,9 @@ import {
 	DialogTrigger,
 } from '../ui/dialog';
 import { Button } from '../ui/button';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2 } from 'lucide-react';
 import { Textarea } from '../ui/textarea';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import ConfirmationDialog from '../ConfirmationDialog';
 
 interface CommentsActionProps {
 	edit: (commentId: number, data: UpdateComment) => Promise<void>;
@@ -101,36 +91,13 @@ export function CommentsAction({ edit, remove, comment }: CommentsActionProps) {
 
 			{(session?.user.blogger?.id === comment.post?.blogger.id ||
 				session?.user.blogger?.id === comment.bloggerId) && (
-				<AlertDialog>
-					<AlertDialogTrigger asChild>
-						<Button
-							variant='ghost'
-							size='sm'
-							className='h-8 px-2 text-muted-foreground hover:text-destructive'
-						>
-							<Trash2 className='mr-1 h-4 w-4' />
-							<span className='text-xs'>Delete</span>
-						</Button>
-					</AlertDialogTrigger>
-					<AlertDialogContent>
-						<AlertDialogHeader>
-							<AlertDialogTitle>Delete Comment</AlertDialogTitle>
-							<AlertDialogDescription>
-								Are you sure you want to delete this comment? This action cannot
-								be undone.
-							</AlertDialogDescription>
-						</AlertDialogHeader>
-						<AlertDialogFooter>
-							<AlertDialogCancel>Cancel</AlertDialogCancel>
-							<AlertDialogAction
-								className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
-								onClick={() => remove(comment.id)}
-							>
-								Delete
-							</AlertDialogAction>
-						</AlertDialogFooter>
-					</AlertDialogContent>
-				</AlertDialog>
+				<ConfirmationDialog
+					title={'Delete Comment'}
+					description={
+						'Are you sure you want to delete this comment? This action cannot be undone.'
+					}
+					remove={() => remove(comment.id)}
+				/>
 			)}
 		</CardFooter>
 	);

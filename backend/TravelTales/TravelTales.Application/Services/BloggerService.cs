@@ -120,7 +120,7 @@ namespace TravelTales.Application.Services
         public async Task<IEnumerable<BloggerDto>> GetBloggersAsync(CancellationToken cancellationToken = default)
         {
             var bloggers = await this.unitOfWork.GetRepository<IBloggerRepository>()
-                .GetAllAsync(cancellationToken);
+                .GetAllFullAsync(cancellationToken);
 
             var currentBloggerId = await GetCurrentBloggerIdSafeAsync(cancellationToken);
             var blockerIds = currentBloggerId != -1

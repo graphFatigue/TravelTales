@@ -1,4 +1,6 @@
-﻿using TravelTales.Application.DTOs.User;
+﻿using Sieve.Models;
+using TravelTales.Application.DTOs.User;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Interfaces
 {
@@ -11,5 +13,7 @@ namespace TravelTales.Application.Interfaces
         Task UpdateAsync(Guid id, UpdateUserDto updateUserDto, CancellationToken cancellationToken = default);
 
         Task AssignRoleToUserAsync(AssignRoleDto assignRoleDto, CancellationToken cancellationToken = default);
+
+        Task<PagedList<UserDto>> GetUsersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
     }
 }

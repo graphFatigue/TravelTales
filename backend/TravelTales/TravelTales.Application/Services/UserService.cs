@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Sieve.Models;
 using TravelTales.Application.DTOs.User;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Services
 {
@@ -64,6 +66,32 @@ namespace TravelTales.Application.Services
         {
             ValidateAssignRoleDto(assignRoleDto);
             await this.PerformRoleAssignmentAsync(assignRoleDto, cancellationToken);
+        }
+
+        public async Task<PagedList<UserDto>> GetUsersWithFilterAsync(
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
+        {
+            var pagedList = await this.unitOfWork.GetRepository<IUserRepository>()
+                .GetAllWithFilterAsync(sieveModel, cancellationToken);
+
+            var filteredUsers = this.mapper.Map<IEnumerable<UserDto>>(pagedList.Items)
+                .Where(u => !u.IsDeleted)
+                .ToList();
+
+            return PagedList<UserDto>.Copy(pagedList, filteredUsers);
+        }
+
+        // Add helper method to clone SieveModel
+        private SieveModel CloneSieveModel(SieveModel original)
+        {
+            return new SieveModel
+            {
+                Filters = original.Filters,
+                Sorts = original.Sorts,
+                Page = original.Page,
+                PageSize = original.PageSize
+            };
         }
 
         private static void ValidateAssignRoleDto(AssignRoleDto assignRoleDto)

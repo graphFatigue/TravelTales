@@ -49,6 +49,7 @@ namespace TravelTales.Persistence.Repositories
                 .Include(p => p.Categories)
                 .Include(p => p.Comments)
                 .Include(p => p.Country)
+                .Include(s => s.Attachments)
                 .Include(p => p.City);
 
             if (predicate != null)
@@ -59,30 +60,34 @@ namespace TravelTales.Persistence.Repositories
             return await query.ToListAsync(cancellationToken);
         }
 
-        //public override async Task<PagedList<Post>> GetAllWithFilterAsync(
-        //    SieveModel sieveModel,
-        //    CancellationToken cancellationToken = default)
-        //{
-        //    //ValidateGetAllWithFilterParameters(sieveModel);
+        public override async Task<PagedList<Post>> GetAllWithFilterAsync(
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
+        {
+            //ValidateGetAllWithFilterParameters(sieveModel);
 
-        //    // Base query with includes for navigation properties
-        //    var query = DbSet
-        //        .Where(x => !x.IsDeleted)
-        //        .Include(p => p.Country)  // Include Country
-        //        .Include(p => p.City)     // Include City
-        //        .Include(p => p.Categories)     // Include City
-        //        .AsQueryable();
+            // Base query with includes for navigation properties
+            var query = DbSet
+                .Where(x => !x.IsDeleted)
+                .Include(p => p.Country)  // Include Country
+                .Include(p => p.City)     // Include City
+                .Include(p => p.Categories)
+                .Include(s => s.Blogger)
+                .Include(s => s.Attachments)
+                .Include(s => s.Likes)
+                .Include(s => s.Comments)
+                .AsQueryable();
 
-        //    // Apply Sieve filters/sorts
-        //    var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
+            // Apply Sieve filters/sorts
+            var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
 
-        //    // Apply pagination if needed
-        //    if (sieveModel.Page != null && sieveModel.PageSize != null)
-        //    {
-        //        filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery, applyFiltering: false, applySorting: false);
-        //    }
+            // Apply pagination if needed
+            if (sieveModel.Page != null && sieveModel.PageSize != null)
+            {
+                filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery, applyFiltering: false, applySorting: false);
+            }
 
-        //    return await PagedList<Post>.ToPagedListAsync(filteredQuery, sieveModel);
-        //}
+            return await PagedList<Post>.ToPagedListAsync(filteredQuery, sieveModel);
+        }
     }
 }

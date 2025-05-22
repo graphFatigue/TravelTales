@@ -21,6 +21,24 @@ namespace TravelTales.Application.Sieve.Configurations
             mapper.Property<Blogger>(x => x.LastName)
                 .CanFilter()
                 .CanSort();
+
+            mapper.Property<Blogger>(x => x.CountryId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<Blogger>(x => x.CityId)
+                .CanFilter()
+                .CanSort();
+
+            mapper.Property<Blogger>(p => p.Country.Name)
+            .CanFilter()
+            .CanSort()
+            .HasName("CountryName");
+
+            mapper.Property<Blogger>(p => p.City.Name)
+                .CanFilter()
+                .CanSort()
+                .HasName("CityName");
         }
     }
 }

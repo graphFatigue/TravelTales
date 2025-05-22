@@ -9,5 +9,8 @@ namespace TravelTales.Application.DTOs.User
         public string Email { get; set; }
 
         public BloggerDto Blogger { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

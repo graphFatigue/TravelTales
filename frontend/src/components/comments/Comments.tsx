@@ -3,7 +3,6 @@ import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import { useComments } from '@/hooks/useComments';
 import { CreateComment, Post } from '@/types/types';
-import { MessageSquare } from 'lucide-react';
 import { Card, CardContent } from '../ui/card';
 import UserAvatar from '../UserAvatar';
 import { formatDate } from '@/lib/utils';
@@ -34,12 +33,7 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 	console.log(comments);
 
 	return (
-		<div className=' py-6'>
-			<div className='mb-6 flex items-center gap-2'>
-				<MessageSquare className='h-5 w-5 text-muted-foreground' />
-				<h3 className='text-xl font-semibold'>Comments ({comments.length})</h3>
-			</div>
-
+		<div>
 			{comments.length > 0 ? (
 				<div className='space-y-4'>
 					{comments.map(comment => (

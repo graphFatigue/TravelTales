@@ -21,6 +21,8 @@ import { useLocationInfo } from '@/hooks/useLocationInfo';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CommentsSection } from '@/components/comments/Comments';
 import { formatDate } from '@/lib/utils';
+import { useLikes } from '@/hooks/useLikes';
+import { useState } from 'react';
 
 export function PostCard({ post }: { post: Post }) {
 	const { data: categories, isLoading: categoriesLoading } = useCategories();
@@ -31,6 +33,13 @@ export function PostCard({ post }: { post: Post }) {
 	} = useLocationInfo(post.countryId);
 	const bloggerName = `${post.blogger.firstName} ${post.blogger.lastName}`;
 
+	const { likesCount, isLiked, toggleLike } = useLikes(
+		post.id,
+		post.likes?.length || 0,
+		post.likes?.some(like => like.bloggerId === post.blogger.id) || false,
+	);
+
+	const [openComments, setOpenComments] = useState(false);
 	const getFileType = (uri: string) => {
 		const extension = uri.split('.').pop()?.toLowerCase();
 		if (!extension) return 'unknown';
@@ -200,23 +209,30 @@ export function PostCard({ post }: { post: Post }) {
 			<CardFooter className='flex flex-col space-y-4 pt-6'>
 				<div className='flex w-full items-center justify-between'>
 					<div className='flex items-center space-x-2'>
-						<button className='flex items-center space-x-1 text-muted-foreground hover:text-foreground'>
+						<Button
+							onClick={toggleLike}
+							variant='ghost'
+							className='flex items-center space-x-1 text-muted-foreground hover:text-foreground'
+						>
 							<Heart
-								className={`h-5 w-5 ${post.likes?.length ? 'fill-red-500 text-red-500' : ''}`}
+								className={`h-5 w-5 ${isLiked ? 'fill-red-500 text-red-500' : ''}`}
 							/>
-							<span>{post.likes?.length || 0}</span>
-						</button>
-						<button className='flex items-center space-x-1 text-muted-foreground hover:text-foreground'>
+							<span>{likesCount}</span>
+						</Button>
+						<Button
+							className='flex items-center space-x-1 text-muted-foreground hover:text-foreground'
+							variant='ghost'
+							onClick={() => setOpenComments(!openComments)}
+						>
 							<MessageCircle className='h-5 w-5' />
 							<span>{post.comments?.length || 0}</span>
-						</button>
+						</Button>
 					</div>
 					<div className='text-sm text-muted-foreground'>
 						{post.comments?.length || 0} comments
 					</div>
 				</div>
-				{/* <CommentsSection  post={post} /> */}
-				<CommentsSection post={post} />
+				{openComments && <CommentsSection post={post} />}
 			</CardFooter>
 		</Card>
 	);

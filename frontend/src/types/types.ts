@@ -68,11 +68,6 @@ export interface PostLike {
 	bloggerId: number;
 }
 
-export interface CreatePostLike {
-	postId: number;
-	bloggerId: number;
-}
-
 
 export interface Notification {
 	id: number;

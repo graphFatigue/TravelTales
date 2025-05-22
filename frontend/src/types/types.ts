@@ -111,6 +111,7 @@ export interface Post {
 	blogger: Blogger;
 	bloggerId?: number;
 	categoryIds?: number[];
+	categories?: Category[];
 	cityId?: number;
 	city?: City | null;
 	countryId?: number;

@@ -1,83 +1,20 @@
 'use client';
 
-import { useCategories } from '@/hooks/useCategories';
 import { Badge } from '@/components/ui/badge';
-import {
-	Card,
-	CardContent,
-	CardFooter,
-	CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Calendar, Heart, MessageCircle } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Post } from '@/types/types';
 import { BudgetIndicator } from '@/components/Post/BudgetIndicator';
 import UserAvatar from '@/components/UserAvatar';
 import { redirect } from 'next/navigation';
-import { useLocationInfo } from '@/hooks/useLocationInfo';
-import { Skeleton } from '@/components/ui/skeleton';
-import { CommentsSection } from '@/components/comments/Comments';
 import { formatDate } from '@/lib/utils';
-import { useLikes } from '@/hooks/useLikes';
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
-import RestrictedDialog from '@/components/RestrictedDialog';
 import PostAttachments from '@/components/Post/PostAttachments';
+import { PostCardFooter } from '@/components/Post/PostCardFooter';
 
 export function PostCard({ post }: { post: Post }) {
-	const { data: session, status } = useSession();
-	const { data: categories, isLoading: categoriesLoading } = useCategories();
-	const {
-		cities,
-		countries,
-		loading: locationsLoading,
-	} = useLocationInfo(post.countryId);
-
 	const bloggerName = `${post.blogger.firstName} ${post.blogger.lastName}`;
-
-	const { likesCount, isLiked, toggleLike } = useLikes(
-		post.id,
-		post.likes?.length || 0,
-		post.likes?.some(like => like.bloggerId === session?.user.blogger?.id) ||
-			false,
-	);
-
-	const [openComments, setOpenComments] = useState(false);
-	const [openLikes, setOpenLikes] = useState(false);
-
-	if (categoriesLoading || locationsLoading || status === 'loading') {
-		return (
-			<Card className='mx-auto'>
-				<CardHeader className='space-y-4'>
-					<Skeleton className='h-8 w-3/4' />
-					<div className='flex items-center space-x-3'>
-						<Skeleton className='h-10 w-10 rounded-full' />
-						<Skeleton className='h-4 w-24' />
-					</div>
-					<div className='flex flex-wrap gap-2'>
-						<Skeleton className='h-6 w-16' />
-						<Skeleton className='h-6 w-16' />
-					</div>
-				</CardHeader>
-				<CardContent>
-					<Skeleton className='h-4 w-full' />
-					<Skeleton className='mt-2 h-4 w-5/6' />
-				</CardContent>
-			</Card>
-		);
-	}
-
-	const categoryMap = categories?.reduce(
-		(acc, category) => {
-			acc[category.id] = category.name;
-			return acc;
-		},
-		{} as Record<number, string>,
-	);
-
-	const city = cities?.find(c => c.id === post.cityId);
-	const country = countries?.find(c => c.id === post.countryId);
 
 	return (
 		<Card className='mx-auto'>
@@ -115,35 +52,35 @@ export function PostCard({ post }: { post: Post }) {
 				</div>
 
 				<div className='flex flex-wrap gap-2'>
-					{post.categoryIds?.map(categoryId => (
-						<Badge
-							key={categoryId}
-							variant='secondary'
-							className='bg-purple-100 text-purple-800 hover:bg-purple-200'
-						>
-							{categoryMap?.[categoryId] || `Category ${categoryId}`}
-						</Badge>
-					))}
-
-					{city && (
+					{post.city && (
 						<Badge
 							variant='outline'
 							className='border-blue-200 bg-blue-50 text-blue-700'
 						>
 							<span className='mr-1'>📍</span>
-							{city.name}
+							{post.city.name}
 						</Badge>
 					)}
 
-					{country && (
+					{post.country && (
 						<Badge
 							variant='outline'
 							className='border-green-200 bg-green-50 text-green-700'
 						>
 							<span className='mr-1'>🌍</span>
-							{country.name}
+							{post.country.name}
 						</Badge>
 					)}
+
+					{post.categories?.map(categorie => (
+						<Badge
+							key={categorie.id}
+							variant='secondary'
+							className='bg-purple-100 text-purple-800 hover:bg-purple-200'
+						>
+							{categorie.name}
+						</Badge>
+					))}
 
 					{post.tags?.map((tag, index) => (
 						<Badge
@@ -164,50 +101,14 @@ export function PostCard({ post }: { post: Post }) {
 
 				<PostAttachments
 					attachments={post.attachments}
-					width={200}
+					width={400}
 					height={200}
 				/>
 			</CardContent>
 
 			<Separator />
 
-			<CardFooter className='flex flex-col space-y-4 pt-6'>
-				<div className='flex w-full items-center justify-between'>
-					<div className='flex items-center space-x-2'>
-						<Button
-							onClick={() => {
-								if (session) {
-									toggleLike();
-								} else {
-									setOpenLikes(true);
-								}
-							}}
-							variant='ghost'
-							className='flex items-center space-x-1 text-muted-foreground hover:text-foreground'
-						>
-							<Heart
-								className={`h-5 w-5 ${isLiked ? 'fill-red-500 text-red-500' : ''}`}
-							/>
-							<span>{likesCount}</span>
-						</Button>
-						<Button
-							className='flex items-center space-x-1 text-muted-foreground hover:text-foreground'
-							variant='ghost'
-							onClick={() => setOpenComments(!openComments)}
-						>
-							<MessageCircle className='h-5 w-5' />
-							<span>{post.comments?.length || 0}</span>
-						</Button>
-					</div>
-					<div className='text-sm text-muted-foreground'>
-						{post.comments?.length || 0} comments
-					</div>
-				</div>
-				{openComments && <CommentsSection post={post} />}
-			</CardFooter>
-			{openLikes && (
-				<RestrictedDialog open={openLikes} setOpen={setOpenLikes} />
-			)}
+			<PostCardFooter post={post} />
 		</Card>
 	);
 }

@@ -23,12 +23,13 @@ export default function PostAttachments({
 				return (
 					<div key={attachment.id} className={cn('space-y-3', classname)}>
 						{fileType === 'image' ? (
-							<div className='overflow-hidden rounded-md'>
+							<div className='relative min-h-[80px] min-w-[120px] flex-shrink-0 overflow-hidden rounded-md'>
 								<Image
 									src={attachment.uri}
 									alt={`Attachment ${attachment.number}`}
-									width={width || 800}
-									height={height || 400}
+									width={width}
+									height={height}
+									fill={width && height ? false : true}
 									className='h-auto w-full object-cover'
 								/>
 							</div>

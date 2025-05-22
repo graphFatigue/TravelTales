@@ -44,5 +44,22 @@ namespace TravelTales.Persistence.Repositories
 
             return await PagedList<User>.ToPagedListAsync(filteredQuery, sieveModel);
         }
+
+        public async Task<List<User>> GetAllFullAsync(CancellationToken cancellationToken = default)
+        {
+            return await this.DbSet
+                .Where(x => !x.IsDeleted)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.City)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.Country)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.VisitedCities)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.VisitedCountries)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.Posts)
+                .ToListAsync(cancellationToken);
+        }
     }
 }

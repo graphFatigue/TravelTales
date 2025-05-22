@@ -28,7 +28,7 @@ namespace TravelTales.Application.Services
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
-            var users = await this.unitOfWork.GetRepository<IUserRepository>().GetAllAsync(cancellationToken);
+            var users = await this.unitOfWork.GetRepository<IUserRepository>().GetAllFullAsync(cancellationToken);
             return this.mapper.Map<IEnumerable<UserDto>>(users);
         }
 

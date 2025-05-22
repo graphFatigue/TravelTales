@@ -1,4 +1,5 @@
-﻿using TravelTales.Domain.Entities;
+﻿using System.Linq.Expressions;
+using TravelTales.Domain.Entities;
 
 namespace TravelTales.Persistence.Interfaces
 {
@@ -6,6 +7,6 @@ namespace TravelTales.Persistence.Interfaces
     {
         Task<Post?> GetByIdFullAsync(long id, CancellationToken cancellationToken = default);
 
-        Task<List<Post>> GetAllFullAsync(CancellationToken cancellationToken = default);
+        Task<List<Post>> GetAllFullAsync(Expression<Func<Post, bool>> predicate = null, CancellationToken cancellationToken = default);
     }
 }

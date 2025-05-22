@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using Sieve.Services;
+using System.Linq.Expressions;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
 using TravelTales.Persistence.SharedFiles;
@@ -37,30 +38,51 @@ namespace TravelTales.Persistence.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken);
         }
 
-        public override async Task<PagedList<Post>> GetAllWithFilterAsync(
-            SieveModel sieveModel,
+        public async Task<List<Post>> GetAllFullAsync(
+            Expression<Func<Post, bool>> predicate = null,
             CancellationToken cancellationToken = default)
         {
-            //ValidateGetAllWithFilterParameters(sieveModel);
-
-            // Base query with includes for navigation properties
-            var query = DbSet
+            IQueryable<Post> query = this.DbSet
                 .Where(x => !x.IsDeleted)
-                .Include(p => p.Country)  // Include Country
-                .Include(p => p.City)     // Include City
-                .Include(p => p.Categories)     // Include City
-                .AsQueryable();
+                .Include(x => x.Likes)
+                .Include(s => s.Blogger)
+                .Include(p => p.Categories)
+                .Include(p => p.Comments)
+                .Include(p => p.Country)
+                .Include(p => p.City);
 
-            // Apply Sieve filters/sorts
-            var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
-
-            // Apply pagination if needed
-            if (sieveModel.Page != null && sieveModel.PageSize != null)
+            if (predicate != null)
             {
-                filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery, applyFiltering: false, applySorting: false);
+                query = query.Where(predicate);
             }
 
-            return await PagedList<Post>.ToPagedListAsync(filteredQuery, sieveModel);
+            return await query.ToListAsync(cancellationToken);
         }
+
+        //public override async Task<PagedList<Post>> GetAllWithFilterAsync(
+        //    SieveModel sieveModel,
+        //    CancellationToken cancellationToken = default)
+        //{
+        //    //ValidateGetAllWithFilterParameters(sieveModel);
+
+        //    // Base query with includes for navigation properties
+        //    var query = DbSet
+        //        .Where(x => !x.IsDeleted)
+        //        .Include(p => p.Country)  // Include Country
+        //        .Include(p => p.City)     // Include City
+        //        .Include(p => p.Categories)     // Include City
+        //        .AsQueryable();
+
+        //    // Apply Sieve filters/sorts
+        //    var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
+
+        //    // Apply pagination if needed
+        //    if (sieveModel.Page != null && sieveModel.PageSize != null)
+        //    {
+        //        filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery, applyFiltering: false, applySorting: false);
+        //    }
+
+        //    return await PagedList<Post>.ToPagedListAsync(filteredQuery, sieveModel);
+        //}
     }
 }

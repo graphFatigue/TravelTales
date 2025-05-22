@@ -165,7 +165,7 @@ namespace TravelTales.Application.Services
 
                 // Get all posts and filter them
                 var posts = await this.unitOfWork.GetRepository<IPostRepository>()
-                    .GetAllAsync(cancellationToken);
+                    .GetAllFullAsync(null, cancellationToken);
 
                 var filteredPosts = posts
                     .Where(p => !p.IsDeleted &&
@@ -179,7 +179,7 @@ namespace TravelTales.Application.Services
             {
                 // If user is not authorized, return all non-deleted posts without blocking filter
                 var posts = await this.unitOfWork.GetRepository<IPostRepository>()
-                    .GetAllAsync(cancellationToken);
+                    .GetAllFullAsync(null, cancellationToken);
 
                 var filteredPosts = posts
                     .Where(p => !p.IsDeleted && p.BloggerId != null)

@@ -2,11 +2,10 @@
 using TravelTales.Application.DTOs.Country.TravelTales.Application.DTOs.Location;
 using TravelTales.Application.DTOs.Enums;
 using TravelTales.Application.DTOs.Post;
-using TravelTales.Application.DTOs.User;
 
 namespace TravelTales.Application.DTOs.Blogger
 {
-    public class BloggerDto
+    public class BloggerShortInfoDto
     {
         public long Id { get; set; }
         public string? FirstName { get; set; }
@@ -19,11 +18,11 @@ namespace TravelTales.Application.DTOs.Blogger
         public int FollowerCount { get; set; }
         public int FollowingCount { get; set; }
         public bool IsFollowing { get; set; }
+        //public UserDto User { get; set; }
         public long? CityId { get; set; }
         public CityDto City { get; set; }
         public long? CountryId { get; set; }
         public CountryDto Country { get; set; }
-        public ICollection<PostShortInfoDto>? Posts { get; set; }
         public ICollection<CityDto> VisitedCities { get; set; } = new List<CityDto>();
         public ICollection<CountryDto> VisitedCountries { get; set; } = new List<CountryDto>();
         public DateTime? CreatedAt { get; set; }

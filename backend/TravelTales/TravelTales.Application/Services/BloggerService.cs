@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Sieve.Models;
+using System.Linq;
 using TravelTales.Application.DTOs.Blogger;
 using TravelTales.Application.DTOs.BloggerFollow;
 using TravelTales.Application.DTOs.Post;
@@ -99,11 +100,10 @@ namespace TravelTales.Application.Services
             var dto = this.mapper.Map<BloggerDto>(blogger);
 
             // Get posts separately
-            var posts = await this.unitOfWork.GetRepository<IPostRepository>().GetAllAsync(
-                p => p.BloggerId == id && !p.IsDeleted,
-                cancellationToken);
+            var posts = await this.unitOfWork.GetRepository<IPostRepository>()
+                .GetAllFullAsync(p => p.BloggerId == id, cancellationToken);
 
-            dto.Posts = this.mapper.Map<List<PostDto>>(posts);
+            dto.Posts = this.mapper.Map<List<PostShortInfoDto>>(posts);
 
             if (currentBloggerId != -1)
             {

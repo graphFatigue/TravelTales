@@ -9,13 +9,12 @@ using TravelTales.Domain.Enums;
 
 namespace TravelTales.Application.DTOs.Post
 {
-    public class PostDto
+    public class PostShortInfoDto
     {
         public long Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public long BloggerId { get; set; }
-        public BloggerShortInfoDto Blogger { get; set; }
         public ICollection<CategoryShortInfoDto>? Categories { get; set; }
         public long? CityId { get; set; }
         public CityDto City { get; set; }

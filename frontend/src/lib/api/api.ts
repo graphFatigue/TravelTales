@@ -12,9 +12,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
 	async config => {
-		// Only add auth header for authenticated requests
 		if (typeof window !== 'undefined') {
-			// Check if we're on the client side
 			const session = await getSession();
 			if (session?.accessToken) {
 				config.headers.Authorization = `Bearer ${session.accessToken}`;

@@ -27,7 +27,7 @@ export function BudgetIndicator({
 		>
 			<DollarSign className='mr-1 h-4 w-4' />
 			{budgetInfo.text} Budget
-			<div className='ml-2 flex space-x-1'>
+			{/* <div className='ml-2 flex space-x-1'>
 				{[0, 1, 2, 3, 4].map(lvl => (
 					<div
 						key={lvl}
@@ -36,7 +36,7 @@ export function BudgetIndicator({
 						}`}
 					/>
 				))}
-			</div>
+			</div> */}
 		</div>
 	);
 }

@@ -26,8 +26,8 @@ export const registrationSchema = z.object({
 });
 
 export const postFormSchema = z.object({
-	title: z.string().min(1, 'Title is required').max(100),
-	content: z.string().min(1, 'Content is required').max(5000),
+	title: z.string().trim().min(1, 'Title is required').max(100),
+	content: z.string().trim().min(1, 'Content is required').max(5000),
 	bloggerId: z.number().int().positive(),
 	cityId: z.number().int().positive().optional(),
 	countryId: z.number().int().positive().optional(),
@@ -35,15 +35,22 @@ export const postFormSchema = z.object({
 	categoryIds: z
 		.array(z.number().int().positive())
 		.min(1, 'At least one category is required'),
-	tags: z.array(z.string().min(1)).optional(),
+	tags: z
+		.array(z.string().min(1).max(30))
+		.optional()
+		.refine(tags => tags?.length === new Set(tags).size, {
+			message: 'Tags must be unique',
+		}),
 	attachments: z
 		.array(
 			z.object({
 				number: z.number().int().positive(),
 				file: z.instanceof(File).optional(),
 				previewUrl: z.string().optional(),
+				id: z.number().int().positive().optional(),
 			}),
 		)
+		.max(10)
 		.optional(),
 });
 

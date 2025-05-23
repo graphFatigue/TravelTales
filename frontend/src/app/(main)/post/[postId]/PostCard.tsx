@@ -5,16 +5,25 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Post } from '@/types/types';
 import { BudgetIndicator } from '@/components/Post/BudgetIndicator';
 import UserAvatar from '@/components/UserAvatar';
-import { redirect } from 'next/navigation';
+import { redirect, useParams } from 'next/navigation';
 import { formatDate } from '@/lib/utils';
 import PostAttachments from '@/components/Post/PostAttachments';
 import { PostCardFooter } from '@/components/Post/PostCardFooter';
+import { usePost } from '@/hooks/usePost';
+import PostLoader from '@/components/Post/PostLoader';
 
-export function PostCard({ post }: { post: Post }) {
-	const bloggerName = `${post.blogger.firstName} ${post.blogger.lastName}`;
+export function PostCard() {
+	const { postId } = useParams();
+	const { data: post, isLoading, error } = usePost(Number(postId));
+
+	if (isLoading) return <PostLoader />;
+
+	if (error) return <div>Error loading post</div>;
+	if (!post) return <div>Post not found</div>;
+
+	const bloggerName = `${post?.blogger.firstName} ${post?.blogger.lastName}`;
 
 	return (
 		<Card className='mx-auto'>
@@ -43,12 +52,14 @@ export function PostCard({ post }: { post: Post }) {
 							</p>
 						</div>
 					</div>
-					<Button
-						variant={post.blogger.isFollowing ? 'default' : 'outline'}
-						className='rounded-full px-5 py-1.5 text-sm font-medium'
-					>
-						{post.blogger.isFollowing ? 'Following' : 'Follow'}
-					</Button>
+					<div>
+						<Button
+							variant={post.blogger.isFollowing ? 'default' : 'outline'}
+							className='rounded-full px-5 py-1.5 text-sm font-medium'
+						>
+							{post.blogger.isFollowing ? 'Following' : 'Follow'}
+						</Button>
+					</div>
 				</div>
 
 				<div className='flex flex-wrap gap-2'>

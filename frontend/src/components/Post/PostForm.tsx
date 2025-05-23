@@ -25,20 +25,28 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { BudgetIndicator } from './BudgetIndicator';
 import { Plus, Trash, X } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { postFormSchema, PostFormValues } from '@/lib/validation';
 import api from '@/lib/api/api';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { Post } from '@/types/types';
+import PostLoader from './PostLoader';
 
-export function CreatePostForm() {
+interface PostFormProps {
+	post?: Post;
+	isEditing?: boolean;
+}
+
+export function PostForm({ post, isEditing = false }: PostFormProps) {
 	const { data: session } = useSession();
 	const bloggerId = session?.user.blogger?.id;
 	const router = useRouter();
 	const { data: categories } = useCategories();
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [isInitialized, setIsInitialized] = useState(false);
 
 	const form = useForm<PostFormValues>({
 		resolver: zodResolver(postFormSchema),
@@ -50,11 +58,37 @@ export function CreatePostForm() {
 			categoryIds: [],
 			tags: [],
 			attachments: [],
+			cityId: undefined,
+			countryId: undefined,
 		},
 	});
 
 	const countryId = form.watch('countryId');
-	const { countries, cities } = useLocationInfo(countryId);
+	const { countries, cities, loading } = useLocationInfo(countryId);
+
+	useEffect(() => {
+		if (isEditing && post && categories && countries && !isInitialized) {
+			const initialValues = {
+				title: post.title,
+				content: post.content,
+				bloggerId: post.bloggerId,
+				cityId: post.cityId,
+				countryId: post.countryId,
+				budget: post.budget || 0,
+				categoryIds: post.categories?.map(c => c.id) || [],
+				tags: post.tags || [],
+				attachments:
+					post.attachments?.map(attachment => ({
+						id: attachment.id,
+						number: attachment.number,
+						previewUrl: attachment.uri,
+					})) || [],
+			};
+
+			form.reset(initialValues);
+			setIsInitialized(true);
+		}
+	}, [isEditing, post, categories, countries, form, isInitialized]);
 
 	const { watch, setValue } = form;
 	const currentAttachments = watch('attachments');
@@ -68,6 +102,7 @@ export function CreatePostForm() {
 			reader.onloadend = () => {
 				const updatedAttachments = [...(currentAttachments || [])];
 				updatedAttachments[index] = {
+					...updatedAttachments[index],
 					number: index + 1,
 					file,
 					previewUrl: reader.result as string,
@@ -98,41 +133,79 @@ export function CreatePostForm() {
 	const onSubmit = async (values: PostFormValues) => {
 		setIsSubmitting(true);
 		try {
-			// Convert attachments to base64
 			const attachmentsWithBase64 = await Promise.all(
-				(values.attachments || []).map(async attachment => {
-					if (!attachment.file) return null;
+				(values.attachments || [])
+					.filter(attachment => attachment.file)
+					.map(async attachment => {
+						const base64 = await new Promise<string>((resolve, reject) => {
+							const reader = new FileReader();
+							reader.readAsDataURL(attachment.file!);
+							reader.onload = () => {
+								const result = reader.result as string;
+								resolve(result); 
+							};
+							reader.onerror = error => reject(error);
+						});
 
-					const base64 = await new Promise<string>((resolve, reject) => {
-						const reader = new FileReader();
-						reader.readAsDataURL(attachment.file!);
-						reader.onload = () => resolve(reader.result as string);
-						reader.onerror = error => reject(error);
-					});
+						return {
+							number: attachment.number,
+							base64Attachment: base64, 
+						};
+					}),
+			);
 
-					return {
-						number: attachment.number,
-						base64Attachment: base64,
-					};
-				}),
-			).then(results => results.filter(Boolean));
-
-			const payload = {
-				...values,
-				attachments: attachmentsWithBase64,
+			const commonPayload = {
+				title: values.title,
+				content: values.content,
+				cityId: values.cityId,
+				countryId: values.countryId,
+				budget: values.budget,
+				categoryIds: values.categoryIds,
+				tags: values.tags,
 			};
-			console.log(payload);
 
-			const response = await api.post('/api/Posts', payload);
-			toast.success('Post created successfully!');
-			router.push(`/post/${response.data.id}`);
+			if (isEditing && post) {
+				const existingAttachmentIds = post.attachments?.map(a => a.id) || [];
+				const currentAttachmentIds = (values.attachments || [])
+					.filter(a => a.id)
+					.map(a => a.id) as number[];
+				const attachmentsToDelete = existingAttachmentIds.filter(
+					id => !currentAttachmentIds.includes(id),
+				);
+
+				const response = await api.put(`/api/Posts/${post.id}`, {
+					...commonPayload,
+					newAttachments: attachmentsWithBase64,
+					attachmentsToDelete,
+				});
+				router.push(`/post/${response.data.id}`);
+				toast.success('Post updated successfully!');
+			} else {
+				const response = await api.post('/api/Posts', {
+					...commonPayload,
+					bloggerId: values.bloggerId,
+					attachments: attachmentsWithBase64,
+				});
+				toast.success('Post created successfully!');
+				router.push(`/post/${response.data.id}`);
+				return;
+			}
+
+			router.refresh();
 		} catch (error) {
-			toast.error('Failed to create post');
-			console.error('Error creating post:', error);
+			toast.error(
+				isEditing ? 'Failed to update post' : 'Failed to create post',
+			);
+			console.error('Error:', error);
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
+
+	const selectedCountry = countries?.find(c => c.id === post?.countryId);
+	const selectedCity = cities?.find(c => c.id === post?.cityId);
+
+	if (loading) return <PostLoader />;
 
 	return (
 		<div className='rounded-2xl bg-card p-5 shadow-sm'>
@@ -183,7 +256,13 @@ export function CreatePostForm() {
 									>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder='Select a country' />
+												<SelectValue
+													placeholder={
+														selectedCountry?.name || 'Select a country'
+													}
+												>
+													{selectedCountry?.name}
+												</SelectValue>
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
@@ -211,10 +290,15 @@ export function CreatePostForm() {
 									<Select
 										onValueChange={value => field.onChange(Number(value))}
 										value={field.value?.toString()}
+										disabled={!countryId}
 									>
 										<FormControl>
 											<SelectTrigger>
-												<SelectValue placeholder='Select a city' />
+												<SelectValue
+													placeholder={selectedCity?.name || 'Select a city'}
+												>
+													{selectedCity?.name}
+												</SelectValue>
 											</SelectTrigger>
 										</FormControl>
 										<SelectContent>
@@ -293,13 +377,23 @@ export function CreatePostForm() {
 								<FormLabel>Tags</FormLabel>
 								<FormControl>
 									<Input
-										placeholder='Add tags (comma separated)'
-										onChange={e => {
-											const tags = e.target.value
-												.split(',')
-												.map(tag => tag.trim())
-												.filter(Boolean);
-											field.onChange(tags);
+										placeholder='Add tags (press Enter or Space to add)'
+										onKeyDown={e => {
+											if (['Enter', ' '].includes(e.key)) {
+												e.preventDefault();
+												const value = e.currentTarget.value.trim();
+												if (value) {
+													field.onChange([...(field.value || []), value]);
+													e.currentTarget.value = '';
+												}
+											}
+										}}
+										onBlur={e => {
+											const value = e.target.value.trim();
+											if (value) {
+												field.onChange([...(field.value || []), value]);
+												e.target.value = '';
+											}
 										}}
 									/>
 								</FormControl>
@@ -380,7 +474,13 @@ export function CreatePostForm() {
 					</div>
 
 					<Button type='submit' disabled={isSubmitting}>
-						{isSubmitting ? 'Creating...' : 'Create Post'}
+						{isSubmitting
+							? isEditing
+								? 'Updating...'
+								: 'Creating...'
+							: isEditing
+								? 'Update Post'
+								: 'Create Post'}
 					</Button>
 				</form>
 			</Form>

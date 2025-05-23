@@ -28,7 +28,7 @@ export default function PostsFeed() {
 		isFetchingNextPage,
 		status,
 	} = useInfiniteQuery({
-		queryKey: ['posts-feed', 'for-you'],
+		queryKey: ['posts', 'for-you'],
 		queryFn: async ({ pageParam }) => {
 			const response = await api.get<PostsResponse>('api/Posts/filter', {
 				params: {

@@ -54,12 +54,11 @@ export function CommentsAction({ edit, remove, comment }: CommentsActionProps) {
 					<DialogTrigger asChild>
 						<Button
 							variant='ghost'
-							size='sm'
 							className='h-8 px-2 text-muted-foreground hover:text-foreground'
 							onClick={() => handleEdit(comment.id, comment.content)}
 						>
 							<Edit2 className='mr-1 h-4 w-4' />
-							<span className='text-xs'>Edit</span>
+							Edit
 						</Button>
 					</DialogTrigger>
 					<DialogContent>

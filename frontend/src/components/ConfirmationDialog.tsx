@@ -16,31 +16,34 @@ interface ConfirmationDialogProps {
 	title: string;
 	description: string;
 	remove: () => void;
+	className?: string;
 }
 
 export default function ConfirmationDialog({
 	title,
 	description,
 	remove,
+	className,
 }: ConfirmationDialogProps) {
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
 				<Button
 					variant='ghost'
-					size='sm'
-					className='h-8 px-2 text-muted-foreground hover:text-destructive'
+					className={
+						className
+							? className
+							: 'h-8 px-2 text-muted-foreground hover:text-destructive'
+					}
 				>
-					<Trash2 className='mr-1 h-4 w-4' />
-					<span className='text-xs'>Delete</span>
+					{!className && <Trash2 className='mr-1 h-4 w-4' />}
+					Delete
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>{title}</AlertDialogTitle>
-					<AlertDialogDescription>
-						{description}
-					</AlertDialogDescription>
+					<AlertDialogDescription>{description}</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>

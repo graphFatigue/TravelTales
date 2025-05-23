@@ -13,10 +13,13 @@ import PostAttachments from '@/components/Post/PostAttachments';
 import { PostCardFooter } from '@/components/Post/PostCardFooter';
 import { usePost } from '@/hooks/usePost';
 import PostLoader from '@/components/Post/PostLoader';
+import DeletePost from '@/components/Post/DeletePost';
+import { useSession } from 'next-auth/react';
 
 export function PostCard() {
 	const { postId } = useParams();
 	const { data: post, isLoading, error } = usePost(Number(postId));
+	const { data: session } = useSession();
 
 	if (isLoading) return <PostLoader />;
 
@@ -52,13 +55,29 @@ export function PostCard() {
 							</p>
 						</div>
 					</div>
-					<div>
+					<div className='space-x-2'>
 						<Button
 							variant={post.blogger.isFollowing ? 'default' : 'outline'}
 							className='rounded-full px-5 py-1.5 text-sm font-medium'
 						>
 							{post.blogger.isFollowing ? 'Following' : 'Follow'}
 						</Button>
+						{post.bloggerId === session?.user.blogger?.id && (
+							<>
+								<Button
+									className='rounded-full bg-primary px-5 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90'
+									onClick={() => redirect(`/post/${post.id}/edit`)}
+								>
+									Edit
+								</Button>
+								<DeletePost
+									postId={post.id}
+									className={
+										'rounded-full px-5 py-1.5 text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+									}
+								/>
+							</>
+						)}
 					</div>
 				</div>
 

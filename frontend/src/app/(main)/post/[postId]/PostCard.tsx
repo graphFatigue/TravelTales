@@ -15,18 +15,24 @@ import { usePost } from '@/hooks/usePost';
 import PostLoader from '@/components/Post/PostLoader';
 import DeletePost from '@/components/Post/DeletePost';
 import { useSession } from 'next-auth/react';
+import { useBlogger } from '@/hooks/useBlogger';
+import FollowButton from '@/components/FollowButton';
 
 export function PostCard() {
 	const { postId } = useParams();
 	const { data: post, isLoading, error } = usePost(Number(postId));
 	const { data: session } = useSession();
+	const { data: blogger } = useBlogger(post?.bloggerId, {
+		initialData: post?.blogger,
+	});
 
 	if (isLoading) return <PostLoader />;
 
 	if (error) return <div>Error loading post</div>;
 	if (!post) return <div>Post not found</div>;
+	if(!blogger) return <div>Blogger not found</div>;
 
-	const bloggerName = `${post?.blogger.firstName} ${post?.blogger.lastName}`;
+	const bloggerName = `${blogger?.firstName} ${blogger?.lastName}`;
 
 	return (
 		<Card className='mx-auto'>
@@ -45,23 +51,18 @@ export function PostCard() {
 
 				<div className='flex w-full items-center justify-between'>
 					<div className='flex items-center space-x-3'>
-						<UserAvatar size={50} avatarUrl={post.blogger.image} />
+						<UserAvatar size={50} avatarUrl={blogger.image} />
 						<div>
 							<p
 								className='font-medium hover:underline'
-								onClick={() => redirect(`/blogger/${post.blogger.id}`)}
+								onClick={() => redirect(`/blogger/${blogger.id}`)}
 							>
 								{bloggerName}
 							</p>
 						</div>
 					</div>
 					<div className='space-x-2'>
-						<Button
-							variant={post.blogger.isFollowing ? 'default' : 'outline'}
-							className='rounded-full px-5 py-1.5 text-sm font-medium'
-						>
-							{post.blogger.isFollowing ? 'Following' : 'Follow'}
-						</Button>
+						<FollowButton bloggerId={blogger?.id} isFollowing={blogger?.isFollowing} />
 						{post.bloggerId === session?.user.blogger?.id && (
 							<>
 								<Button
@@ -73,7 +74,7 @@ export function PostCard() {
 								<DeletePost
 									postId={post.id}
 									className={
-										'rounded-full px-5 py-1.5 text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+										'rounded-full bg-destructive px-5 py-1.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
 									}
 								/>
 							</>

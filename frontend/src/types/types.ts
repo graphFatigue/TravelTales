@@ -23,9 +23,13 @@ export interface Blogger {
 	followingCount: number;
 	isFollowing: boolean;
 	cityId: number | null;
-	city: string | null;
+	city: City | null;
 	countryId: number | null;
-	country: string | null;
+	country: Country | null;
+	visitedCities: City[] | null;
+	visitedCountries: Country[] | null;
+	visitedCityIds: number[] | null;
+	visitedCountryIds: number[] | null;
 }
 
 export enum Sex {
@@ -46,6 +50,7 @@ export interface Category {
 export interface City {
 	id: number;
 	name: string;
+	countryId: number;
 }
 
 export interface Country {

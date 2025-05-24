@@ -1,19 +1,15 @@
 import { notFound } from 'next/navigation';
 import api from '@/lib/api/api';
-import UserAvatar from '@/components/UserAvatar';
-import { Blogger } from '@/types/types';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import UserProfile from './Profile';
 import { getServerSession } from 'next-auth';
-import EditProfileButton from './EditProfileButton';
 import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
+import ProfilePageClient from './ProfilePageClient';
 
-const getBlogger = async (bloggerId: string) => {
-	const { data: blogger } = await api.get(`/api/Blogger/${bloggerId}`);
-
+const getBlogger = async (bloggerId: string, token?: string) => {
+	const headers = token ? { Authorization: `Bearer ${token}` } : {};
+	const { data: blogger } = await api.get(`/api/Blogger/${bloggerId}`, {
+		headers,
+	});
 	if (!blogger) notFound();
-
 	return blogger;
 };
 
@@ -23,64 +19,9 @@ export default async function Page({
 	params: Promise<{ bloggerId: string }>;
 }) {
 	const { bloggerId } = await params;
-	const blogger: Blogger = await getBlogger(bloggerId);
-
 	const session = await getServerSession(authOptions);
+	const blogger = await getBlogger(bloggerId, session?.accessToken);
 
-	return (
-		<div className='container mx-auto max-w-5xl px-4 py-8'>
-			<div className='flex flex-col items-start gap-6 md:flex-row'>
-				<div className='flex flex-col items-center gap-2'>
-					<UserAvatar size={150} avatarUrl={blogger.image} />
-					{blogger.id === session?.user.blogger?.id ? (
-						<EditProfileButton blogger={blogger} />
-					) : (
-						<Button variant='outline' size='sm'>
-							{blogger.isFollowing ? 'Unfollow' : 'Follow'}
-						</Button>
-					)}
-				</div>
-
-				{/* User Info */}
-				<div className='flex-1 space-y-4'>
-					<div>
-						<h1 className='text-3xl font-bold'>
-							{`${blogger.firstName} ${blogger.lastName}`}
-						</h1>
-					</div>
-
-					{/* Stats */}
-					<div className='flex gap-6'>
-						<div className='text-center'>
-							<div className='text-2xl font-bold'>
-								{blogger.posts?.length || 0}
-							</div>
-							<div className='text-sm text-muted-foreground'>Posts</div>
-						</div>
-						<div className='text-center'>
-							<div className='text-2xl font-bold'>{blogger.followerCount}</div>
-							<div className='text-sm text-muted-foreground'>Followers</div>
-						</div>
-						<div className='text-center'>
-							<div className='text-2xl font-bold'>{blogger.followingCount}</div>
-							<div className='text-sm text-muted-foreground'>Following</div>
-						</div>
-					</div>
-
-					{/* Traveler Rating */}
-					{/* <div className="flex items-center gap-2">
-								<Star className="h-5 w-5 text-yellow-500" />
-								<span className="font-semibold">
-									{travelerRating.title}
-								</span>
-								<Badge variant="outline">{travelerRating.range}</Badge>
-							</div> */}
-				</div>
-			</div>
-
-			<Separator className='my-6' />
-
-			<UserProfile blogger={blogger} />
-		</div>
-	);
+	return <ProfilePageClient initialBlogger={blogger} session={session} />;
 }
+

@@ -11,11 +11,11 @@ import { redirect, useParams } from 'next/navigation';
 import { formatDate } from '@/lib/utils';
 import PostAttachments from '@/components/Post/PostAttachments';
 import { PostCardFooter } from '@/components/Post/PostCardFooter';
-import { usePost } from '@/hooks/usePost';
+import { usePost } from '@/hooks/posts/usePost';
 import PostLoader from '@/components/Post/PostLoader';
 import DeletePost from '@/components/Post/DeletePost';
 import { useSession } from 'next-auth/react';
-import { useBlogger } from '@/hooks/useBlogger';
+import { useBlogger } from '@/hooks/bloggers/useBlogger';
 import FollowButton from '@/components/FollowButton';
 
 export function PostCard() {
@@ -30,7 +30,7 @@ export function PostCard() {
 
 	if (error) return <div>Error loading post</div>;
 	if (!post) return <div>Post not found</div>;
-	if(!blogger) return <div>Blogger not found</div>;
+	if (!blogger) return <div>Blogger not found</div>;
 
 	const bloggerName = `${blogger?.firstName} ${blogger?.lastName}`;
 
@@ -62,8 +62,7 @@ export function PostCard() {
 						</div>
 					</div>
 					<div className='space-x-2'>
-						<FollowButton bloggerId={blogger?.id} isFollowing={blogger?.isFollowing} />
-						{post.bloggerId === session?.user.blogger?.id && (
+						{post.bloggerId === session?.user.blogger?.id ? (
 							<>
 								<Button
 									className='rounded-full bg-primary px-5 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90'
@@ -78,6 +77,11 @@ export function PostCard() {
 									}
 								/>
 							</>
+						) : (
+							<FollowButton
+								bloggerId={blogger?.id}
+								isFollowing={blogger?.isFollowing}
+							/>
 						)}
 					</div>
 				</div>

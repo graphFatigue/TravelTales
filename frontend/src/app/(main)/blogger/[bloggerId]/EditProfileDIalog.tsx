@@ -43,7 +43,7 @@ import { format } from 'date-fns';
 import {
 	UpdateBloggerProfileValues,
 	useProfileMutations,
-} from '@/hooks/useProfileMutations';
+} from '@/hooks/bloggers/useProfileMutations';
 import { useLocationInfo } from '@/hooks/useLocationInfo';
 import LoadingButton from '@/components/LoadingButton';
 

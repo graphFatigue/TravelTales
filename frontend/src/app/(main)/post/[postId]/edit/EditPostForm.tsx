@@ -2,7 +2,7 @@
 
 import { PostForm } from '@/components/Post/PostForm';
 import PostLoader from '@/components/Post/PostLoader';
-import { usePost } from '@/hooks/usePost';
+import { usePost } from '@/hooks/posts/usePost';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';
 

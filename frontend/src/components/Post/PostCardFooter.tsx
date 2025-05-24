@@ -7,7 +7,7 @@ import { Heart, Loader2, MessageCircle } from 'lucide-react';
 import { CommentsSection } from '../comments/Comments';
 import RestrictedDialog from '../RestrictedDialog';
 import { useSession } from 'next-auth/react';
-import { useLikes } from '@/hooks/useLikes';
+import { useLikes } from '@/hooks/posts/useLikes';
 import { Post } from '@/types/types';
 
 export function PostCardFooter({ post }: { post: Post }) {

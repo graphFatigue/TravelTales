@@ -1,7 +1,7 @@
 'use client';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
-import { useComments } from '@/hooks/useComments';
+import { useComments } from '@/hooks/posts/useComments';
 import { CreateComment, Post } from '@/types/types';
 import { Card, CardContent } from '../ui/card';
 import UserAvatar from '../UserAvatar';

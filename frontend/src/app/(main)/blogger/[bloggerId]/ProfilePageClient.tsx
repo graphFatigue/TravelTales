@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import UserProfile from './Profile';
 import EditProfileButton from './EditProfileButton';
 import FollowButton from '@/components/FollowButton';
-import { useBlogger } from '@/hooks/useBlogger';
+import { useBlogger } from '@/hooks/bloggers/useBlogger';
 import { Session } from 'next-auth';
 import { DeleteBloggerButton } from '@/components/DeleteBloggerButton';
 

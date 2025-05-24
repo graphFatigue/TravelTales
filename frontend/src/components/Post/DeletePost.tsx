@@ -1,4 +1,4 @@
-import { useDeletePost } from '@/hooks/useDeletePost';
+import { useDeletePost } from '@/hooks/posts/useDeletePost';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';

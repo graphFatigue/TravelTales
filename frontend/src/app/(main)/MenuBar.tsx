@@ -26,7 +26,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
 			<Button
 				variant='ghost'
 				className='flex items-center justify-start gap-3'
-				title='Home'
+				title='Bloggers'
 				asChild
 			>
 				<Link href='/blogger'>
@@ -40,7 +40,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
 					<Button
 						variant='ghost'
 						className='flex items-center justify-start gap-3'
-						title='Notifications'
+						title='Followers'
 						asChild
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/followers`}>
@@ -51,7 +51,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
 					<Button
 						variant='ghost'
 						className='flex items-center justify-start gap-3'
-						title='Notifications'
+						title='Following'
 						asChild
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/following`}>

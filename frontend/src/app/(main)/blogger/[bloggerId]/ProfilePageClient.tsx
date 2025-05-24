@@ -8,6 +8,7 @@ import EditProfileButton from './EditProfileButton';
 import FollowButton from '@/components/FollowButton';
 import { useBlogger } from '@/hooks/useBlogger';
 import { Session } from 'next-auth';
+import { DeleteBloggerButton } from '@/components/DeleteBloggerButton';
 
 interface ProfilePageClientProps {
 	initialBlogger: Blogger;
@@ -65,6 +66,10 @@ export default function ProfilePageClient({
 						</div>
 					</div>
 				</div>
+
+				{blogger.id === session?.user.blogger?.id && (
+					<DeleteBloggerButton bloggerId={blogger.id} />
+				)}
 			</div>
 
 			<Separator className='my-6' />

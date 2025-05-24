@@ -1,5 +1,4 @@
-
-import PostsFeed from '@/components/PostsFeed';
+import PostsFeed from '@/components/Post/PostsFeed';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

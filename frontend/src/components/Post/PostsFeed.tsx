@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { PostCardPreview } from './Post/PostCardPreview';
+import { PostCardPreview } from './PostCardPreview';
 import { Post } from '@/types/types';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import api from '@/lib/api/api';
-import InfiniteScrollContainer from './InfiniteScrollContainer';
+import InfiniteScrollContainer from '../InfiniteScrollContainer';
 import { Loader2 } from 'lucide-react';
-import PostLoader from './Post/PostLoader';
+import PostLoader from './PostLoader';
 
 interface PostsResponse {
 	items: Post[];

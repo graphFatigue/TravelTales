@@ -37,27 +37,52 @@ export const authOptions: NextAuthOptions = {
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID!,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+			authorization: {
+				params: {
+					prompt: 'consent',
+					access_type: 'offline',
+					response_type: 'code',
+					scope: 'openid email profile',
+				},
+			},
 		}),
 	],
 	callbacks: {
-		async jwt({ token, account, user }) {
+		async signIn({ account }) {
 			if (account?.provider === 'google') {
-				// Get your API token using Google access token
-				const googleAccessToken = account.access_token;
-
-				console.log(googleAccessToken);
-
 				try {
-					const { data } = await api.post('/api/Auth/login/google', {
-						accessToken: googleAccessToken,
+					console.log(account.id_token);
+					const response = await api.post('/api/Auth/signin-google', {
+						token: account.id_token,
 					});
 
-					token.accessToken = data.accessToken;
-					token.blogger = data.user.blogger;
-					token.sub = data.user.id;
+					if (!response.data?.accessToken) {
+						return false;
+					}
+
+					return true;
 				} catch (error) {
-					console.error('Failed to login via Google to your backend', error);
-					throw new Error('Login failed');
+					console.error('Google sign-in error:', error);
+					return false;
+				}
+			}
+			return true;
+		},
+		async jwt({ token, account, user }) {
+			if (account?.provider === 'google') {
+				try {
+					const { data } = await api.post('/api/Auth/signin-google', {
+						token: account.id_token,
+					});
+
+					return {
+						accessToken: data.accessToken,
+						blogger: data.user.blogger,
+						sub: data.user.id,
+					};
+				} catch (error) {
+					console.error('JWT callback error:', error);
+					return token;
 				}
 			}
 
@@ -66,6 +91,7 @@ export const authOptions: NextAuthOptions = {
 				token.blogger = user.blogger;
 				token.sub = user.id;
 			}
+
 			return token;
 		},
 		async session({ session, token }) {

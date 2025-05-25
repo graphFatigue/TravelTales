@@ -18,7 +18,7 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 		postId: post.id,
 		initialComments: post.comments || [],
 	});
-	
+
 	const [content, setContent] = useState('');
 
 	const handleSend = async () => {
@@ -33,9 +33,9 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 	};
 
 	return (
-		<div>
+		<div className='space-y-4 w-full'>
 			{comments.length > 0 ? (
-				<div className='space-y-4'>
+				<>
 					{comments.map(comment => (
 						<Card
 							key={comment.id}
@@ -43,11 +43,11 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 						>
 							<CardContent className='p-4'>
 								<div className='flex items-start gap-3'>
-									<UserAvatar avatarUrl={comment.blogger?.image} />
+									<UserAvatar avatarUrl={comment.bloggerImage} />
 									<div className='flex-1 space-y-1.5'>
 										<div className='flex items-center justify-between'>
 											<p className='text-sm font-medium'>
-												{comment.blogger?.firstName || 'Anonymous'}
+												{comment.bloggerName || 'Anonymous'}
 											</p>
 											<p className='text-xs text-muted-foreground'>
 												{formatDate(comment.createdAt)}
@@ -59,11 +59,15 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 							</CardContent>
 
 							{session && (
-								<CommentsAction edit={edit} remove={remove} comment={comment} />
+								<CommentsAction
+									edit={edit}
+									remove={remove}
+									comment={comment}
+								/>
 							)}
 						</Card>
 					))}
-				</div>
+				</>
 			) : (
 				<div className='py-8 text-center'>
 					<p className='text-muted-foreground'>
@@ -74,7 +78,7 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 
 			{session ? (
 				<div className='mt-8 space-y-4'>
-					<div className='flex items-center gap-3'>
+					<div className='flex items-center gap-3 mx-1'>
 						<UserAvatar avatarUrl={session.user.blogger?.image} />
 						<Label htmlFor='comment' className='text-sm font-medium'>
 							Add a comment

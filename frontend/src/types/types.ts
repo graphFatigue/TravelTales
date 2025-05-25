@@ -97,6 +97,9 @@ export interface Comment {
 	createdAt?: string;
 	modifiedAt?: string;
 	isDeleted: boolean;
+	bloggerName?: string;
+	bloggerImage?: string | null;
+	postAuthorBloggerId?: number | null;
 }
 
 export interface CreateComment {

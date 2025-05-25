@@ -88,7 +88,7 @@ export function CommentsAction({ edit, remove, comment }: CommentsActionProps) {
 				</Dialog>
 			)}
 
-			{(session?.user.blogger?.id === comment.post?.blogger.id ||
+			{(session?.user.blogger?.id === comment.postAuthorBloggerId ||
 				session?.user.blogger?.id === comment.bloggerId) && (
 				<ConfirmationDialog
 					title={'Delete Comment'}

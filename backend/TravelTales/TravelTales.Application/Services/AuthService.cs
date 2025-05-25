@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using FluentValidation;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
@@ -55,11 +56,13 @@ namespace TravelTales.Application.Services
             // Generate token for the new user
             var jwtAccessToken = await this.GenerateTokenAsync(user);
             var userDto = this.mapper.Map<UserDto>(user);
+            var roles = await userManager.GetRolesAsync(user);
 
             return new AuthResponseDto
             {
                 AccessToken = jwtAccessToken,
-                User = userDto
+                User = userDto,
+                Role = roles.FirstOrDefault()
             };
         }
 
@@ -125,11 +128,13 @@ namespace TravelTales.Application.Services
             var accessToken = await jwtService.GenerateTokenAsync(user);
             user = await this.unitOfWork.GetRepository<IUserRepository>().GetByIdFullAsync(user.Id);
             var userDto = mapper.Map<UserDto>(user);
+            var roles = await userManager.GetRolesAsync(user);
 
             return new AuthResponseDto
             {
                 AccessToken = accessToken,
-                User = userDto
+                User = userDto,
+                Role = roles.FirstOrDefault()
             };
         }
 
@@ -216,11 +221,13 @@ namespace TravelTales.Application.Services
             var jwtAccessToken = await this.GenerateTokenAsync(user);
 
             var userDto = this.mapper.Map<UserDto>(user);
+            var roles = await userManager.GetRolesAsync(user);
 
             return new AuthResponseDto
             {
                 AccessToken = jwtAccessToken,
                 User = userDto,
+                Role = roles.FirstOrDefault()
             };
         }
 

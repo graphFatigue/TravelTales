@@ -6,5 +6,6 @@ namespace TravelTales.Application.DTOs.Auth
     {
         public string AccessToken { get; set; }
         public UserDto? User { get; set; }
+        public string Role { get; set; }
     }
 }

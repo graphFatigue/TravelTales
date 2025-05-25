@@ -174,13 +174,10 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException("User not found");
             }
 
-            var result = await userManager.ResetPasswordAsync(
-                user,
-                passwordResetDto.Token,
-                passwordResetDto.NewPassword
-            );
+            var decodedToken = Uri.UnescapeDataString(passwordResetDto.Token);
+            var result = await userManager.ResetPasswordAsync(user, decodedToken, passwordResetDto.NewPassword);
 
-            if (!result.Succeeded)
+            if (result.Errors.Any())
             {
                 throw new IdentityException("Password reset failed", result.Errors);
             }

@@ -3,6 +3,7 @@ using FluentValidation;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using TravelTales.Application.DTOs.Auth;
 using TravelTales.Application.DTOs.User;
 using TravelTales.Application.Exceptions;
@@ -90,10 +91,15 @@ namespace TravelTales.Application.Services
                     UserId = user.Id,
                     FirstName = payload.GivenName,
                     LastName = payload.FamilyName,
+                    BirthDate = DateTime.UtcNow.AddYears(-25),
                     CreatedAt = DateTime.UtcNow
                 };
 
                 await unitOfWork.GetRepository<IBloggerRepository>().AddAsync(blogger);
+
+                user.Blogger = blogger;
+
+                this.unitOfWork.GetRepository<IUserRepository>().Update(user);
                 await unitOfWork.SaveChangesAsync();
 
                 // Add Google login

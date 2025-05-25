@@ -117,6 +117,7 @@ namespace TravelTales.Application.Services
             }
 
             var accessToken = await jwtService.GenerateTokenAsync(user);
+            user = await this.unitOfWork.GetRepository<IUserRepository>().GetByIdFullAsync(user.Id);
             var userDto = mapper.Map<UserDto>(user);
 
             return new AuthResponseDto

@@ -81,11 +81,11 @@ namespace TravelTales.Persistence.Repositories
             // Apply Sieve filters/sorts
             var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
 
-            // Apply pagination if needed
-            if (sieveModel.Page != null && sieveModel.PageSize != null)
-            {
-                filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery, applyFiltering: false, applySorting: false);
-            }
+            //// Apply pagination if needed
+            //if (sieveModel.Page != null && sieveModel.PageSize != null)
+            //{
+            //    filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery, applyFiltering: false, applySorting: false);
+            //}
 
             return await PagedList<Post>.ToPagedListAsync(filteredQuery, sieveModel);
         }

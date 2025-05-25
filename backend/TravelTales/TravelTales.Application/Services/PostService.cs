@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FluentValidation;
 using Sieve.Models;
+using TravelTales.Application.DTOs.Comment;
 using TravelTales.Application.DTOs.Post;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
@@ -148,45 +149,48 @@ namespace TravelTales.Application.Services
                 // You might want to add additional public visibility checks here
             }
 
-            return this.mapper.Map<PostDto>(post);
+            var postDto = this.mapper.Map<PostDto>(post);
+
+            var comments = await this.unitOfWork.GetRepository<ICommentRepository>().GetCommentsByPostIdAsync(post.Id);
+            postDto.Comments = this.mapper.Map<List<CommentBroadcastDto>>(comments);
+
+            return postDto;
         }
 
         public async Task<IEnumerable<PostDto>> GetPostsAsync(CancellationToken cancellationToken = default)
         {
+            List<Post> posts;
+
             try
             {
-                // Try to get current blogger ID if authorized
                 var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
-
-                // Get list of users who blocked current user
                 var blockerIds = (await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
-                    .GetBlockerIdsAsync(currentBloggerId, cancellationToken))
-                    .ToList();
+                    .GetBlockerIdsAsync(currentBloggerId, cancellationToken)).ToList();
 
-                // Get all posts and filter them
-                var posts = await this.unitOfWork.GetRepository<IPostRepository>()
-                    .GetAllFullAsync(null, cancellationToken);
-
-                var filteredPosts = posts
+                posts = (await this.unitOfWork.GetRepository<IPostRepository>()
+                    .GetAllFullAsync(null, cancellationToken))
                     .Where(p => !p.IsDeleted &&
                                 p.BloggerId != null &&
                                 !blockerIds.Contains(Convert.ToInt64(p.BloggerId)))
                     .ToList();
-
-                return this.mapper.Map<IEnumerable<PostDto>>(filteredPosts);
             }
             catch (NotAuthorizedException)
             {
-                // If user is not authorized, return all non-deleted posts without blocking filter
-                var posts = await this.unitOfWork.GetRepository<IPostRepository>()
-                    .GetAllFullAsync(null, cancellationToken);
-
-                var filteredPosts = posts
+                posts = (await this.unitOfWork.GetRepository<IPostRepository>()
+                    .GetAllFullAsync(null, cancellationToken))
                     .Where(p => !p.IsDeleted && p.BloggerId != null)
                     .ToList();
-
-                return this.mapper.Map<IEnumerable<PostDto>>(filteredPosts);
             }
+
+            var postDtos = this.mapper.Map<List<PostDto>>(posts);
+
+            foreach (var postDto in postDtos)
+            {
+                var comments = await this.unitOfWork.GetRepository<ICommentRepository>().GetCommentsByPostIdAsync(postDto.Id);
+                postDto.Comments = this.mapper.Map<List<CommentBroadcastDto>>(comments);
+            }
+
+            return postDtos;
         }
 
         public async Task<PagedList<PostDto>> GetPostsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
@@ -219,7 +223,15 @@ namespace TravelTales.Application.Services
                            (blockerIds.Count == 0 || !blockerIds.Contains(p.BloggerId)))
                 .ToList();
 
-            return PagedList<PostDto>.Copy(pagedList, filteredPosts);
+            var postDtos = this.mapper.Map<List<PostDto>>(filteredPosts);
+
+            foreach (var postDto in postDtos)
+            {
+                var comments = await this.unitOfWork.GetRepository<ICommentRepository>().GetCommentsByPostIdAsync(postDto.Id);
+                postDto.Comments = this.mapper.Map<List<CommentBroadcastDto>>(comments);
+            }
+
+            return PagedList<PostDto>.Copy(pagedList, postDtos);
         }
 
         public async Task<PostDto> UpdatePostAsync(long id, UpdatePostDto updatePostDto, CancellationToken cancellationToken = default)

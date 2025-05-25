@@ -19,23 +19,16 @@ namespace TravelTales.API.Hubs
             this.notificationsHub = notificationsHub;
         }
 
-        //public async Task SendComment(CreateCommentDto commentDto)
-        //{
-        //    var bloggerId = await this.bloggerService.GetCurrentBloggerId();
-        //    var createdComment = await commentService.CreateCommentAsync(commentDto, bloggerId);
-        //    await Clients.Group(commentDto.PostId.ToString()).SendAsync("ReceiveComment", createdComment);
-        //}
-
         public async Task SendComment(CreateCommentDto commentDto)
         {
             var bloggerId = await bloggerService.GetCurrentBloggerId();
             var createdComment = await commentService.CreateCommentAsync(commentDto, bloggerId);
 
-            if (createdComment.Post?.BloggerId != null && createdComment.Post.BloggerId != bloggerId)
+            if (createdComment.PostAuthorBloggerId != bloggerId)
             {
-                await this.notificationsHub.Clients
-                    .Group(createdComment.Post.BloggerId.ToString())
-                    .SendAsync("ReceiveNotification", "New comment received!");
+                await notificationsHub.Clients
+                    .Group(createdComment.PostAuthorBloggerId.ToString())
+                    .SendAsync("ReceiveNotification", "New comment received!", createdComment);
             }
 
             await Clients.Group(commentDto.PostId.ToString())
@@ -45,10 +38,9 @@ namespace TravelTales.API.Hubs
         public async Task EditComment(long commentId, UpdateCommentDto commentDto, long postId)
         {
             var bloggerId = await bloggerService.GetCurrentBloggerId();
-            await commentService.UpdateCommentAsync(commentId, commentDto, bloggerId);
+            var updatedComment = await commentService.UpdateCommentAsync(commentId, commentDto, bloggerId);
 
-            var updatedComments = await commentService.GetCommentsByPostIdAsync(postId);
-            await Clients.Group(postId.ToString()).SendAsync("UpdateComments", updatedComments);
+            await Clients.Group(postId.ToString()).SendAsync("UpdateComments", updatedComment);
         }
 
         public async Task DeleteComment(long commentId, long postId)

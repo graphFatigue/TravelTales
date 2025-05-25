@@ -20,6 +20,19 @@ namespace TravelTales.Persistence.Repositories
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
         }
+
+        public override void Delete(Comment comment)
+        {
+            // Delete notifications related to this comment first
+            var notifications = this.context.Notifications
+                .Where(n => n.CommentId == comment.Id)
+                .ToList();
+
+            this.context.Notifications.RemoveRange(notifications);
+
+            // Then delete the comment
+            base.Delete(comment);
+        }
     }
 
 }

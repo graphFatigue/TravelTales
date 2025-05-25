@@ -31,7 +31,7 @@ namespace TravelTales.Application.Services
             this.updateValidator = updateValidator;
         }
 
-        public async Task<CommentDto> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
+        public async Task<CommentBroadcastDto> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
         {
             await createValidator.ValidateAndThrowAsync(commentDto);
 
@@ -42,35 +42,32 @@ namespace TravelTales.Application.Services
             await this.unitOfWork.GetRepository<ICommentRepository>().AddAsync(comment);
             await this.unitOfWork.SaveChangesAsync();
 
-            var post = await this.unitOfWork.GetRepository<IPostRepository>().GetByIdAsync(commentDto.PostId);
-            if (post != null && post.BloggerId != bloggerId)
+            // Eager load related entities for mapping
+            comment.Post = await unitOfWork.GetRepository<IPostRepository>().GetByIdAsync(commentDto.PostId);
+            comment.Blogger = await unitOfWork.GetRepository<IBloggerRepository>().GetByIdAsync(bloggerId);
+
+            if (comment.Post != null && comment.Post.BloggerId != bloggerId)
             {
-                var isBlocked = await this.unitOfWork.GetRepository<IBloggerBlockRepository>().ExistsAsync(post.BloggerId, bloggerId, cancellationToken);
+                var isBlocked = await unitOfWork.GetRepository<IBloggerBlockRepository>()
+                    .ExistsAsync(comment.Post.BloggerId, bloggerId, cancellationToken);
                 if (!isBlocked)
                 {
                     var notificationDto = new CreateNotificationDto
                     {
                         Message = "New comment on your post",
-                        RecipientBloggerId = (long)post.BloggerId,
+                        RecipientBloggerId = (long)comment.Post.BloggerId,
                         TriggeredByBloggerId = bloggerId,
-                        PostId = post.Id,
+                        PostId = comment.Post.Id,
                         CommentId = comment.Id
                     };
                     var notification = await this.notificationService.CreateNotificationAsync(notificationDto);
-
-                    // Access the blogger name through the DTO
-                    var triggeredByName = notification.TriggeredByBlogger != null
-                        ? $"{notification.TriggeredByBlogger.FirstName} {notification.TriggeredByBlogger.LastName}"
-                        : "Anonymous";
-
-                    // Use this name in your real-time notification if needed
                 }
             }
 
-            return mapper.Map<CommentDto>(comment);
+            return mapper.Map<CommentBroadcastDto>(comment);
         }
 
-        public async Task UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
+        public async Task<CommentBroadcastDto> UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
         {
             await updateValidator.ValidateAndThrowAsync(commentDto);
 
@@ -81,6 +78,8 @@ namespace TravelTales.Application.Services
 
             unitOfWork.GetRepository<ICommentRepository>().Update(comment);
             await unitOfWork.SaveChangesAsync();
+
+            return mapper.Map<CommentBroadcastDto>(comment);
         }
 
         public async Task DeleteCommentAsync(long commentId, long bloggerId, CancellationToken cancellationToken = default)

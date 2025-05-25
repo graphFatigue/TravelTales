@@ -30,7 +30,7 @@ namespace TravelTales.Persistence.Repositories
                 .Include(x => x.Likes)
                 .Include(s => s.Blogger)
                 .Include(p => p.Categories)
-                .Include(p => p.Comments)
+                //.Include(p => p.Comments)
                 .Include(p => p.Country)
                 .Include(p => p.City)
                 //.Include(p => p.Tags)
@@ -47,7 +47,7 @@ namespace TravelTales.Persistence.Repositories
                 .Include(x => x.Likes)
                 .Include(s => s.Blogger)
                 .Include(p => p.Categories)
-                .Include(p => p.Comments)
+                //.Include(p => p.Comments)
                 .Include(p => p.Country)
                 .Include(s => s.Attachments)
                 .Include(p => p.City);
@@ -75,7 +75,7 @@ namespace TravelTales.Persistence.Repositories
                 .Include(s => s.Blogger)
                 .Include(s => s.Attachments)
                 .Include(s => s.Likes)
-                .Include(s => s.Comments)
+                //.Include(s => s.Comments)
                 .AsQueryable();
 
             // Apply Sieve filters/sorts

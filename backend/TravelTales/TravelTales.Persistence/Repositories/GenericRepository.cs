@@ -16,7 +16,7 @@ namespace TravelTales.Persistence.Repositories
 
         protected readonly ISieveProcessor sieveProcessor;
 
-        private readonly AppDbContext context;
+        protected readonly AppDbContext context;
 
         public GenericRepository(AppDbContext context, ISieveProcessor sieveProcessor)
         {

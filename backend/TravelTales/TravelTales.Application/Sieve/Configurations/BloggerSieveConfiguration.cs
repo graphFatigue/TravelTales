@@ -1,9 +1,4 @@
 ﻿using Sieve.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TravelTales.Domain.Entities;
 
 namespace TravelTales.Application.Sieve.Configurations

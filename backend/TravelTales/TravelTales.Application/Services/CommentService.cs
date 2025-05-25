@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Sieve.Models;
 using TravelTales.Application.DTOs.Comment;
 using TravelTales.Application.DTOs.Notification;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Services
 {
@@ -96,6 +98,18 @@ namespace TravelTales.Application.Services
                 .GetCommentsByPostIdAsync(postId);
 
             return mapper.Map<List<CommentDto>>(comments);
+        }
+
+        public async Task<PagedList<CommentDto>> GetCommentsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
+        {
+            var pagedList = await this.unitOfWork.GetRepository<ICommentRepository>()
+                .GetAllWithFilterAsync(sieveModel, cancellationToken);
+
+            var filteredComments = this.mapper.Map<List<CommentDto>>(pagedList.Items)
+                .Where(c => !c.IsDeleted)
+                .ToList();
+
+            return PagedList<CommentDto>.Copy(pagedList, filteredComments);
         }
 
         private async Task<Comment> GetCommentWithAuthorization(long commentId, long bloggerId, CancellationToken cancellationToken = default)

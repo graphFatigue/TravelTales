@@ -1,4 +1,6 @@
-﻿using TravelTales.Application.DTOs.Comment;
+﻿using Sieve.Models;
+using TravelTales.Application.DTOs.Comment;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Interfaces
 {
@@ -11,5 +13,7 @@ namespace TravelTales.Application.Interfaces
         Task DeleteCommentAsync(long commentId, long bloggerId, CancellationToken cancellationToken = default);
 
         Task<List<CommentDto>> GetCommentsByPostIdAsync(long postId, CancellationToken cancellationToken = default);
+
+        Task<PagedList<CommentDto>> GetCommentsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
     }
 }

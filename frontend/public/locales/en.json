@@ -38,7 +38,9 @@
         "theme": "Theme",
         "light": "Light",
         "dark": "Dark",
-        "system": "System"
+        "system": "System",
+		"users": "Users",
+		"categories": "Categories"
 	},
 	"profile": {
 		"title": "Profile",

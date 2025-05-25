@@ -46,50 +46,52 @@ export function CommentsAction({ edit, remove, comment }: CommentsActionProps) {
 
 	return (
 		<CardFooter className='flex justify-end gap-2 bg-muted/20 px-4 py-2'>
-			{session?.user.blogger?.id === comment.bloggerId && (
-				<Dialog
-					open={isEditDialogOpen && editingCommentId === comment.id}
-					onOpenChange={setIsEditDialogOpen}
-				>
-					<DialogTrigger asChild>
-						<Button
-							variant='ghost'
-							className='h-8 px-2 text-muted-foreground hover:text-foreground'
-							onClick={() => handleEdit(comment.id, comment.content)}
-						>
-							<Edit2 className='mr-1 h-4 w-4' />
-							Edit
-						</Button>
-					</DialogTrigger>
-					<DialogContent>
-						<DialogHeader>
-							<DialogTitle>Edit Comment</DialogTitle>
-							<DialogDescription>
-								Make changes to your comment below.
-							</DialogDescription>
-						</DialogHeader>
-						<div className='py-4'>
-							<Textarea
-								value={editingContent}
-								onChange={e => setEditingContent(e.target.value)}
-								className='min-h-[100px]'
-							/>
-						</div>
-						<DialogFooter>
+			{(session?.user.blogger?.id === comment.bloggerId ||
+				session?.role === 'Admin') && (
+					<Dialog
+						open={isEditDialogOpen && editingCommentId === comment.id}
+						onOpenChange={setIsEditDialogOpen}
+					>
+						<DialogTrigger asChild>
 							<Button
-								variant='outline'
-								onClick={() => setIsEditDialogOpen(false)}
+								variant='ghost'
+								className='h-8 px-2 text-muted-foreground hover:text-foreground'
+								onClick={() => handleEdit(comment.id, comment.content)}
 							>
-								Cancel
+								<Edit2 className='mr-1 h-4 w-4' />
+								Edit
 							</Button>
-							<Button onClick={submitEdit}>Save changes</Button>
-						</DialogFooter>
-					</DialogContent>
-				</Dialog>
-			)}
+						</DialogTrigger>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Edit Comment</DialogTitle>
+								<DialogDescription>
+									Make changes to your comment below.
+								</DialogDescription>
+							</DialogHeader>
+							<div className='py-4'>
+								<Textarea
+									value={editingContent}
+									onChange={e => setEditingContent(e.target.value)}
+									className='min-h-[100px]'
+								/>
+							</div>
+							<DialogFooter>
+								<Button
+									variant='outline'
+									onClick={() => setIsEditDialogOpen(false)}
+								>
+									Cancel
+								</Button>
+								<Button onClick={submitEdit}>Save changes</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
+				)}
 
 			{(session?.user.blogger?.id === comment.postAuthorBloggerId ||
-				session?.user.blogger?.id === comment.bloggerId) && (
+				session?.user.blogger?.id === comment.bloggerId ||
+				session?.role === 'Admin') && (
 				<ConfirmationDialog
 					title={'Delete Comment'}
 					description={

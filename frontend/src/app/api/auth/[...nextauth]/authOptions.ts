@@ -24,6 +24,7 @@ export const authOptions: NextAuthOptions = {
 						image: data.user.blogger.image,
 						accessToken: data.accessToken,
 						blogger: data.user.blogger,
+						role: data.role,
 					};
 				} catch (err: unknown) {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -79,6 +80,7 @@ export const authOptions: NextAuthOptions = {
 						accessToken: data.accessToken,
 						blogger: data.user.blogger,
 						sub: data.user.id,
+						role: data.role,
 					};
 				} catch (error) {
 					console.error('JWT callback error:', error);
@@ -90,6 +92,7 @@ export const authOptions: NextAuthOptions = {
 				token.accessToken = user.accessToken;
 				token.blogger = user.blogger;
 				token.sub = user.id;
+				token.role = user.role;
 			}
 
 			return token;
@@ -98,6 +101,7 @@ export const authOptions: NextAuthOptions = {
 			session.accessToken = token.accessToken;
 			session.user.id = token.sub;
 			session.user.blogger = token.blogger;
+			session.role = token.role;
 			return session;
 		},
 	},

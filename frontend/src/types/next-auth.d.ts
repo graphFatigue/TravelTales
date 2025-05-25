@@ -10,6 +10,7 @@ declare module 'next-auth' {
 			image?: string | null;
 			blogger?: Blogger;
 		};
+		role: string;
 	}
 
 	interface User {
@@ -19,6 +20,7 @@ declare module 'next-auth' {
 		image?: string | null;
 		accessToken: string;
 		blogger: Blogger;
+		role: string;
 	}
 }
 
@@ -27,5 +29,6 @@ declare module 'next-auth/jwt' {
 		accessToken: string;
 		blogger: Blogger;
 		sub: string;
+		role: string;
 	}
 }

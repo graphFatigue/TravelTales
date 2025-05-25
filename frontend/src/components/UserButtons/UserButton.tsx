@@ -18,37 +18,38 @@ import { Check, LogOutIcon, Monitor, Moon, Sun, UserIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 import UserAvatar from '../UserAvatar';
-import { signOut } from 'next-auth/react';
-import { User } from '@/types/types';
+import { signOut, useSession } from 'next-auth/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 interface UserButtonProps {
-	user: User;
 	className?: string;
 }
 
-export default function UserButton({ user, className }: UserButtonProps) {
+export default function UserButton({ className }: UserButtonProps) {
 	const { theme, setTheme } = useTheme();
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
+	const { data: session } = useSession();
+	console.log(session);
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<button className={cn('flex-none rounded-full', className)}>
-					<UserAvatar avatarUrl={user.image} size={40} />
+					<UserAvatar avatarUrl={session?.user.blogger?.image} size={40} />
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
 				<DropdownMenuLabel>
 					{t('dashboard.logedinAs', {
 						name:
-							user.blogger?.firstName + ' ' + user.blogger?.lastName ||
-							'unknown',
+							session?.user.blogger?.firstName +
+								' ' +
+								session?.user.blogger?.lastName || 'unknown',
 					})}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<Link href={`/blogger/${user.blogger?.id}`}>
+				<Link href={`/blogger/${session?.user.blogger?.id}`}>
 					<DropdownMenuItem>
 						<UserIcon className='mr-2 size-4' /> {t('dashboard.profile')}
 					</DropdownMenuItem>

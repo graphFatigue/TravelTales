@@ -135,3 +135,26 @@ export interface Post {
 }
 
 export type BudgetLevel = 0 | 1 | 2 | 3 | 4;
+
+export interface Role {
+	id: string;
+	name: string;
+	createdAt: string;
+	modifiedAt: string;
+	isDeleted: boolean;
+  }
+  
+  export interface UsersResponse {
+	items: User[];
+	currentPage: number;
+	totalPages: number;
+	pageSize: number;
+	totalCount: number;
+	hasPrevious: boolean;
+	hasNext: boolean;
+  }
+  
+  export interface AssignRoleRequest {
+	userId: string;
+	roleId: string;
+  }

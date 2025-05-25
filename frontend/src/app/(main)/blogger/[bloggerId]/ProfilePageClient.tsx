@@ -67,7 +67,8 @@ export default function ProfilePageClient({
 					</div>
 				</div>
 
-				{blogger.id === session?.user.blogger?.id && (
+				{(blogger.id === session?.user.blogger?.id ||
+					session?.role === 'Admin') && (
 					<DeleteBloggerButton bloggerId={blogger.id} />
 				)}
 			</div>

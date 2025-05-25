@@ -38,7 +38,9 @@
 		"theme": "Тема",
 		"light": "Світла",
 		"dark": "Темна",
-		"system": "Система"
+		"system": "Система",
+		"users": "Користувачі",
+		"categories": "Категорії"
 	},
 	"profile": {
 		"title": "Profile",

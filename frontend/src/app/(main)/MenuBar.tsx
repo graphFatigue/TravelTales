@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { Bell, Home, UserRoundCheck, UserRoundPlus, Users } from 'lucide-react';
+import { Bell, Home, UserRoundCheck, UserRoundPlus, Users, ContactRound, ChartBarStacked  } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +37,35 @@ export default function MenuBar({ className }: MenuBarProps) {
 					<span className='hidden lg:inline'>{t('dashboard.bloggers')}</span>
 				</Link>
 			</Button>
+
+			{session?.role === "Admin" && (
+				<>
+					<Button
+						variant='ghost'
+						className='flex items-center justify-start gap-3'
+						title='Users'
+						asChild
+					>
+						<Link href={`/admin/users`}>
+							<ContactRound />
+							<span className='hidden lg:inline'>{t('dashboard.users')}</span>
+						</Link>
+					</Button>
+					<Button
+						variant='ghost'
+						className='flex items-center justify-start gap-3'
+						title='Categories'
+						asChild
+					>
+						<Link href={`/admin/categories`}>
+							<ChartBarStacked />
+							<span className='hidden lg:inline'>
+								{t('dashboard.categories')}
+							</span>
+						</Link>
+					</Button>
+				</>
+			)}
 
 			{session?.user && (
 				<>

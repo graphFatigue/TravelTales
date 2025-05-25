@@ -62,7 +62,8 @@ export function PostCard() {
 						</div>
 					</div>
 					<div className='space-x-2'>
-						{post.bloggerId === session?.user.blogger?.id ? (
+						{(post.bloggerId === session?.user.blogger?.id ||
+						session?.role === 'Admin') ? (
 							<>
 								<Button
 									className='rounded-full bg-primary px-5 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90'

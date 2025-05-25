@@ -14,7 +14,7 @@ export default function UserButtons() {
 		<div className='flex items-center gap-4'>
 			<LanguageSwitcher />
 			{session ? (
-				<UserButton user={session.user} />
+				<UserButton />
 			) : (
 				<div className='flex gap-4'>
 					<Button variant='default'>

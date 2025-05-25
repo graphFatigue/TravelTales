@@ -48,7 +48,7 @@ namespace TravelTales.Persistence.Repositories
                 .AsQueryable();
 
             //// Apply Sieve filters/sorts
-            //var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
+            var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
 
             //// Apply pagination if needed
             //if (sieveModel.Page != null && sieveModel.PageSize != null)
@@ -56,7 +56,7 @@ namespace TravelTales.Persistence.Repositories
             //    filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery, applyFiltering: false, applySorting: false);
             //}
 
-            return await PagedList<Comment>.ToPagedListAsync(query, sieveModel);
+            return await PagedList<Comment>.ToPagedListAsync(filteredQuery, sieveModel);
         }
     }
 

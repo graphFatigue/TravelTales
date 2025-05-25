@@ -1,3 +1,9 @@
+import { CategoryList } from "./CategoryList";
+
 export default function Page() {
-	return <div className=''>Categories</div>;
+	return (
+		<div className='container py-8'>
+			<CategoryList />
+		</div>
+	);
 }

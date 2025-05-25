@@ -55,3 +55,11 @@ export const postFormSchema = z.object({
 });
 
 export type PostFormValues = z.infer<typeof postFormSchema>;
+
+
+export const formSchema = z.object({
+	name: z.string().min(1, 'Name is required').max(100),
+	description: z.string().min(1, 'Description is required').max(500),
+});
+
+export type CategoryFormValues = z.infer<typeof formSchema>;

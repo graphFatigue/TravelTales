@@ -1,16 +1,13 @@
 import { Metadata } from 'next';
 import SignUpForm from './SignUpForm';
 import {
-	Card,
-	CardDescription,
-	CardHeader,
-	CardTitle,
+	Card
 } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-	title: 'Log in',
+	title: 'Sign up',
 };
 
 export default function page() {
@@ -20,12 +17,6 @@ export default function page() {
 				<Link href={'/'} className='absolute right-5 top-5'>
 					<X />
 				</Link>
-				<CardHeader className='space-y-1'>
-					<CardTitle className='text-2xl font-bold'>
-						Create an account
-					</CardTitle>
-					<CardDescription>Enter your information to register</CardDescription>
-				</CardHeader>
 				<SignUpForm />
 			</Card>
 		</div>

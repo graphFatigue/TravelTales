@@ -12,7 +12,13 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { CardContent, CardFooter } from '@/components/ui/card';
+import {
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -23,6 +29,7 @@ import {
 import { cn } from '@/lib/utils';
 import { registrationSchema } from '@/lib/validation';
 import api from '@/lib/api/api';
+import { useTranslation } from 'react-i18next';
 
 type RegistrationSchema = z.infer<typeof registrationSchema>;
 
@@ -39,6 +46,7 @@ export default function RegistrationForm() {
 	});
 	const [isLoading, setIsLoading] = React.useState(false);
 	const date = watch('birthDate');
+	const { t } = useTranslation();
 
 	const onSubmit = async (data: RegistrationSchema) => {
 		setIsLoading(true);
@@ -58,7 +66,7 @@ export default function RegistrationForm() {
 			if (signInResponse?.error) {
 				toast.error(signInResponse?.error);
 			} else {
-				toast.success("You've successfully registered.");
+				toast.success(t('auth.signupSuccess'));
 				router.push('/');
 			}
 		} catch (err: unknown) {
@@ -71,84 +79,96 @@ export default function RegistrationForm() {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(onSubmit)}>
-			<CardContent className='space-y-4'>
-				{/* First Name */}
-				<div className='space-y-2'>
-					<Label htmlFor='firstname'>First Name</Label>
-					<Input id='firstname' placeholder='John' {...register('firstName')} />
-					{errors.firstName && (
-						<p className='text-sm text-red-500'>{errors.firstName.message}</p>
-					)}
-				</div>
+		<>
+			<CardHeader className='space-y-1'>
+				<CardTitle className='text-2xl font-bold'>
+					{t('auth.signupTitle')}
+				</CardTitle>
+				<CardDescription>{t('auth.signupDescription')}</CardDescription>
+			</CardHeader>
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<CardContent className='space-y-4'>
+					{/* First Name */}
+					<div className='space-y-2'>
+						<Label htmlFor='firstname'>{t('auth.firstName')}</Label>
+						<Input
+							id='firstname'
+							placeholder='John'
+							{...register('firstName')}
+						/>
+						{errors.firstName && (
+							<p className='text-sm text-red-500'>{errors.firstName.message}</p>
+						)}
+					</div>
 
-				{/* Last Name */}
-				<div className='space-y-2'>
-					<Label htmlFor='lastname'>Last Name</Label>
-					<Input id='lastname' placeholder='Doe' {...register('lastName')} />
-					{errors.lastName && (
-						<p className='text-sm text-red-500'>{errors.lastName.message}</p>
-					)}
-				</div>
+					{/* Last Name */}
+					<div className='space-y-2'>
+						<Label htmlFor='lastname'>{t('auth.lastName')}</Label>
+						<Input id='lastname' placeholder='Doe' {...register('lastName')} />
+						{errors.lastName && (
+							<p className='text-sm text-red-500'>{errors.lastName.message}</p>
+						)}
+					</div>
 
-				{/* Birth Date */}
-				<div className='space-y-2'>
-					<Label htmlFor='dob'>Date of Birth</Label>
-					<Popover>
-						<PopoverTrigger asChild>
-							<Button
-								variant='outline'
-								className={cn(
-									'w-full justify-start text-left font-normal',
-									!date && 'text-muted-foreground',
-								)}
-							>
-								<CalendarIcon className='mr-2 h-4 w-4' />
-								{date ? format(date, 'PPP') : 'Pick a date'}
-							</Button>
-						</PopoverTrigger>
-						<PopoverContent className='w-auto p-0'>
-							<Calendar
-								mode='single'
-								selected={date}
-								onSelect={d => d && setValue('birthDate', d)}
-								initialFocus
-								disabled={d => d > new Date()}
-							/>
-						</PopoverContent>
-					</Popover>
-					{errors.birthDate && (
-						<p className='text-sm text-red-500'>{errors.birthDate.message}</p>
-					)}
-				</div>
+					{/* Birth Date */}
+					<div className='space-y-2'>
+						<Label htmlFor='dob'>{t('auth.birthDate')}</Label>
+						<Popover>
+							<PopoverTrigger asChild>
+								<Button
+									variant='outline'
+									className={cn(
+										'w-full justify-start text-left font-normal',
+										!date && 'text-muted-foreground',
+									)}
+								>
+									<CalendarIcon className='mr-2 h-4 w-4' />
+									{date ? format(date, 'PPP') : 'Pick a date'}
+								</Button>
+							</PopoverTrigger>
+							<PopoverContent className='w-auto p-0'>
+								<Calendar
+									mode='single'
+									selected={date}
+									onSelect={d => d && setValue('birthDate', d)}
+									initialFocus
+									disabled={d => d > new Date()}
+								/>
+							</PopoverContent>
+						</Popover>
+						{errors.birthDate && (
+							<p className='text-sm text-red-500'>{errors.birthDate.message}</p>
+						)}
+					</div>
 
-				{/* Email */}
-				<div className='space-y-2'>
-					<Label htmlFor='email'>Email</Label>
-					<Input id='email' type='email' {...register('email')} />
-					{errors.email && (
-						<p className='text-sm text-red-500'>{errors.email.message}</p>
-					)}
-				</div>
+					{/* Email */}
+					<div className='space-y-2'>
+						<Label htmlFor='email'>{t('auth.email')}</Label>
+						<Input id='email' type='email' {...register('email')} />
+						{errors.email && (
+							<p className='text-sm text-red-500'>{errors.email.message}</p>
+						)}
+					</div>
 
-				{/* Password */}
-				<div className='space-y-2'>
-					<Label htmlFor='password'>Password</Label>
-					<Input id='password' type='password' {...register('password')} />
-					{errors.password && (
-						<p className='text-sm text-red-500'>{errors.password.message}</p>
-					)}
-					<p className='text-xs text-muted-foreground'>
-						Password must be at least 6 characters long
-					</p>
-				</div>
-			</CardContent>
+					{/* Password */}
+					<div className='space-y-2'>
+						<Label htmlFor='password'>{t('auth.password')}</Label>
+						<Input id='password' type='password' {...register('password')} />
+						{errors.password && (
+							<p className='text-sm text-red-500'>{errors.password.message}</p>
+						)}
+						<p className='text-xs text-muted-foreground'>
+							{t('auth.passwordDescription')}
+						</p>
+					</div>
+				</CardContent>
 
-			<CardFooter>
-				<Button type='submit' className='w-full' disabled={isLoading}>
-					{isLoading ? 'Signing up...' : 'Sign up'}
-				</Button>
-			</CardFooter>
-		</form>
+				<CardFooter>
+					<Button type='submit' className='w-full' disabled={isLoading}>
+						{isLoading ? t('auth.signuping') : t('auth.signup')}
+					</Button>
+				</CardFooter>
+			</form>
+		</>
 	);
 }

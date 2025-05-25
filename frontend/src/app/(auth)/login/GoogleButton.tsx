@@ -11,7 +11,7 @@ export default function GoogleButton() {
 		>
 			<div className='flex w-full items-center gap-2'>
 				<GoogleIcon />
-				Sign in with Google
+				Google
 			</div>
 		</Button>
 	);

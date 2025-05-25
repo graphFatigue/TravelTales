@@ -8,6 +8,7 @@ import api from '@/lib/api/api';
 import InfiniteScrollContainer from '../InfiniteScrollContainer';
 import { Loader2 } from 'lucide-react';
 import PostLoader from './PostLoader';
+import { useTranslation } from 'react-i18next';
 
 interface PostsResponse {
 	items: Post[];
@@ -44,6 +45,8 @@ export default function PostsFeed() {
 		},
 	});
 
+	const { t } = useTranslation();
+
 	const posts = data?.pages.flatMap(page => page.items) || [];
 
 	if (status === 'pending') {
@@ -67,6 +70,8 @@ export default function PostsFeed() {
 			className='space-y-5'
 			onBottomReached={() => hasNextPage && !isFetching && fetchNextPage()}
 		>
+			<h1>{t('common.welcome')}</h1>
+			<p>{t('common.greeting', { name: 'John' })}</p>
 			{posts.map(post => (
 				<PostCardPreview key={post.id} post={post} />
 			))}

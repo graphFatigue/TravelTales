@@ -1,15 +1,18 @@
+"use client";
+
 import { Button } from '@/components/ui/button';
 import { Bell, Home, UserRoundCheck, UserRoundPlus, Users } from 'lucide-react';
-import { getServerSession } from 'next-auth';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { authOptions } from '../api/auth/[...nextauth]/authOptions';
+import { useTranslation } from 'react-i18next';
 
 interface MenuBarProps {
 	className?: string;
 }
 
-export default async function MenuBar({ className }: MenuBarProps) {
-	const session = await getServerSession(authOptions);
+export default function MenuBar({ className }: MenuBarProps) {
+	const { data: session } = useSession();
+	const {t} = useTranslation();
 	return (
 		<div className={className}>
 			<Button
@@ -20,7 +23,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
 			>
 				<Link href='/'>
 					<Home />
-					<span className='hidden lg:inline'>Home</span>
+					<span className='hidden lg:inline'>{t('dashboard.home')}</span>
 				</Link>
 			</Button>
 			<Button
@@ -31,7 +34,7 @@ export default async function MenuBar({ className }: MenuBarProps) {
 			>
 				<Link href='/blogger'>
 					<Users />
-					<span className='hidden lg:inline'>Bloggers</span>
+					<span className='hidden lg:inline'>{t('dashboard.bloggers')}</span>
 				</Link>
 			</Button>
 
@@ -45,7 +48,9 @@ export default async function MenuBar({ className }: MenuBarProps) {
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/followers`}>
 							<UserRoundPlus />
-							<span className='hidden lg:inline'>Followers</span>
+							<span className='hidden lg:inline'>
+								{t('dashboard.followers')}
+							</span>
 						</Link>
 					</Button>
 					<Button
@@ -56,7 +61,9 @@ export default async function MenuBar({ className }: MenuBarProps) {
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/following`}>
 							<UserRoundCheck />
-							<span className='hidden lg:inline'>Following</span>
+							<span className='hidden lg:inline'>
+								{t('dashboard.following')}
+							</span>
 						</Link>
 					</Button>
 					<Button
@@ -67,7 +74,9 @@ export default async function MenuBar({ className }: MenuBarProps) {
 					>
 						<Link href={`/`}>
 							<Bell />
-							<span className='hidden lg:inline'>Notifications</span>
+							<span className='hidden lg:inline'>
+								{t('dashboard.notifications')}
+							</span>
 						</Link>
 					</Button>
 				</>

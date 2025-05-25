@@ -4,6 +4,7 @@ import { ThemeProvider } from 'next-themes';
 import { Toaster } from 'sonner';
 import AuthProvider from '@/components/AuthProvider';
 import ReactQueryProvider from './QueryProvider';
+import I18nProvider from '@/components/I18nProvider';
 
 export const metadata: Metadata = {
 	title: 'TravelTales',
@@ -26,7 +27,7 @@ export default function RootLayout({
 							enableSystem
 							disableTransitionOnChange
 						>
-							{children}
+							<I18nProvider>{children}</I18nProvider>
 						</ThemeProvider>
 						<Toaster position='bottom-left' />
 					</AuthProvider>

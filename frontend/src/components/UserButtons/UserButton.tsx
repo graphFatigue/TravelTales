@@ -21,6 +21,7 @@ import UserAvatar from '../UserAvatar';
 import { signOut } from 'next-auth/react';
 import { User } from '@/types/types';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 
 interface UserButtonProps {
 	user: User;
@@ -30,6 +31,7 @@ interface UserButtonProps {
 export default function UserButton({ user, className }: UserButtonProps) {
 	const { theme, setTheme } = useTheme();
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -39,34 +41,37 @@ export default function UserButton({ user, className }: UserButtonProps) {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
 				<DropdownMenuLabel>
-					Logged in as{' '}
-					{user.blogger?.firstName + ' ' + user.blogger?.lastName || 'unknown'}
+					{t('dashboard.logedinAs', {
+						name:
+							user.blogger?.firstName + ' ' + user.blogger?.lastName ||
+							'unknown',
+					})}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<Link href={`/blogger/${user.blogger?.id}`}>
 					<DropdownMenuItem>
-						<UserIcon className='mr-2 size-4' /> Profile
+						<UserIcon className='mr-2 size-4' /> {t('dashboard.profile')}
 					</DropdownMenuItem>
 				</Link>
 				<DropdownMenuSub>
 					<DropdownMenuSubTrigger>
-						<Monitor className='mr-2 size-4' /> Theme
+						<Monitor className='mr-2 size-4' /> {t('dashboard.theme')}
 					</DropdownMenuSubTrigger>
 					<DropdownMenuPortal>
 						<DropdownMenuSubContent>
 							<DropdownMenuItem onClick={() => setTheme('system')}>
 								<Monitor className='mr-2 size-4' />
-								System default
+								{t('dashboard.system')}
 								{theme === 'system' && <Check className='ms-2 size-4' />}
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => setTheme('light')}>
 								<Sun className='mr-2 size-4' />
-								Light
+								{t('dashboard.light')}
 								{theme === 'light' && <Check className='ms-2 size-4' />}
 							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => setTheme('dark')}>
 								<Moon className='mr-2 size-4' />
-								Dark
+								{t('dashboard.dark')}
 								{theme === 'dark' && <Check className='ms-2 size-4' />}
 							</DropdownMenuItem>
 						</DropdownMenuSubContent>
@@ -79,7 +84,7 @@ export default function UserButton({ user, className }: UserButtonProps) {
 						signOut();
 					}}
 				>
-					<LogOutIcon className='mr-2 size-4' /> Logout
+					<LogOutIcon className='mr-2 size-4' /> {t('auth.logout')}
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>

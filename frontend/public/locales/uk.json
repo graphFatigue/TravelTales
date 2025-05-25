@@ -1,0 +1,51 @@
+{
+	"common": {
+		"welcome": "Ласкаво просимо",
+		"greeting": "Привіт, {{name}}!",
+		"edit": "Редагувати",
+		"delete": "Видалити"
+	},
+	"auth": {
+		"login": "Увійти",
+		"logout": "Вийти",
+		"signup": "Зареєструватися",
+		"loginTitle": "Введіть електронну пошту та пароль для входу в обліковий запис",
+		"email": "Електронна пошта",
+		"password": "Пароль",
+		"logginError": "Не вдалося увійти",
+		"loginSuccess": "Ви успішно увійшли",
+		"signupSuccess": "Ви успішно зареєструвались.",
+		"forgotPassword": "Забули пароль?",
+		"dontHaveAccount": "Немає облікового запису?",
+		"signupTitle": "Створіть обліковий запис",
+		"signupDescription": "Введіть свої дані для реєстрації",
+		"firstName": "Ім’я",
+		"lastName": "Прізвище",
+		"birthDate": "Дата народження",
+		"passwordDescription": "Пароль повинен містити щонайменше 6 символів",
+		"OR": "АБО",
+		"loggingin": "Завантаження...",
+		"signuping": "Реєстрація..."
+	},
+	"dashboard": {
+		"home": "Головна",
+		"bloggers": "Блогери",
+		"profile": "Профіль",
+		"followers": "Підписники",
+		"following": "Підписані",
+		"notifications": "Сповіщення",
+		"logedinAs": "Авторизований як {{name}}",
+		"theme": "Тема",
+		"light": "Світла",
+		"dark": "Темна",
+		"system": "Система"
+	},
+	"profile": {
+		"title": "Profile",
+		"edit": "Edit Profile"
+	},
+	"post": {
+		"title": "Публікація",
+		"create": "Створити нову публікацію"
+	}
+}

@@ -61,13 +61,12 @@ export const CommentsSection = ({
 							<CardContent className='p-4'>
 								<div className='flex items-start gap-3'>
 									<UserAvatar
-										avatarUrl={comment.bloggerImage || comment.blogger.image}
+										avatarUrl={comment.bloggerImage || ''}
 									/>
 									<div className='flex-1 space-y-1.5'>
 										<div className='flex items-center justify-between'>
 											<p className='text-sm font-medium'>
-												{comment.bloggerName ||
-													`${comment.blogger.firstName} ${comment.blogger.lastName}`}
+												{comment.bloggerName || 'Anonymous'}
 											</p>
 											<p className='text-xs text-muted-foreground'>
 												{formatDate(comment.createdAt)}

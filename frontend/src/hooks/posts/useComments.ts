@@ -26,6 +26,7 @@ export const useComments = ({ postId }: { postId: number }) => {
 						PageSize: 3,
 						Page: pageParam,
 						Filters: `postId==${postId}`,
+						Sorts: '-createdAt',
 					},
 				});
 				return response.data;
@@ -68,7 +69,9 @@ export const useComments = ({ postId }: { postId: number }) => {
 					if (!old) return old;
 
 					if (Array.isArray(data)) {
-						const oldComments = old.pages.flatMap((page: {items: Comment[]}) => page.items);
+						const oldComments = old.pages.flatMap(
+							(page: { items: Comment[] }) => page.items,
+						);
 						const deletedCommentId = oldComments.find(
 							(oldComment: Comment) =>
 								!data.some(newComment => newComment.id === oldComment.id),

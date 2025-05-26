@@ -25,7 +25,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { BudgetIndicator } from './BudgetIndicator';
 import { Plus, Trash, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { postFormSchema, PostFormValues } from '@/lib/validation';
@@ -33,7 +33,6 @@ import api from '@/lib/api/api';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { Post } from '@/types/types';
-import PostLoader from './PostLoader';
 
 interface PostFormProps {
 	post?: Post;
@@ -46,49 +45,30 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 	const router = useRouter();
 	const { data: categories } = useCategories();
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const [isInitialized, setIsInitialized] = useState(false);
 
 	const form = useForm<PostFormValues>({
 		resolver: zodResolver(postFormSchema),
 		defaultValues: {
-			title: '',
-			content: '',
-			bloggerId,
-			budget: 0,
-			categoryIds: [],
-			tags: [],
-			attachments: [],
-			cityId: undefined,
-			countryId: undefined,
+			title: post?.title || '',
+			content: post?.content || '',
+			bloggerId: post?.bloggerId || bloggerId,
+			budget: post?.budget || 0,
+			categoryIds: post?.categories?.map(c => c.id) || [],
+			tags: post?.tags || [],
+			attachments:
+				post?.attachments?.map(attachment => ({
+					id: attachment.id,
+					number: attachment.number,
+					previewUrl: attachment.uri,
+				})) || [],
+			cityId: post?.cityId || undefined,
+			countryId: post?.countryId || undefined,
 		},
 	});
 
 	const countryId = form.watch('countryId');
-	const { countries, cities, loading } = useLocationInfo(countryId);
-
-	useEffect(() => {
-		if (isEditing && post && categories && countries && !isInitialized) {
-			const initialValues = {
-				title: post.title,
-				content: post.content,
-				bloggerId: post.bloggerId,
-				cityId: post.cityId,
-				countryId: post.countryId,
-				budget: post.budget || 0,
-				categoryIds: post.categories?.map(c => c.id) || [],
-				tags: post.tags || [],
-				attachments:
-					post.attachments?.map(attachment => ({
-						id: attachment.id,
-						number: attachment.number,
-						previewUrl: attachment.uri,
-					})) || [],
-			};
-
-			form.reset(initialValues);
-			setIsInitialized(true);
-		}
-	}, [isEditing, post, categories, countries, form, isInitialized]);
+	const { countries, cities, loadingCities, loadingCountries } =
+		useLocationInfo(countryId);
 
 	const { watch, setValue } = form;
 	const currentAttachments = watch('attachments');
@@ -142,14 +122,14 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 							reader.readAsDataURL(attachment.file!);
 							reader.onload = () => {
 								const result = reader.result as string;
-								resolve(result); 
+								resolve(result);
 							};
 							reader.onerror = error => reject(error);
 						});
 
 						return {
 							number: attachment.number,
-							base64Attachment: base64, 
+							base64Attachment: base64,
 						};
 					}),
 			);
@@ -173,6 +153,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 					id => !currentAttachmentIds.includes(id),
 				);
 
+
 				const response = await api.put(`/api/Posts/${post.id}`, {
 					...commonPayload,
 					newAttachments: attachmentsWithBase64,
@@ -181,6 +162,11 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 				router.push(`/post/${response.data.id}`);
 				toast.success('Post updated successfully!');
 			} else {
+				console.log({
+					...commonPayload,
+					bloggerId: values.bloggerId,
+					attachments: attachmentsWithBase64,
+				});
 				const response = await api.post('/api/Posts', {
 					...commonPayload,
 					bloggerId: values.bloggerId,
@@ -204,8 +190,6 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 
 	const selectedCountry = countries?.find(c => c.id === post?.countryId);
 	const selectedCity = cities?.find(c => c.id === post?.cityId);
-
-	if (loading) return <PostLoader />;
 
 	return (
 		<div className='rounded-2xl bg-card p-5 shadow-sm'>
@@ -251,8 +235,12 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 								<FormItem>
 									<FormLabel>Country</FormLabel>
 									<Select
-										onValueChange={value => field.onChange(Number(value))}
+										onValueChange={value => {
+											field.onChange(Number(value));
+											form.setValue('cityId', undefined);
+										}}
 										value={field.value?.toString()}
+										disabled={loadingCountries}
 									>
 										<FormControl>
 											<SelectTrigger>
@@ -290,7 +278,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 									<Select
 										onValueChange={value => field.onChange(Number(value))}
 										value={field.value?.toString()}
-										disabled={!countryId}
+										disabled={!countryId || loadingCities}
 									>
 										<FormControl>
 											<SelectTrigger>

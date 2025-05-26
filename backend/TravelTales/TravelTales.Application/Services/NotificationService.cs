@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Sieve.Models;
 using TravelTales.Application.DTOs.Notification;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
+using TravelTales.Persistence;
 using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Services
 {
@@ -13,24 +16,23 @@ namespace TravelTales.Application.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
-        //private readonly IValidator<CreateNotificationDto> validator;
         private readonly IBloggerBlockRepository blockerRepository;
+        private readonly IBloggerService bloggerService;
 
         public NotificationService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            //IValidator<CreateNotificationDto> validator,
+            IBloggerService bloggerService,
             IBloggerBlockRepository blockerRepository)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
-            //this.validator = validator;
+            this.bloggerService = bloggerService;
             this.blockerRepository = blockerRepository;
         }
 
         public async Task<NotificationDto> CreateNotificationAsync(CreateNotificationDto notificationDto, CancellationToken cancellationToken = default)
         {
-            //await validator.ValidateAndThrowAsync(notificationDto, cancellationToken);
 
             var notification = mapper.Map<Notification>(notificationDto);
             await unitOfWork.GetRepository<INotificationRepository>().AddAsync(notification, cancellationToken);
@@ -70,65 +72,55 @@ namespace TravelTales.Application.Services
 
         public async Task MarkAsReadAsync(long notificationId, CancellationToken cancellationToken = default)
         {
-            var notification = await unitOfWork.GetRepository<INotificationRepository>()
+            var notification = await this.unitOfWork.GetRepository<INotificationRepository>()
                 .GetByIdAsync(notificationId, cancellationToken);
 
             if (notification == null || notification.IsDeleted)
                 throw new NotFoundException("Notification not found");
 
+            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
+            if (notification.RecipientBloggerId != currentBloggerId)
+                throw new PermissionsException("Cannot modify another user's notifications");
+
             notification.IsRead = true;
             unitOfWork.GetRepository<INotificationRepository>().Update(notification);
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
+
+        public async Task<PagedList<NotificationDto>> GetNotificationsAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
+        {
+            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
+
+            var pagedList = await this.unitOfWork.GetRepository<INotificationRepository>()
+                .GetAllWithFilterAsync(sieveModel, cancellationToken);
+
+            var filteredNotifications = pagedList.Items?
+                .Where(n => n.RecipientBloggerId == currentBloggerId && !n.IsDeleted)
+                .ToList();
+
+            var dtos = this.mapper.Map<List<NotificationDto>>(filteredNotifications);
+
+            return PagedList<NotificationDto>.Copy(pagedList, dtos);
+        }
+
+        public async Task MarkAllAsReadAsync(CancellationToken cancellationToken = default)
+        {
+            var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
+
+            var notifications = await this.unitOfWork.GetRepository<INotificationRepository>()
+                .GetAllAsync(n =>
+                    n.RecipientBloggerId == currentBloggerId &&
+                    !n.IsDeleted &&
+                    !n.IsRead,
+                    cancellationToken);
+
+            foreach (var notification in notifications)
+            {
+                notification.IsRead = true;
+                this.unitOfWork.GetRepository<INotificationRepository>().Update(notification);
+            }
+
+            await this.unitOfWork.SaveChangesAsync(cancellationToken);
+        }
     }
-    //public class NotificationService : INotificationService
-    //{
-    //    private readonly IUnitOfWork unitOfWork;
-    //    private readonly IMapper mapper;
-    //    private readonly IValidator<CreateNotificationDto> validator;
-
-    //    public NotificationService(
-    //        IUnitOfWork unitOfWork,
-    //        IMapper mapper,
-    //        IValidator<CreateNotificationDto> validator)
-    //    {
-    //        this.unitOfWork = unitOfWork;
-    //        this.mapper = mapper;
-    //        this.validator = validator;
-    //    }
-
-    //    public async Task<NotificationDto> CreateNotificationAsync(CreateNotificationDto notificationDto, CancellationToken cancellationToken = default)
-    //    {
-    //        await validator.ValidateAndThrowAsync(notificationDto, cancellationToken);
-
-    //        var notification = mapper.Map<Notification>(notificationDto);
-    //        notification.CreatedAt = DateTime.UtcNow;
-
-    //        await unitOfWork.GetRepository<INotificationRepository>().AddAsync(notification, cancellationToken);
-    //        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-    //        return mapper.Map<NotificationDto>(notification);
-    //    }
-
-    //    public async Task<List<NotificationDto>> GetNotificationsForBloggerAsync(long bloggerId, CancellationToken cancellationToken = default)
-    //    {
-    //        var notifications = await unitOfWork.GetRepository<INotificationRepository>()
-    //            .GetByRecipientIdAsync(bloggerId, cancellationToken);
-
-    //        return mapper.Map<List<NotificationDto>>(notifications);
-    //    }
-
-    //    public async Task MarkAsReadAsync(long notificationId, CancellationToken cancellationToken = default)
-    //    {
-    //        var notification = await unitOfWork.GetRepository<INotificationRepository>()
-    //            .GetByIdAsync(notificationId, cancellationToken);
-
-    //        if (notification == null || notification.IsDeleted)
-    //            throw new NotFoundException("Notification not found");
-
-    //        notification.IsRead = true;
-    //        unitOfWork.GetRepository<INotificationRepository>().Update(notification);
-    //        await unitOfWork.SaveChangesAsync(cancellationToken);
-    //    }
-    //}
 }

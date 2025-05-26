@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
 using Sieve.Services;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Persistence.Repositories
 {
@@ -32,6 +34,22 @@ namespace TravelTales.Persistence.Repositories
                 .Include(n => n.Post)
                 .Include(n => n.Comment)
                 .FirstOrDefaultAsync(n => n.Id == id && !n.IsDeleted, cancellationToken);
+        }
+
+        public override async Task<PagedList<Notification>> GetAllWithFilterAsync(
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
+        {
+            var query = DbSet
+                .Include(n => n.RecipientBlogger)
+                .Include(n => n.TriggeredByBlogger)
+                .Include(n => n.Post)
+                .Include(n => n.Comment)
+                .Where(n => !n.IsDeleted)
+                .OrderByDescending(n => n.CreatedAt);
+
+            var filteredQuery = this.sieveProcessor.Apply(sieveModel, query, applyPagination: false);
+            return await PagedList<Notification>.ToPagedListAsync(filteredQuery, sieveModel);
         }
     }
 }

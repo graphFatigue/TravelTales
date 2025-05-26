@@ -6,7 +6,6 @@ using TravelTales.Application.Services;
 
 namespace TravelTales.API.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class BloggerFollowController : ControllerBase
@@ -22,6 +21,7 @@ namespace TravelTales.API.Controllers
             this.logger = logger;
         }
 
+        [Authorize]
         [HttpPost("{id}/follow")]
         public async Task<IActionResult> FollowBlogger(long id, CancellationToken cancellationToken)
         {
@@ -29,6 +29,7 @@ namespace TravelTales.API.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}/follow")]
         public async Task<IActionResult> UnfollowBlogger(long id, CancellationToken cancellationToken)
         {

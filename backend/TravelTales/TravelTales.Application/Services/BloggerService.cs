@@ -270,29 +270,6 @@ namespace TravelTales.Application.Services
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
-        //public async Task FollowBloggerAsync(long followingId, CancellationToken cancellationToken = default)
-        //{
-        //    var followerId = await GetCurrentBloggerId(cancellationToken);
-
-        //    if (followerId == followingId)
-        //        throw new ValidationException("Cannot follow yourself");
-
-        //    if (await unitOfWork.GetRepository<IBloggerFollowRepository>()
-        //        .ExistsAsync(followerId, followingId, cancellationToken))
-        //    {
-        //        throw new ValidationException("Already following this blogger");
-        //    }
-
-        //    var follow = new BloggerFollow
-        //    {
-        //        FollowerId = followerId,
-        //        FollowingId = followingId
-        //    };
-
-        //    await unitOfWork.GetRepository<IBloggerFollowRepository>().AddAsync(follow, cancellationToken);
-        //    await unitOfWork.SaveChangesAsync(cancellationToken);
-        //}
-
         public async Task FollowBloggerAsync(long followingId, CancellationToken cancellationToken = default)
         {
             try

@@ -18,6 +18,7 @@ namespace TravelTales.Persistence.Repositories
         {
             return await this.DbSet
                 .Include(c => c.Blogger)
+                .Include(s => s.Post)
                 .Where(c => c.PostId == postId && !c.IsDeleted)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
@@ -45,6 +46,7 @@ namespace TravelTales.Persistence.Repositories
             var query = DbSet
                 .Where(x => !x.IsDeleted)
                 .Include(s => s.Blogger)
+                .Include(s => s.Post)
                 .AsQueryable();
 
             //// Apply Sieve filters/sorts

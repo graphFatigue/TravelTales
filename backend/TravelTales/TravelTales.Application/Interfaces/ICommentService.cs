@@ -14,6 +14,6 @@ namespace TravelTales.Application.Interfaces
 
         Task<List<CommentDto>> GetCommentsByPostIdAsync(long postId, CancellationToken cancellationToken = default);
 
-        Task<PagedList<CommentDto>> GetCommentsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
+        Task<PagedList<CommentBroadcastDto>> GetCommentsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
     }
 }

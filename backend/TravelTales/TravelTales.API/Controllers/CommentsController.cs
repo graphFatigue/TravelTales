@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Sieve.Models;
 using TravelTales.Application.Interfaces;
 
 namespace TravelTales.API.Controllers
 {
-    [Authorize]
     [ApiController, Route("api/[controller]")]
     public class CommentsController : ControllerBase
     {

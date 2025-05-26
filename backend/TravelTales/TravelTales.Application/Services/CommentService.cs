@@ -100,16 +100,16 @@ namespace TravelTales.Application.Services
             return mapper.Map<List<CommentDto>>(comments);
         }
 
-        public async Task<PagedList<CommentDto>> GetCommentsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
+        public async Task<PagedList<CommentBroadcastDto>> GetCommentsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
         {
             var pagedList = await this.unitOfWork.GetRepository<ICommentRepository>()
                 .GetAllWithFilterAsync(sieveModel, cancellationToken);
 
-            var filteredComments = this.mapper.Map<List<CommentDto>>(pagedList.Items)
+            var filteredComments = this.mapper.Map<List<CommentBroadcastDto>>(pagedList.Items)
                 .Where(c => !c.IsDeleted)
                 .ToList();
 
-            return PagedList<CommentDto>.Copy(pagedList, filteredComments);
+            return PagedList<CommentBroadcastDto>.Copy(pagedList, filteredComments);
         }
 
         private async Task<Comment> GetCommentWithAuthorization(long commentId, long bloggerId, CancellationToken cancellationToken = default)

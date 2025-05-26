@@ -23,10 +23,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
       params.set('value', searchValue);
     }
     
-    // Reset to page 1 when searching
     params.set('page', '1');
     
     router.push(`/admin/users?${params.toString()}`);
+    
+    setSearchValue('');
   };
 
   return (

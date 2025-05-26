@@ -10,6 +10,7 @@ export function UsersList({ filters }: { filters: Record<string, string> }) {
 		field: filters.field,
 		value: filters.value,
 	};
+	console.log(backendFilters);
 
 	const {
 		data,

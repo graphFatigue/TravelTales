@@ -12,6 +12,10 @@ namespace TravelTales.Application.Sieve.Configurations
             mapper.Property<Comment>(x => x.PostId)
                 .CanFilter()
                 .CanSort();
+
+            mapper.Property<Comment>(x => x.CreatedAt)
+                .CanFilter()
+                .CanSort();
         }
     }
 }

@@ -31,7 +31,7 @@ export default function UserButton({ className }: UserButtonProps) {
 	const queryClient = useQueryClient();
 	const { t } = useTranslation();
 	const { data: session } = useSession();
-	console.log(session);
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>

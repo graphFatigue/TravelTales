@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { CardFooter } from '../ui/card';
 import { Button } from '../ui/button';
 import { Heart, Loader2, MessageCircle } from 'lucide-react';
@@ -14,6 +14,9 @@ export function PostCardFooter({ post }: { post: Post }) {
 	const { data: session, status } = useSession();
 	const [openComments, setOpenComments] = useState(false);
 	const [openLikes, setOpenLikes] = useState(false);
+	const [commentsAmount, setCommentsAmount] = useState<number>(
+		post.comments?.length || 0,
+	);
 
 	const { likesCount, isLiked, toggleLike } = useLikes(
 		post.id,
@@ -24,7 +27,7 @@ export function PostCardFooter({ post }: { post: Post }) {
 
 	if (status === 'loading')
 		return (
-			<div className='flex items-center space-x-2 text-muted-foreground m-5 gap-5'>
+			<div className='m-5 flex items-center gap-5 space-x-2 text-muted-foreground'>
 				<Loader2 className='animate-spin' />
 				Loading...
 			</div>
@@ -56,14 +59,14 @@ export function PostCardFooter({ post }: { post: Post }) {
 						onClick={() => setOpenComments(!openComments)}
 					>
 						<MessageCircle className='h-8 w-8' />
-						<span className='text-base'>{post.comments?.length || 0}</span>
+						<span className='text-base'>{commentsAmount}</span>
 					</Button>
 				</div>
 				<div className='text-base text-muted-foreground'>
-					{post.comments?.length || 0} comments
+					{commentsAmount} comments
 				</div>
 			</div>
-			{openComments && <CommentsSection post={post} />}
+			{openComments && <CommentsSection post={post} changeCommentsAmount={setCommentsAmount} />}
 			{openLikes && (
 				<RestrictedDialog open={openLikes} setOpen={setOpenLikes} />
 			)}

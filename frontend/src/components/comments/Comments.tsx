@@ -10,13 +10,27 @@ import { Button } from '../ui/button';
 import { CommentsAction } from './CommentsAction';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
+import { Loader2 } from 'lucide-react';
 
-export const CommentsSection = ({ post }: { post: Post }) => {
+export const CommentsSection = ({
+	post,
+	changeCommentsAmount,
+}: {
+	post: Post;
+	changeCommentsAmount: React.Dispatch<React.SetStateAction<number>>;
+}) => {
 	const { data: session } = useSession();
 
-	const { comments, send, edit, remove } = useComments({
+	const {
+		comments,
+		send,
+		edit,
+		remove,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useComments({
 		postId: post.id,
-		initialComments: post.comments || [],
 	});
 
 	const [content, setContent] = useState('');
@@ -30,10 +44,13 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 		};
 		await send(comment);
 		setContent('');
+		changeCommentsAmount(prev=>prev+1);
 	};
 
+	console.log(comments);
+
 	return (
-		<div className='space-y-4 w-full'>
+		<div className='w-full space-y-4'>
 			{comments.length > 0 ? (
 				<>
 					{comments.map(comment => (
@@ -43,11 +60,14 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 						>
 							<CardContent className='p-4'>
 								<div className='flex items-start gap-3'>
-									<UserAvatar avatarUrl={comment.bloggerImage} />
+									<UserAvatar
+										avatarUrl={comment.bloggerImage || comment.blogger.image}
+									/>
 									<div className='flex-1 space-y-1.5'>
 										<div className='flex items-center justify-between'>
 											<p className='text-sm font-medium'>
-												{comment.bloggerName || 'Anonymous'}
+												{comment.bloggerName ||
+													`${comment.blogger.firstName} ${comment.blogger.lastName}`}
 											</p>
 											<p className='text-xs text-muted-foreground'>
 												{formatDate(comment.createdAt)}
@@ -63,10 +83,30 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 									edit={edit}
 									remove={remove}
 									comment={comment}
+									changeCommentsAmount={changeCommentsAmount}
 								/>
 							)}
 						</Card>
 					))}
+
+					{hasNextPage && (
+						<div className='flex justify-center pt-4'>
+							<Button
+								variant='outline'
+								onClick={() => fetchNextPage()}
+								disabled={isFetchingNextPage}
+							>
+								{isFetchingNextPage ? (
+									<>
+										<Loader2 className='mr-2 h-4 w-4 animate-spin' />
+										Loading...
+									</>
+								) : (
+									'Load more comments'
+								)}
+							</Button>
+						</div>
+					)}
 				</>
 			) : (
 				<div className='py-8 text-center'>
@@ -78,7 +118,7 @@ export const CommentsSection = ({ post }: { post: Post }) => {
 
 			{session ? (
 				<div className='mt-8 space-y-4'>
-					<div className='flex items-center gap-3 mx-1'>
+					<div className='mx-1 flex items-center gap-3'>
 						<UserAvatar avatarUrl={session.user.blogger?.image} />
 						<Label htmlFor='comment' className='text-sm font-medium'>
 							Add a comment

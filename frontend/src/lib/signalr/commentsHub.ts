@@ -1,9 +1,13 @@
-// lib/signalr/commentsHub.ts
 import { CreateComment, UpdateComment, Comment } from '@/types/types';
 import * as signalR from '@microsoft/signalr';
 import { getSession } from 'next-auth/react';
 
 let connection: signalR.HubConnection | null = null;
+
+const listeners: {
+	onCommentReceived?: (comment: Comment) => void;
+	onCommentUpdated?: (comment: Comment) => void;
+} = {};
 
 export const initCommentsHub = async () => {
 	if (connection) return connection;
@@ -19,11 +23,33 @@ export const initCommentsHub = async () => {
 		.withAutomaticReconnect()
 		.build();
 
-	connection
+	connection.onreconnected(() => {
+		attachListeners(); 
+	});
+
+	await connection
 		.start()
-		.then(() => console.log('Connected to SignalR hub'))
+		.then(() => {
+			console.log('Connected to SignalR hub');
+			attachListeners();
+		})
 		.catch(err => console.error('Error connecting to SignalR', err));
+
 	return connection;
+};
+
+const attachListeners = () => {
+	if (!connection) return;
+
+	if (listeners.onCommentReceived) {
+		connection.off('ReceiveComment');
+		connection.on('ReceiveComment', listeners.onCommentReceived);
+	}
+
+	if (listeners.onCommentUpdated) {
+		connection.off('UpdateComments');
+		connection.on('UpdateComments', listeners.onCommentUpdated);
+	}
 };
 
 export const joinPostGroup = async (postId: number) => {
@@ -55,10 +81,18 @@ export const deleteComment = async (commentId: number, postId: number) => {
 	await connection.invoke('DeleteComment', commentId, postId);
 };
 
-export const onReceiveComment = (callback: (comment: Comment) => void) => {
-	connection?.on('ReceiveComment', callback);
+export const onCommentReceived = (callback: (comment: Comment) => void) => {
+	listeners.onCommentReceived = callback;
+	if (connection?.state === signalR.HubConnectionState.Connected) {
+		connection.off('ReceiveComment');
+		connection.on('ReceiveComment', callback);
+	}
 };
 
-export const onUpdateComments = (callback: (comments: Comment[]) => void) => {
-	connection?.on('UpdateComments', callback);
+export const onCommentUpdated = (callback: (comment: Comment) => void) => {
+	listeners.onCommentUpdated = callback;
+	if (connection?.state === signalR.HubConnectionState.Connected) {
+		connection.off('UpdateComments');
+		connection.on('UpdateComments', callback);
+	}
 };

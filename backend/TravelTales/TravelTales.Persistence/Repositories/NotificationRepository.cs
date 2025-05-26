@@ -45,8 +45,8 @@ namespace TravelTales.Persistence.Repositories
                 .Include(n => n.TriggeredByBlogger)
                 .Include(n => n.Post)
                 .Include(n => n.Comment)
-                .Where(n => !n.IsDeleted)
-                .OrderByDescending(n => n.CreatedAt);
+                .Where(n => !n.IsDeleted);
+                //.OrderByDescending(n => n.CreatedAt);
 
             var filteredQuery = this.sieveProcessor.Apply(sieveModel, query, applyPagination: false);
             return await PagedList<Notification>.ToPagedListAsync(filteredQuery, sieveModel);

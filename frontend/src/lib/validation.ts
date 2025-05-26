@@ -63,3 +63,17 @@ export const formSchema = z.object({
 });
 
 export type CategoryFormValues = z.infer<typeof formSchema>;
+
+export const profileFormSchema = z.object({
+	firstName: z.string().min(1, 'First name is required'),
+	lastName: z.string().min(1, 'Last name is required'),
+	birthDate: z.string().optional(),
+	sex: z.number(),
+	bio: z.string().optional(),
+	countryId: z.number().optional(),
+	cityId: z.number().optional(),
+	visitedCityIds: z.array(z.number()).optional(),
+	visitedCountryIds: z.array(z.number()).optional(),
+});
+
+export type UpdateBloggerProfileValues = z.infer<typeof profileFormSchema>;

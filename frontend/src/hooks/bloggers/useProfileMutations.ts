@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 export interface UpdateBloggerProfileValues {
 	firstName: string;
 	lastName: string;
-	birthDate?: Date;
+	birthDate?: string;
 	sex: number;
 	bio?: string;
 	countryId?: number;

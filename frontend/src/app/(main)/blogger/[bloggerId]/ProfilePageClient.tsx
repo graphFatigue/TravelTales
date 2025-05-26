@@ -31,7 +31,7 @@ export default function ProfilePageClient({
 				<div className='flex flex-col items-center gap-2'>
 					<UserAvatar size={150} avatarUrl={blogger.image} />
 					{blogger.id === session?.user.blogger?.id ? (
-						<EditProfileButton blogger={blogger} />
+						<EditProfileButton blogger={initialBlogger} />
 					) : (
 						<FollowButton
 							bloggerId={blogger.id}

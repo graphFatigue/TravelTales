@@ -35,13 +35,6 @@ namespace TravelTales.Persistence.Repositories
 
             var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
 
-            //if (sieveModel.Page != null && sieveModel.PageSize != null)
-            //{
-            //    filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery,
-            //        applyFiltering: false,
-            //        applySorting: false);
-            //}
-
             return await PagedList<User>.ToPagedListAsync(filteredQuery, sieveModel);
         }
 

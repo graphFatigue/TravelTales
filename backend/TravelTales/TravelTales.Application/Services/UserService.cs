@@ -29,7 +29,11 @@ namespace TravelTales.Application.Services
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
             var users = await this.unitOfWork.GetRepository<IUserRepository>().GetAllFullAsync(cancellationToken);
-            return this.mapper.Map<IEnumerable<UserDto>>(users);
+            var userDtos = this.mapper.Map<IEnumerable<UserDto>>(users).ToList();
+
+            await AddRolesToUserDtosAsync(userDtos, users);
+
+            return userDtos;
         }
 
         public async Task<UserDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -79,6 +83,8 @@ namespace TravelTales.Application.Services
                 .Where(u => !u.IsDeleted)
                 .ToList();
 
+            await AddRolesToUserDtosAsync(filteredUsers, pagedList.Items);
+
             return PagedList<UserDto>.Copy(pagedList, filteredUsers);
         }
 
@@ -92,6 +98,16 @@ namespace TravelTales.Application.Services
                 Page = original.Page,
                 PageSize = original.PageSize
             };
+        }
+
+        private async Task AddRolesToUserDtosAsync(IEnumerable<UserDto> userDtos, IEnumerable<User> users)
+        {
+            foreach (var userDto in userDtos)
+            {
+                var user = users.First(u => u.Id == userDto.Id);
+                var roles = await this.userManager.GetRolesAsync(user);
+                userDto.RoleName = roles.FirstOrDefault(); // assuming one role per user
+            }
         }
 
         private static void ValidateAssignRoleDto(AssignRoleDto assignRoleDto)

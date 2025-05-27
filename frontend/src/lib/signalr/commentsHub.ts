@@ -23,17 +23,26 @@ export const initCommentsHub = async () => {
 		.withAutomaticReconnect()
 		.build();
 
-	connection.onreconnected(() => {
-		attachListeners(); 
+	connection.onclose(async error => {
+		console.log(
+			'CommentsHub connection closed. Attempting to reconnect...',
+			error,
+		);
 	});
 
-	await connection
-		.start()
-		.then(() => {
-			console.log('Connected to SignalR hub');
-			attachListeners();
-		})
-		.catch(err => console.error('Error connecting to SignalR', err));
+	connection.onreconnected(() => {
+		console.log('CommentsHub reconnected');
+		attachListeners();
+	});
+
+	try {
+		await connection.start();
+		console.log('Connected to CommentsHub');
+		attachListeners();
+	} catch (err) {
+		console.error('Error connecting to CommentsHub:', err);
+		throw err;
+	}
 
 	return connection;
 };

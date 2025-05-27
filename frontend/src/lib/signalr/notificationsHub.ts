@@ -1,4 +1,4 @@
-import { Comment, Notification } from '@/types/types';
+import { Notification } from '@/types/types';
 import * as signalR from '@microsoft/signalr';
 import { getSession } from 'next-auth/react';
 
@@ -20,6 +20,9 @@ export const getNotificationsConnection = async () => {
 
 	try {
 		const session = await getSession();
+		if (!session?.accessToken) {
+			throw new Error('No access token available');
+		}
 
 		connection = new signalR.HubConnectionBuilder()
 			.withUrl(`${process.env.NEXT_PUBLIC_API_BASE_URL}/hubs/notifications`, {
@@ -32,11 +35,11 @@ export const getNotificationsConnection = async () => {
 					return Math.min(retryContext.elapsedMilliseconds * 2, 30000);
 				},
 			})
-			.configureLogging(signalR.LogLevel.Information)
+			.configureLogging(signalR.LogLevel.Warning)
 			.build();
 
 		connection.onclose(error => {
-			console.log('SignalR connection closed', error);
+			console.log('NotificationsHub connection closed', error);
 		});
 
 		connection.onreconnected(connectionId => {
@@ -78,7 +81,9 @@ export const onNotificationReceived = (
 
 	if (connection) {
 		connection.off('ReceiveNotification');
-		connection.on('ReceiveNotification', (message: string, data?: Comment) => {
+		// for comments notification I receive Comment object (createCommentDTO on backend)
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		connection.on('ReceiveNotification', (message: string, data?: any) => {
 			const notification: Notification = {
 				id: Date.now(),
 				message,
@@ -93,6 +98,7 @@ export const onNotificationReceived = (
 				},
 				postId: data?.postId || 0,
 				commentId: data?.id || 0,
+				likedPostId: data?.likedPostId || 0,
 			};
 			callback(notification);
 		});

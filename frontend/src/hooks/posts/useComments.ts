@@ -69,29 +69,16 @@ export const useComments = ({ postId }: { postId: number }) => {
 					if (!old) return old;
 
 					if (Array.isArray(data)) {
-						const oldComments = old.pages.flatMap(
-							(page: { items: Comment[] }) => page.items,
-						);
-						const deletedCommentId = oldComments.find(
-							(oldComment: Comment) =>
-								!data.some(newComment => newComment.id === oldComment.id),
-						)?.id;
-
-						if (deletedCommentId) {
-							return {
-								...old,
-								pages: old.pages.map(
-									(page: { items: Comment[]; totalCount: number }) => ({
-										...page,
-										items: page.items.filter(
-											comment => comment.id !== deletedCommentId,
-										),
-										totalCount: page.totalCount - 1,
-									}),
-								),
-							};
-						}
-						return old;
+						return {
+							...old,
+							pages: [
+								{
+									...old.pages[0],
+									items: data,
+									totalCount: data.length,
+								},
+							],
+						};
 					}
 
 					return {

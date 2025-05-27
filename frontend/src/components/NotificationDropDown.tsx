@@ -33,10 +33,10 @@ export const NotificationDropdown = () => {
 
 	const getNotificationContent = (notification: Notification) => {
 		if (notification.commentId) {
-			return `${notification.triggeredByBlogger?.firstName} ${notification.triggeredByBlogger?.lastName} commented on your post`;
+			return `commented on your post`;
         }
         if(notification.likedPostId){
-            return `${notification.triggeredByBlogger?.firstName} ${notification.triggeredByBlogger?.lastName} liked your post`;
+            return `liked your post`;
         }
 		return notification.message;
 	};

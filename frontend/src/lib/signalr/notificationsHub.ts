@@ -1,4 +1,4 @@
-import { Notification } from '@/types/types';
+import { Comment, Notification } from '@/types/types';
 import * as signalR from '@microsoft/signalr';
 import { getSession } from 'next-auth/react';
 
@@ -78,6 +78,23 @@ export const onNotificationReceived = (
 
 	if (connection) {
 		connection.off('ReceiveNotification');
-		connection.on('ReceiveNotification', callback);
+		connection.on('ReceiveNotification', (message: string, data?: Comment) => {
+			const notification: Notification = {
+				id: Date.now(),
+				message,
+				isRead: false,
+				createdAt: new Date().toISOString(),
+				recipientBloggerId: data?.postAuthorBloggerId || 0,
+				triggeredByBlogger: {
+					id: data?.bloggerId || 0,
+					image: data?.bloggerImage,
+					firstName: data?.bloggerName?.split(' ')[0] || '',
+					lastName: data?.bloggerName?.split(' ')[1] || '',
+				},
+				postId: data?.postId || 0,
+				commentId: data?.id || 0,
+			};
+			callback(notification);
+		});
 	}
 };

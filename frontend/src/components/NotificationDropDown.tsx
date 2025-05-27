@@ -33,10 +33,10 @@ export const NotificationDropdown = () => {
 
 	const getNotificationContent = (notification: Notification) => {
 		if (notification.commentId) {
-			return `${notification.triggeredByBlogger?.firstName} commented on your post`;
+			return `${notification.triggeredByBlogger?.firstName} ${notification.triggeredByBlogger?.lastName} commented on your post`;
         }
         if(notification.likedPostId){
-            return `${notification.triggeredByBlogger?.firstName} liked your post`;
+            return `${notification.triggeredByBlogger?.firstName} ${notification.triggeredByBlogger?.lastName} liked your post`;
         }
 		return notification.message;
 	};
@@ -81,7 +81,7 @@ export const NotificationDropdown = () => {
 								<div className='flex-1'>
 									<div className='flex items-center justify-between'>
 										<p className='text-sm font-medium'>
-											{notification.triggeredByBlogger?.firstName}{' '}
+											{notification.triggeredByBlogger?.firstName} {' '}
 											{notification.triggeredByBlogger?.lastName}
 										</p>
 										{!notification.isRead && (

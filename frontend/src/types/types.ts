@@ -73,13 +73,20 @@ export interface PostLike {
 	bloggerId: number;
 }
 
+export interface triggeredByBlogger {
+	id: number;
+	firstName: string;
+	lastName: string;
+	image?: string | null;
+}
+
 export interface Notification {
 	id: number;
 	message: string;
 	recipientBloggerId: number;
-	recipientBlogger: Blogger;
+	recipientBlogger?: Blogger;
 	triggeredByBloggerId?: number;
-	triggeredByBlogger?: Blogger;
+	triggeredByBlogger?: Blogger | triggeredByBlogger;
 	likedPostId?: number;
 	likedBloggerId?: number;
 	postId?: number;
@@ -142,9 +149,9 @@ export interface Role {
 	createdAt: string;
 	modifiedAt: string;
 	isDeleted: boolean;
-  }
-  
-  export interface UsersResponse {
+}
+
+export interface UsersResponse {
 	items: User[];
 	currentPage: number;
 	totalPages: number;
@@ -152,9 +159,9 @@ export interface Role {
 	totalCount: number;
 	hasPrevious: boolean;
 	hasNext: boolean;
-  }
-  
-  export interface AssignRoleRequest {
+}
+
+export interface AssignRoleRequest {
 	userId: string;
 	roleId: string;
-  }
+}

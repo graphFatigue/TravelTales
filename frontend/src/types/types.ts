@@ -73,7 +73,6 @@ export interface PostLike {
 	bloggerId: number;
 }
 
-
 export interface Notification {
 	id: number;
 	message: string;
@@ -81,12 +80,13 @@ export interface Notification {
 	recipientBlogger: Blogger;
 	triggeredByBloggerId?: number;
 	triggeredByBlogger?: Blogger;
+	likedPostId?: number;
+	likedBloggerId?: number;
 	postId?: number;
 	commentId?: number;
 	isRead: boolean;
 	createdAt: string;
 }
-
 export interface Comment {
 	id: number;
 	content: string;

@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import LanguageSwitcher from '../LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { NotificationDropdown } from '../NotificationDropDown';
 
 export default function UserButtons() {
 	const { data: session } = useSession();
@@ -14,7 +15,10 @@ export default function UserButtons() {
 		<div className='flex items-center gap-4'>
 			<LanguageSwitcher />
 			{session ? (
-				<UserButton />
+				<>
+					<NotificationDropdown />
+					<UserButton />
+				</>
 			) : (
 				<div className='flex gap-4'>
 					<Button variant='default'>

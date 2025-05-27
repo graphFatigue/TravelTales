@@ -5,6 +5,7 @@ import { Toaster } from 'sonner';
 import AuthProvider from '@/components/AuthProvider';
 import ReactQueryProvider from './QueryProvider';
 import I18nProvider from '@/components/I18nProvider';
+import { NotificationProvider } from '@/components/NotificationProvider';
 
 export const metadata: Metadata = {
 	title: 'TravelTales',
@@ -27,7 +28,9 @@ export default function RootLayout({
 							enableSystem
 							disableTransitionOnChange
 						>
-							<I18nProvider>{children}</I18nProvider>
+							<I18nProvider>
+								<NotificationProvider>{children}</NotificationProvider>
+							</I18nProvider>
 						</ThemeProvider>
 						<Toaster position='bottom-left' />
 					</AuthProvider>

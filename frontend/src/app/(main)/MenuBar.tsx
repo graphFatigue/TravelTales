@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { Bell, Home, UserRoundCheck, UserRoundPlus, Users, ContactRound, ChartBarStacked  } from 'lucide-react';
+import { Home, UserRoundCheck, UserRoundPlus, Users, ContactRound, ChartBarStacked  } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
@@ -101,12 +101,6 @@ export default function MenuBar({ className }: MenuBarProps) {
 						title='Notifications'
 						asChild
 					>
-						<Link href={`/`}>
-							<Bell />
-							<span className='hidden lg:inline'>
-								{t('dashboard.notifications')}
-							</span>
-						</Link>
 					</Button>
 				</>
 			)}

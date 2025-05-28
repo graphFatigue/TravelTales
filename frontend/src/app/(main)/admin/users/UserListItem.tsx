@@ -67,6 +67,7 @@ export function UserListItem({ user }: { user: User }) {
 				</div>
 			</div>
 			<div className='flex items-center space-x-2'>
+				<p>{user.roleName}</p>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<Button

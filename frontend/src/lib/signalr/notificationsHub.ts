@@ -81,7 +81,7 @@ export const onNotificationReceived = (
 
 	if (connection) {
 		connection.off('ReceiveNotification');
-		// for comments notification I receive Comment object (createCommentDTO on backend)
+		// for comments notification I receive Comment object (createCommentDTO on backend) and for likes I receive nothing(need to adapt)
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		connection.on('ReceiveNotification', (message: string, data?: any) => {
 			const notification: Notification = {

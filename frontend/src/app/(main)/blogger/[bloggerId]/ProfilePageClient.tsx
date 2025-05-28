@@ -5,10 +5,11 @@ import UserAvatar from '@/components/UserAvatar';
 import { Separator } from '@/components/ui/separator';
 import UserProfile from './Profile';
 import EditProfileButton from './EditProfileButton';
-import FollowButton from '@/components/FollowButton';
+import FollowButton from '@/components/follow/FollowButton';
 import { useBlogger } from '@/hooks/bloggers/useBlogger';
 import { Session } from 'next-auth';
 import { DeleteBloggerButton } from '@/components/DeleteBloggerButton';
+import Link from 'next/link';
 
 interface ProfilePageClientProps {
 	initialBlogger: Blogger;
@@ -58,11 +59,19 @@ export default function ProfilePageClient({
 						</div>
 						<div className='text-center'>
 							<div className='text-2xl font-bold'>{blogger.followerCount}</div>
-							<div className='text-sm text-muted-foreground'>Followers</div>
+							<Link href={`/blogger/${blogger.id}/followers`}>
+								<div className='text-sm text-muted-foreground hover:underline'>
+									Followers
+								</div>
+							</Link>
 						</div>
 						<div className='text-center'>
 							<div className='text-2xl font-bold'>{blogger.followingCount}</div>
-							<div className='text-sm text-muted-foreground'>Following</div>
+							<Link href={`/blogger/${blogger.id}/following`}>
+								<div className='text-sm text-muted-foreground hover:underline'>
+									Followings
+								</div>
+							</Link>
 						</div>
 					</div>
 				</div>

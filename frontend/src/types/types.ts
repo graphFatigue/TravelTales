@@ -32,6 +32,16 @@ export interface Blogger {
 	visitedCountryIds: number[] | null;
 }
 
+export interface FollowBlogger {
+	followerId: number;
+	followerName: string;
+	followerImage?: string | null;
+	followingId: number;
+	followingName: string;
+	followingImage?: string | null;
+	createdAt: string;
+}
+
 export enum Sex {
 	Male = 1,
 	Female = 2,

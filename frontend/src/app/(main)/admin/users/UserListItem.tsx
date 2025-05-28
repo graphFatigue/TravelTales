@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -10,7 +10,7 @@ import {
 import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAssignRole, useDeleteUser, useRoles } from '@/lib/api/users';
+import { useAssignRole, useDeleteUser, useRoles } from '@/hooks/users';
 import UserAvatar from '@/components/UserAvatar';
 import { User } from '@/types/types';
 import { toast } from 'sonner';
@@ -36,12 +36,12 @@ export function UserListItem({ user }: { user: User }) {
 			{
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: ['users'] });
-                    toast.success('Role assigned successfully');
-                },
-                onError: (error) => {
-                    console.error('Failed to assign role:', error);
-                    toast.error(error.message);
-                }
+					toast.success('Role assigned successfully');
+				},
+				onError: error => {
+					console.error('Failed to assign role:', error);
+					toast.error(error.message);
+				},
 			},
 		);
 	};

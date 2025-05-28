@@ -3,10 +3,21 @@
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import { Button } from '@/components/ui/button';
 import { Loader2, Globe } from 'lucide-react';
-import { useInfiniteBloggers } from '@/hooks/bloggers/useInfiniteBloggers';
-import BloggerCard from './BloggerCard';
+import FollowBloggerCard from './FollowBloggerCard';
+import { FollowBlogger } from '@/types/types';
+import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
+import { FollowBloggersResponse } from '@/hooks/bloggers/useInfiniteBloggers';
 
-export default function BloggersPage() {
+export default function FollowPage({
+	followType,
+	responseData,
+}: {
+	followType: 'following' | 'followers';
+	responseData: UseInfiniteQueryResult<
+		InfiniteData<FollowBloggersResponse, unknown>,
+		Error
+	>;
+}) {
 	const {
 		data,
 		fetchNextPage,
@@ -14,9 +25,10 @@ export default function BloggersPage() {
 		isFetchingNextPage,
 		isLoading,
 		isError,
-	} = useInfiniteBloggers();
+	} = responseData;
 
-	const bloggers = data?.pages.flatMap(page => page.items) || [];
+	const bloggers =
+		data?.pages.flatMap((page: { items: FollowBlogger[] }) => page.items) || [];
 
 	if (isLoading) {
 		return (
@@ -42,8 +54,16 @@ export default function BloggersPage() {
 				}
 				className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
 			>
-				{bloggers.map(blogger => (
-					<BloggerCard key={blogger.id} blogger={blogger} />
+				{bloggers.map((blogger: FollowBlogger) => (
+					<FollowBloggerCard
+						key={
+							followType === 'following'
+								? blogger.followingId
+								: blogger.followerId
+						}
+						blogger={blogger}
+						followStatus={followType}
+					/>
 				))}
 
 				{isFetchingNextPage && (

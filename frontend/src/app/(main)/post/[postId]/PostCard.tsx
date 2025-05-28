@@ -16,7 +16,7 @@ import PostLoader from '@/components/Post/PostLoader';
 import DeletePost from '@/components/Post/DeletePost';
 import { useSession } from 'next-auth/react';
 import { useBlogger } from '@/hooks/bloggers/useBlogger';
-import FollowButton from '@/components/FollowButton';
+import FollowButton from '@/components/follow/FollowButton';
 
 export function PostCard() {
 	const { postId } = useParams();
@@ -62,8 +62,8 @@ export function PostCard() {
 						</div>
 					</div>
 					<div className='space-x-2'>
-						{(post.bloggerId === session?.user.blogger?.id ||
-						session?.role === 'Admin') ? (
+						{post.bloggerId === session?.user.blogger?.id ||
+						session?.role === 'Admin' ? (
 							<>
 								<Button
 									className='rounded-full bg-primary px-5 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90'

@@ -1,25 +1,25 @@
 'use client';
 
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
-import api from './api';
+import api from '../lib/api/api';
 import { AssignRoleRequest, Role, UsersResponse } from '@/types/types';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useUsers (filters: Record<string, any> = {}) {
+export function useUsers(filters: Record<string, any> = {}) {
 	return useInfiniteQuery<UsersResponse, Error>({
 		queryKey: ['users', filters],
 		queryFn: async context => {
 			const pageParam =
 				typeof context.pageParam === 'number' ? context.pageParam : 1;
-				const params = new URLSearchParams();
-				params.set('Page', pageParam.toString());
-				params.set('PageSize', '6'); 
+			const params = new URLSearchParams();
+			params.set('Page', pageParam.toString());
+			params.set('PageSize', '6');
 
-				if (filters.field && filters.value) {
-					const backendField = filters.field.toLowerCase();
-					params.set('Filters', `${backendField}==${filters.value}`);
-				}
-			
+			if (filters.field && filters.value) {
+				const backendField = filters.field.toLowerCase();
+				params.set('Filters', `${backendField}==${filters.value}`);
+			}
+
 			const { data } = await api.get<UsersResponse>(
 				`/api/Users/filter?${params}`,
 			);
@@ -30,7 +30,7 @@ export function useUsers (filters: Record<string, any> = {}) {
 		},
 		initialPageParam: 1,
 	});
-};
+}
 
 export const useDeleteUser = () => {
 	return useMutation({

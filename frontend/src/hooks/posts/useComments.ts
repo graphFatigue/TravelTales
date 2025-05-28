@@ -68,6 +68,7 @@ export const useComments = ({ postId }: { postId: number }) => {
 				queryClient.setQueryData(['comments', postId], (old: any) => {
 					if (!old) return old;
 
+					// I want to receive number of deleted comemnt and just filter the old one
 					if (Array.isArray(data)) {
 						return {
 							...old,

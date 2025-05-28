@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import BloggersPage from './BloggersPage';
 
 export default function Page() {
@@ -9,7 +10,9 @@ export default function Page() {
 					Connect with travel enthusiasts around the world
 				</p>
 			</div>
-			<BloggersPage />
+			<Suspense fallback={<div>Loading bloggers...</div>}>
+				<BloggersPage />
+			</Suspense>
 		</div>
 	);
 }

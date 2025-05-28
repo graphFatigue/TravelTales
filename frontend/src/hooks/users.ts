@@ -17,7 +17,7 @@ export function useUsers(filters: Record<string, any> = {}) {
 
 			if (filters.field && filters.value) {
 				const backendField = filters.field.toLowerCase();
-				params.set('Filters', `${backendField}@=${filters.value}`);
+				params.set('Filters', `${backendField}@=*${filters.value}`);
 			}
 
 			const { data } = await api.get<UsersResponse>(

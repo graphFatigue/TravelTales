@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signOut } from 'next-auth/react';
-import ConfirmationDialog from './ConfirmationDialog';
 import api from '@/lib/api/api';
 import { toast } from 'sonner';
+import ConfirmationDialog from '../ConfirmationDialog';
 
 interface DeleteBloggerButtonProps {
 	bloggerId: number;

@@ -9,12 +9,12 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { useNotificationContext } from './NotificationProvider';
 import { BellIcon } from 'lucide-react';
-import { ScrollArea } from './ui/scroll-area';
 import { Notification } from '@/types/types';
-import UserAvatar from './user/UserAvatar';
 import { redirect } from 'next/navigation';
+import { useNotificationContext } from './NotificationProvider';
+import { ScrollArea } from '../ui/scroll-area';
+import UserAvatar from '../user/UserAvatar';
 
 export const NotificationDropdown = () => {
 	const { notifications, unreadCount, markAsRead, markAllAsRead } =

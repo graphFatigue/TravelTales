@@ -8,8 +8,8 @@ import EditProfileButton from './EditProfileButton';
 import FollowButton from '@/components/follow/FollowButton';
 import { useBlogger } from '@/hooks/bloggers/useBlogger';
 import { Session } from 'next-auth';
-import { DeleteBloggerButton } from '@/components/DeleteBloggerButton';
 import Link from 'next/link';
+import { DeleteBloggerButton } from '@/components/bloggers/DeleteBloggerButton';
 
 interface ProfilePageClientProps {
 	initialBlogger: Blogger;

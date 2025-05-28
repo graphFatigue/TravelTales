@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Blogger, FollowBlogger } from '@/types/types';
 import api from '@/lib/api/api';
@@ -12,16 +13,20 @@ export interface BloggersResponse {
 	hasNext: boolean;
 }
 
-export const useInfiniteBloggers = (pageSize = 4) => {
+export const useInfiniteBloggers = (pageSize = 6, searchTerm?: string) => {
 	return useInfiniteQuery<BloggersResponse>({
-		queryKey: ['bloggers', "all"],
+		queryKey: ['bloggers', searchTerm || 'all'],
 		queryFn: async ({ pageParam = 1 }) => {
-			const response = await api.get('/api/Blogger/filter', {
-				params: {
-					page: pageParam,
-					pageSize,
-				},
-			});
+			const params: Record<string, any> = {
+				page: pageParam,
+				pageSize,
+			};
+
+			if (searchTerm) {
+				params.filters = `(firstName|lastName|cityName|countryName)@=*${searchTerm}`;
+			}
+
+			const response = await api.get('/api/Blogger/filter', { params });
 			return response.data;
 		},
 		getNextPageParam: lastPage => {
@@ -84,4 +89,3 @@ export const useInfiniteFollowingBloggers = (bloggerId: number) => {
 		initialPageParam: 1,
 	});
 };
-

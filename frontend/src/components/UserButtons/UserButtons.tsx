@@ -6,7 +6,7 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
-import { NotificationDropdown } from '../NotificationDropDown';
+import { NotificationDropdown } from '../notifications/NotificationDropDown';
 
 export default function UserButtons() {
 	const { data: session } = useSession();

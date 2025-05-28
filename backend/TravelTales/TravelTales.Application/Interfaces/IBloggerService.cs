@@ -30,5 +30,14 @@ namespace TravelTales.Application.Interfaces
         Task<IEnumerable<BloggerFollowDto>> GetFollowersAsync(long bloggerId, CancellationToken cancellationToken = default);
 
         Task<IEnumerable<BloggerFollowDto>> GetFollowingAsync(long bloggerId, CancellationToken cancellationToken = default);
+        Task<PagedList<BloggerFollowDto>> GetFollowersWithFilterAsync(
+            long bloggerId,
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default);
+
+        Task<PagedList<BloggerFollowDto>> GetFollowingWithFilterAsync(
+            long bloggerId,
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default);
     }
 }

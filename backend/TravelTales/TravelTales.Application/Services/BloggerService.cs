@@ -321,6 +321,32 @@ namespace TravelTales.Application.Services
             await unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
+        public async Task<PagedList<BloggerFollowDto>> GetFollowingWithFilterAsync(
+            long bloggerId,
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
+        {
+            var pagedList = await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                .GetFollowingWithFilterAsync(bloggerId, sieveModel, cancellationToken);
+
+            var itemsDto = mapper.Map<List<BloggerFollowDto>>(pagedList.Items);
+            
+            return PagedList<BloggerFollowDto>.Copy(pagedList, itemsDto);
+        }
+
+        public async Task<PagedList<BloggerFollowDto>> GetFollowersWithFilterAsync(
+            long bloggerId,
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
+        {
+            var pagedList = await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                .GetFollowersWithFilterAsync(bloggerId, sieveModel, cancellationToken);
+
+            var itemsDto = mapper.Map<List<BloggerFollowDto>>(pagedList.Items);
+            
+            return PagedList<BloggerFollowDto>.Copy(pagedList, itemsDto);
+        }
+
         public async Task<IEnumerable<BloggerFollowDto>> GetFollowersAsync(long bloggerId, CancellationToken cancellationToken = default)
         {
             var followers = await unitOfWork.GetRepository<IBloggerFollowRepository>()
@@ -331,7 +357,7 @@ namespace TravelTales.Application.Services
 
         public async Task<IEnumerable<BloggerFollowDto>> GetFollowingAsync(long bloggerId, CancellationToken cancellationToken = default)
         {
-            var following = await unitOfWork.GetRepository<IBloggerFollowRepository>()
+            var following = await this.unitOfWork.GetRepository<IBloggerFollowRepository>()
                 .GetAllAsync(bf => bf.FollowerId == bloggerId && !bf.IsDeleted, cancellationToken);
 
             return mapper.Map<IEnumerable<BloggerFollowDto>>(following);

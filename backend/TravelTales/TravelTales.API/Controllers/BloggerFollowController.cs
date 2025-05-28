@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sieve.Models;
 using TravelTales.Application.DTOs.BloggerFollow;
 using TravelTales.Application.Interfaces;
 using TravelTales.Application.Services;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.API.Controllers
 {
@@ -38,16 +40,22 @@ namespace TravelTales.API.Controllers
         }
 
         [HttpGet("{id}/followers")]
-        public async Task<ActionResult<IEnumerable<BloggerFollowDto>>> GetFollowers(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedList<BloggerFollowDto>>> GetFollowers(
+            long id,
+            [FromQuery] SieveModel sieveModel,
+            CancellationToken cancellationToken)
         {
-            var followers = await bloggerService.GetFollowersAsync(id, cancellationToken);
+            var followers = await bloggerService.GetFollowersWithFilterAsync(id, sieveModel, cancellationToken);
             return Ok(followers);
         }
 
         [HttpGet("{id}/following")]
-        public async Task<ActionResult<IEnumerable<BloggerFollowDto>>> GetFollowing(long id, CancellationToken cancellationToken)
+        public async Task<ActionResult<PagedList<BloggerFollowDto>>> GetFollowing(
+            long id,
+            [FromQuery] SieveModel sieveModel,
+            CancellationToken cancellationToken)
         {
-            var following = await bloggerService.GetFollowingAsync(id, cancellationToken);
+            var following = await bloggerService.GetFollowingWithFilterAsync(id, sieveModel, cancellationToken);
             return Ok(following);
         }
     }

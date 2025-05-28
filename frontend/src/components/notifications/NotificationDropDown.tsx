@@ -13,31 +13,29 @@ import { useNotificationContext } from './NotificationProvider';
 import { BellIcon } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { Notification } from '@/types/types';
-import UserAvatar from './UserAvatar';
+import UserAvatar from './user/UserAvatar';
 import { redirect } from 'next/navigation';
 
 export const NotificationDropdown = () => {
 	const { notifications, unreadCount, markAsRead, markAllAsRead } =
 		useNotificationContext();
 
-	const handleNotificationClick = async (
-		notification: Notification,
-	) => {
+	const handleNotificationClick = async (notification: Notification) => {
 		if (!notification.isRead) {
 			await markAsRead(notification.id);
-        }
-        if (notification.postId) {
-            redirect(`/post/${notification.postId}`);
-        }
+		}
+		if (notification.postId) {
+			redirect(`/post/${notification.postId}`);
+		}
 	};
 
 	const getNotificationContent = (notification: Notification) => {
 		if (notification.commentId) {
 			return `commented on your post`;
-        }
-        if(notification.likedPostId){
-            return `liked your post`;
-        }
+		}
+		if (notification.likedPostId) {
+			return `liked your post`;
+		}
 		return notification.message;
 	};
 
@@ -81,7 +79,7 @@ export const NotificationDropdown = () => {
 								<div className='flex-1'>
 									<div className='flex items-center justify-between'>
 										<p className='text-sm font-medium'>
-											{notification.triggeredByBlogger?.firstName} {' '}
+											{notification.triggeredByBlogger?.firstName}{' '}
 											{notification.triggeredByBlogger?.lastName}
 										</p>
 										{!notification.isRead && (

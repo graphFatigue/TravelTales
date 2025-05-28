@@ -11,7 +11,7 @@ import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAssignRole, useDeleteUser, useRoles } from '@/hooks/users';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/user/UserAvatar';
 import { User } from '@/types/types';
 import { toast } from 'sonner';
 

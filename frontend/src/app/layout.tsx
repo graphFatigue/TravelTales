@@ -5,7 +5,7 @@ import { Toaster } from 'sonner';
 import AuthProvider from '@/components/AuthProvider';
 import ReactQueryProvider from './QueryProvider';
 import I18nProvider from '@/components/I18nProvider';
-import { NotificationProvider } from '@/components/NotificationProvider';
+import { NotificationProvider } from '@/components/notifications/NotificationProvider';
 
 export const metadata: Metadata = {
 	title: 'TravelTales',

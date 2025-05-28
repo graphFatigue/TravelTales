@@ -6,7 +6,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/user/UserAvatar';
 import { FollowBlogger } from '@/types/types';
 import { redirect } from 'next/navigation';
 import React from 'react';
@@ -35,7 +35,7 @@ export default function FollowBloggerCard({
 				</div>
 			</CardHeader>
 
-			<CardContent >
+			<CardContent>
 				<CardTitle className='text-center text-xl'>
 					{followStatus === 'following'
 						? blogger.followingName

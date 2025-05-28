@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react';
 import UserButton from './UserButton';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import LanguageSwitcher from '../LanguageSwitcher';
+import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import { NotificationDropdown } from '../NotificationDropDown';
 

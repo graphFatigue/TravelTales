@@ -4,13 +4,13 @@ import { useState } from 'react';
 import { useComments } from '@/hooks/posts/useComments';
 import { CreateComment, Post } from '@/types/types';
 import { Card, CardContent } from '../ui/card';
-import UserAvatar from '../UserAvatar';
 import { formatDate } from '@/lib/utils';
 import { Button } from '../ui/button';
 import { CommentsAction } from './CommentsAction';
 import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Loader2 } from 'lucide-react';
+import UserAvatar from '../user/UserAvatar';
 
 export const CommentsSection = ({
 	post,

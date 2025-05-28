@@ -1,7 +1,7 @@
 'use client';
 
 import { Blogger } from '@/types/types';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/user/UserAvatar';
 import { Separator } from '@/components/ui/separator';
 import UserProfile from './Profile';
 import EditProfileButton from './EditProfileButton';

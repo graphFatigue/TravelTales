@@ -1,16 +1,21 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import UserAvatar from '@/components/UserAvatar';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
+import UserAvatar from '@/components/user/UserAvatar';
 import { Blogger } from '@/types/types';
 import { Calendar, MapPin, UserPlus } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import React from 'react'
+import React from 'react';
 
 export default function BloggerCard({ blogger }: { blogger: Blogger }) {
-  return (
-		<Card
-			className='group transition-all duration-300 hover:shadow-lg'
-		>
+	return (
+		<Card className='group transition-all duration-300 hover:shadow-lg'>
 			<CardHeader className='relative pb-12'>
 				<div className='absolute inset-0 rounded-t-lg bg-gradient-to-br from-primary/5 to-secondary/5' />
 
@@ -56,8 +61,15 @@ export default function BloggerCard({ blogger }: { blogger: Blogger }) {
 							})}
 						</span>
 					</div>
-              </div>
-               <Button variant='outline' onClick={() => {redirect(`/blogger/${blogger.id}`)}}>See</Button>
+				</div>
+				<Button
+					variant='outline'
+					onClick={() => {
+						redirect(`/blogger/${blogger.id}`);
+					}}
+				>
+					See
+				</Button>
 			</CardFooter>
 		</Card>
 	);

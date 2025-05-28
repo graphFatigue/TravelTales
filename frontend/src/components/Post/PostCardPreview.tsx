@@ -4,7 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar } from 'lucide-react';
 import type { Post } from '@/types/types';
 import { BudgetIndicator } from '@/components/Post/BudgetIndicator';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/user/UserAvatar';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 import PostAttachments from './PostAttachments';

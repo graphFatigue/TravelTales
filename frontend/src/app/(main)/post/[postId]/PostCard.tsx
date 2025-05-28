@@ -6,7 +6,7 @@ import { Separator } from '@/components/ui/separator';
 import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BudgetIndicator } from '@/components/Post/BudgetIndicator';
-import UserAvatar from '@/components/UserAvatar';
+import UserAvatar from '@/components/user/UserAvatar';
 import { redirect, useParams } from 'next/navigation';
 import { formatDate } from '@/lib/utils';
 import PostAttachments from '@/components/Post/PostAttachments';

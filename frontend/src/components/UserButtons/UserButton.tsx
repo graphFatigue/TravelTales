@@ -17,7 +17,7 @@ import { Check, LogOutIcon, Monitor, Moon, Sun, UserIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
-import UserAvatar from '../UserAvatar';
+import UserAvatar from '../user/UserAvatar';
 import { signOut, useSession } from 'next-auth/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';

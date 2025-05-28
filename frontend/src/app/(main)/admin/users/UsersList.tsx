@@ -3,7 +3,7 @@
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import { useUsers } from '@/hooks/users';
 import { UserListItem } from './UserListItem';
-import { UsersSkeleton } from '@/components/UserSkeleton';
+import { UsersSkeleton } from '@/components/user/UserSkeleton';
 
 export function UsersList({ filters }: { filters: Record<string, string> }) {
 	const backendFilters = {

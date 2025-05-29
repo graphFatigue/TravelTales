@@ -7,11 +7,19 @@ interface BudgetIndicatorProps {
 }
 
 const budgetLevels = [
-	{ text: 'Lowest', class: 'bg-green-100 text-green-800', color: 'green' },
-	{ text: 'Low', class: 'bg-blue-100 text-blue-800', color: 'blue' },
-	{ text: 'Medium', class: 'bg-yellow-100 text-yellow-800', color: 'yellow' },
-	{ text: 'High', class: 'bg-orange-100 text-orange-800', color: 'orange' },
-	{ text: 'Highest', class: 'bg-red-100 text-red-800', color: 'red' },
+	{ text: '0 - 100', class: 'bg-green-100 text-green-800', color: 'green' },
+	{ text: '100 - 500', class: 'bg-blue-100 text-blue-800', color: 'blue' },
+	{
+		text: '500 - 2000',
+		class: 'bg-yellow-100 text-yellow-800',
+		color: 'yellow',
+	},
+	{
+		text: '2000 - 5000',
+		class: 'bg-orange-100 text-orange-800',
+		color: 'orange',
+	},
+	{ text: '5000+', class: 'bg-red-100 text-red-800', color: 'red' },
 ];
 
 export function BudgetIndicator({
@@ -26,7 +34,7 @@ export function BudgetIndicator({
 			title={`Budget level: ${level}`}
 		>
 			<DollarSign className='mr-1 h-4 w-4' />
-			{budgetInfo.text} Budget
+			{budgetInfo.text}
 			{/* <div className='ml-2 flex space-x-1'>
 				{[0, 1, 2, 3, 4].map(lvl => (
 					<div

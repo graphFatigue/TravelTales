@@ -15,96 +15,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Blogger } from '@/types/types';
 import { useLocationInfo } from '@/hooks/useLocationInfo';
-
-const userData = {
-	fullName: 'Iryna Bibik',
-	dateOfBirth: new Date('2004-05-21'),
-	avatarUrl: '',
-	gender: 'Female',
-	countries: [
-		'United States',
-		'Japan',
-		'France',
-		'Italy',
-		'Spain',
-		'Germany',
-		'United Kingdom',
-	],
-	cities: [
-		'New York',
-		'Tokyo',
-		'Paris',
-		'Rome',
-		'Barcelona',
-		'Berlin',
-		'London',
-		'San Francisco',
-		'Los Angeles',
-		'Chicago',
-		'Miami',
-		'Seattle',
-		'Portland',
-		'Austin',
-		'Denver',
-		'Boston',
-		'Washington DC',
-		'Philadelphia',
-		'San Diego',
-		'Nashville',
-		'New Orleans',
-		'Las Vegas',
-		'Phoenix',
-		'Atlanta',
-		'Dallas',
-		'Houston',
-	],
-	bio: 'Travel enthusiast and photographer with a passion for exploring urban landscapes and local cuisines. Always looking for the next adventure!',
-	location: 'Poltava, Ukraine',
-	followers: 1245,
-	following: 567,
-	posts: 89,
-};
-
-const getTravelerRating = (citiesCount: number) => {
-	if (citiesCount >= 150)
-		return {
-			title: 'World Explorer',
-			range: '150+ cities',
-			description:
-				'This elite category includes travelers who have visited an exceptional number of cities. Their experiences often focus on comprehensive global travel, sharing expert-level insights and inspiring stories.',
-		};
-	if (citiesCount >= 71)
-		return {
-			title: 'Global Voyager',
-			range: '71–150 cities',
-			description:
-				'Representing a broad range of travel experiences, these travelers have explored many corners of the world. They typically highlight unique and less-traveled destinations, inspiring a wide audience.',
-		};
-	if (citiesCount >= 31)
-		return {
-			title: 'Seasoned Traveler',
-			range: '31–70 cities',
-			description:
-				'Travelers in this group are experienced with extensive knowledge of diverse destinations. They offer in-depth reviews, cultural insights, and specialized travel advice.',
-		};
-	if (citiesCount >= 11)
-		return {
-			title: 'Adventurous Wanderer',
-			range: '11–30 cities',
-			description:
-				'These travelers have explored a moderate number of cities, showcasing a growing passion for travel. Their experiences often include varied adventures, detailed itineraries, and travel hacks.',
-		};
-	return {
-		title: 'Beginner Explorer',
-		range: '1–10 cities',
-		description:
-			'Travelers in this category have visited up to 10 cities. They are just starting their journey and usually share first impressions and beginner travel tips.',
-	};
-};
+import BloggersPosts from '@/components/bloggers/BloggersPosts';
+import getTravelerRating from '@/lib/getTravelRating';
 
 export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const [activeTab, setActiveTab] = useState('overview');
-	const travelerRating = getTravelerRating(userData.cities.length);
+	const travelerRating = getTravelerRating(blogger.visitedCities?.length || 0);
 
 	const { countries, cities, loading } = useLocationInfo(blogger.countryId);
 
@@ -204,14 +120,14 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 						<CardHeader>
 							<CardTitle>Countries Visited</CardTitle>
 							<CardDescription>
-								{userData.countries.length} countries in total
+								{blogger.visitedCountries?.length || 0} countries in total
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<div className='flex flex-wrap gap-2'>
-								{userData.countries.map(country => (
-									<Badge key={country} variant='secondary'>
-										{country}
+								{blogger.visitedCountries?.map(country => (
+									<Badge key={country.id} variant='secondary'>
+										{country.name}
 									</Badge>
 								))}
 							</div>
@@ -222,17 +138,19 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 						<CardHeader>
 							<CardTitle>Cities Explored</CardTitle>
 							<CardDescription>
-								{userData.cities.length} cities in total
+								{blogger.visitedCities?.length || 0} cities in total
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<div className='flex flex-wrap gap-2'>
-								{userData.cities.map(city => (
-									<Badge key={city} variant='outline'>
-										{city}
+							{blogger.visitedCountries?.length && (
+								<div className='flex flex-wrap gap-2'>
+								{blogger.visitedCities?.map(city => (
+									<Badge key={city.id} variant='outline'>
+										{city.name}
 									</Badge>
 								))}
 							</div>
+							)}
 						</CardContent>
 					</Card>
 				</TabsContent>
@@ -242,10 +160,13 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 					<Card>
 						<CardHeader>
 							<CardTitle>Recent Posts</CardTitle>
-							<CardDescription>View all {userData.posts} posts</CardDescription>
+							<CardDescription>View all {blogger.posts?.length || 0} posts</CardDescription>
 						</CardHeader>
 						<CardContent>
-							<div className='space-y-4'>
+							{blogger.posts?.length ? (
+									<BloggersPosts bloggerId={blogger.id} />
+							) : (
+								<div className='space-y-4'>
 								<div className='py-8 text-center'>
 									<BookOpen className='mx-auto h-12 w-12 text-muted-foreground opacity-50' />
 									<h3 className='mt-4 text-lg font-medium'>
@@ -257,6 +178,7 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 									<Button className='mt-4'>Create a Post</Button>
 								</div>
 							</div>
+							)}
 						</CardContent>
 					</Card>
 				</TabsContent>

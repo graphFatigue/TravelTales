@@ -10,6 +10,8 @@ import { useBlogger } from '@/hooks/bloggers/useBlogger';
 import { Session } from 'next-auth';
 import Link from 'next/link';
 import { DeleteBloggerButton } from '@/components/bloggers/DeleteBloggerButton';
+import { Star } from 'lucide-react';
+import getTravelerRating from '@/lib/getTravelRating';
 
 interface ProfilePageClientProps {
 	initialBlogger: Blogger;
@@ -24,13 +26,15 @@ export default function ProfilePageClient({
 		initialData: initialBlogger,
 	});
 
+	const travelerRating = getTravelerRating(blogger?.visitedCities?.length || 0);
+
 	if (!blogger) return null;
 
 	return (
 		<div className='container mx-auto max-w-5xl px-4 py-8'>
-			<div className='flex flex-col items-start gap-6 md:flex-row'>
-				<div className='flex flex-col items-center gap-2'>
-					<UserAvatar size={150} avatarUrl={blogger.image} />
+			<div className='flex flex-col gap-8 items-center md:flex-row '>
+				<div className='flex flex-col items-center gap-4'>
+					<UserAvatar size={180} avatarUrl={blogger.image} />
 					{blogger.id === session?.user.blogger?.id ? (
 						<EditProfileButton blogger={initialBlogger} />
 					) : (
@@ -72,6 +76,19 @@ export default function ProfilePageClient({
 									Followings
 								</div>
 							</Link>
+						</div>
+					</div>
+
+					<div className='mb-4 flex items-center gap-2'>
+						{/* {[...Array(travelerRating.id + 1)].map((_, index) => (
+							<Star key={index} className='h-6 w-6 text-yellow-500' />
+						))} */}
+						<Star className='h-6 w-6 text-yellow-500' />
+						<div>
+							<h3 className='text-lg font-bold'>{travelerRating.title}</h3>
+							<p className='text-sm text-muted-foreground'>
+								{travelerRating.range}
+							</p>
 						</div>
 					</div>
 				</div>

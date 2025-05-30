@@ -24,7 +24,6 @@ import { GenderField } from '@/components/EditProfile/GenderField';
 import { BioField } from '@/components/EditProfile/BioField';
 import { LocationSection } from '@/components/EditProfile/LocationSection';
 
-
 interface EditBloggerProfileDialogProps {
 	blogger: Blogger;
 	open: boolean;
@@ -51,15 +50,14 @@ export default function EditBloggerProfileDialog({
 			bio: blogger.bio || '',
 			countryId: blogger.countryId || undefined,
 			cityId: blogger.cityId || undefined,
-			visitedCityIds: blogger.visitedCityIds || [],
-			visitedCountryIds: blogger.visitedCountryIds || [],
+			visitedCityIds: blogger?.visitedCountries?.map(c => c.id) || [],
+			visitedCountryIds: blogger?.visitedCountries?.map(c => c.id) || [],
 		},
 	});
 
-	const { watch, setValue } = form;
+	const { watch } = form;
 	const selectedCountryId = watch('countryId');
 
-	// Fetch location data
 	const { countries, cities, loading } = useLocationInfo(selectedCountryId);
 
 	useEffect(() => {
@@ -93,7 +91,7 @@ export default function EditBloggerProfileDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className='max-h-[90vh] overflow-y-auto'>
+			<DialogContent className='max-h-[95vh] overflow-y-auto'>
 				<DialogHeader>
 					<DialogTitle>Edit profile</DialogTitle>
 				</DialogHeader>
@@ -117,7 +115,9 @@ export default function EditBloggerProfileDialog({
 							loading={loading}
 							countries={countries}
 							cities={cities}
-							setValue={setValue}
+							setValue={form.setValue}
+							visitedCountries={blogger.visitedCountries || []}
+							visitedCities={blogger.visitedCities || []}
 						/>
 
 						<DialogFooter>

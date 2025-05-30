@@ -16,11 +16,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Blogger } from '@/types/types';
 import { useLocationInfo } from '@/hooks/useLocationInfo';
 import BloggersPosts from '@/components/bloggers/BloggersPosts';
-import getTravelerRating from '@/lib/getTravelRating';
+import { useTravelerRating } from '@/hooks/useTravelRating';
 
 export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const [activeTab, setActiveTab] = useState('overview');
-	const travelerRating = getTravelerRating(blogger.visitedCities?.length || 0);
+	const travelerRating = useTravelerRating(blogger.visitedCities?.length || 0);
 
 	const { countries, cities, loading } = useLocationInfo(blogger.countryId);
 
@@ -144,12 +144,12 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 						<CardContent>
 							{blogger.visitedCountries?.length && (
 								<div className='flex flex-wrap gap-2'>
-								{blogger.visitedCities?.map(city => (
-									<Badge key={city.id} variant='outline'>
-										{city.name}
-									</Badge>
-								))}
-							</div>
+									{blogger.visitedCities?.map(city => (
+										<Badge key={city.id} variant='outline'>
+											{city.name}
+										</Badge>
+									))}
+								</div>
 							)}
 						</CardContent>
 					</Card>
@@ -160,24 +160,26 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 					<Card>
 						<CardHeader>
 							<CardTitle>Recent Posts</CardTitle>
-							<CardDescription>View all {blogger.posts?.length || 0} posts</CardDescription>
+							<CardDescription>
+								View all {blogger.posts?.length || 0} posts
+							</CardDescription>
 						</CardHeader>
 						<CardContent>
 							{blogger.posts?.length ? (
-									<BloggersPosts bloggerId={blogger.id} />
+								<BloggersPosts bloggerId={blogger.id} />
 							) : (
 								<div className='space-y-4'>
-								<div className='py-8 text-center'>
-									<BookOpen className='mx-auto h-12 w-12 text-muted-foreground opacity-50' />
-									<h3 className='mt-4 text-lg font-medium'>
-										No posts to display
-									</h3>
-									<p className='mt-2 text-sm text-muted-foreground'>
-										Posts will appear here once created.
-									</p>
-									<Button className='mt-4'>Create a Post</Button>
+									<div className='py-8 text-center'>
+										<BookOpen className='mx-auto h-12 w-12 text-muted-foreground opacity-50' />
+										<h3 className='mt-4 text-lg font-medium'>
+											No posts to display
+										</h3>
+										<p className='mt-2 text-sm text-muted-foreground'>
+											Posts will appear here once created.
+										</p>
+										<Button className='mt-4'>Create a Post</Button>
+									</div>
 								</div>
-							</div>
 							)}
 						</CardContent>
 					</Card>

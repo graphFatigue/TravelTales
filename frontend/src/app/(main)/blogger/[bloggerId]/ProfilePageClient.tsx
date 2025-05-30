@@ -11,7 +11,7 @@ import { Session } from 'next-auth';
 import Link from 'next/link';
 import { DeleteBloggerButton } from '@/components/bloggers/DeleteBloggerButton';
 import { Star } from 'lucide-react';
-import getTravelerRating from '@/lib/getTravelRating';
+import { useTravelerRating } from '@/hooks/useTravelRating';
 
 interface ProfilePageClientProps {
 	initialBlogger: Blogger;
@@ -26,13 +26,13 @@ export default function ProfilePageClient({
 		initialData: initialBlogger,
 	});
 
-	const travelerRating = getTravelerRating(blogger?.visitedCities?.length || 0);
+	const travelerRating = useTravelerRating(blogger?.visitedCities?.length || 0);
 
 	if (!blogger) return null;
 
 	return (
 		<div className='container mx-auto max-w-5xl px-4 py-8'>
-			<div className='flex flex-col gap-8 items-center md:flex-row '>
+			<div className='flex flex-col items-center gap-8 md:flex-row'>
 				<div className='flex flex-col items-center gap-4'>
 					<UserAvatar size={180} avatarUrl={blogger.image} />
 					{blogger.id === session?.user.blogger?.id ? (

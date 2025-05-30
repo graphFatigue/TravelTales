@@ -7,7 +7,6 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { CalendarIcon } from 'lucide-react';
 
 interface BirthDateFieldProps {
 	control: any;
@@ -38,7 +37,7 @@ export function BirthDateField({ control }: BirthDateFieldProps) {
 									field.onChange(date ? new Date(date).toISOString() : null);
 								}}
 							/>
-							<CalendarIcon className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform' />
+							{/* <CalendarIcon className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform' /> */}
 						</div>
 					</FormControl>
 					<FormMessage />

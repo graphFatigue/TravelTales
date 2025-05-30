@@ -78,6 +78,7 @@ export default function LoginForm() {
 								variant='link'
 								className='h-auto p-0 text-sm'
 								type='button'
+								onClick={() => router.push('/forgot-password')}
 							>
 								{t('auth.forgotPassword')}
 							</Button>

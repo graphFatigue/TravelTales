@@ -56,7 +56,6 @@ export const postFormSchema = z.object({
 
 export type PostFormValues = z.infer<typeof postFormSchema>;
 
-
 export const formSchema = z.object({
 	name: z.string().min(1, 'Name is required').max(100),
 	description: z.string().min(1, 'Description is required').max(500),
@@ -77,3 +76,25 @@ export const profileFormSchema = z.object({
 });
 
 export type UpdateBloggerProfileValues = z.infer<typeof profileFormSchema>;
+
+export const forgotPasswordFormSchema = z.object({
+	email: z.string().email('Please enter a valid email address'),
+});
+
+export type forgotPasswordValues = z.infer<typeof forgotPasswordFormSchema>;
+
+export const resetPasswordFormSchema = z
+	.object({
+		email: z.string().email(),
+		token: z.string().min(1, 'Token is required'),
+		newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+		confirmPassword: z
+			.string()
+			.min(8, 'Password must be at least 8 characters'),
+	})
+	.refine(data => data.newPassword === data.confirmPassword, {
+		message: "Passwords don't match",
+		path: ['confirmPassword'],
+	});
+
+export type ResetPasswordValues = z.infer<typeof resetPasswordFormSchema>;

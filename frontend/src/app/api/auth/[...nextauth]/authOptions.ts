@@ -52,7 +52,6 @@ export const authOptions: NextAuthOptions = {
 		async signIn({ account }) {
 			if (account?.provider === 'google') {
 				try {
-					console.log(account.id_token);
 					const response = await api.post('/api/Auth/signin-google', {
 						token: account.id_token,
 					});

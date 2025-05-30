@@ -33,6 +33,11 @@ export default function PostsFeed() {
 				{isFetchingNextPage && (
 					<Loader2 className='mx-auto my-3 animate-spin' />
 				)}
+				{!hasNextPage && posts.length > 0 && (
+					<div className='col-span-full py-8 text-center text-muted-foreground'>
+						You&apos;ve reached the end
+					</div>
+				)}
 			</InfiniteScrollContainer>
 		</div>
 	);

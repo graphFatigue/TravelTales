@@ -33,10 +33,11 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 				onValueChange={setActiveTab}
 				className='w-full'
 			>
-				<TabsList className='grid grid-cols-3 md:w-[400px]'>
+				<TabsList className='grid grid-cols-4 md:w-[400px]'>
 					<TabsTrigger value='overview'>Overview</TabsTrigger>
 					<TabsTrigger value='places'>Places</TabsTrigger>
 					<TabsTrigger value='posts'>Posts</TabsTrigger>
+					<TabsTrigger value='statistics'>Statistics</TabsTrigger>
 				</TabsList>
 
 				{/* Overview Tab */}
@@ -181,6 +182,18 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 									</div>
 								</div>
 							)}
+						</CardContent>
+					</Card>
+				</TabsContent>
+
+				{/* Statistics Tab*/}
+				<TabsContent value='statistics' className='mt-6'>
+					<Card>
+						<CardHeader>
+							<CardTitle>Statistic</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p> *Statistics* </p>
 						</CardContent>
 					</Card>
 				</TabsContent>

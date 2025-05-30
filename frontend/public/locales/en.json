@@ -40,7 +40,8 @@
         "dark": "Dark",
         "system": "System",
 		"users": "Users",
-		"categories": "Categories"
+		"categories": "Categories",
+		"followersPosts": "Followers posts"
 	},
 	"profile": {
 		"title": "Profile",

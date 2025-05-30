@@ -40,7 +40,8 @@
 		"dark": "Темна",
 		"system": "Система",
 		"users": "Користувачі",
-		"categories": "Категорії"
+		"categories": "Категорії",
+		"followersPosts": "Публікації підписників"
 	},
 	"profile": {
 		"title": "Profile",

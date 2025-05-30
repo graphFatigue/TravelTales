@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { Home, UserRoundCheck, UserRoundPlus, Users, ContactRound, ChartBarStacked  } from 'lucide-react';
+import { Home, UserRoundCheck, UserRoundPlus, Users, ContactRound, ChartBarStacked, NotebookText  } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
@@ -38,7 +38,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 				</Link>
 			</Button>
 
-			{session?.role === "Admin" && (
+			{session?.role === 'Admin' && (
 				<>
 					<Button
 						variant='ghost'
@@ -72,6 +72,21 @@ export default function MenuBar({ className }: MenuBarProps) {
 					<Button
 						variant='ghost'
 						className='flex items-center justify-start gap-3'
+						title='Followers Posts'
+						asChild
+					>
+						<Link
+							href={`/blogger/${session?.user.blogger?.id}/followers/posts`}
+						>
+							<NotebookText />
+							<span className='hidden lg:inline'>
+								{t('dashboard.followersPosts')}
+							</span>
+						</Link>
+					</Button>
+					<Button
+						variant='ghost'
+						className='flex items-center justify-start gap-3'
 						title='Followers'
 						asChild
 					>
@@ -100,8 +115,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 						className='flex items-center justify-start gap-3'
 						title='Notifications'
 						asChild
-					>
-					</Button>
+					></Button>
 				</>
 			)}
 		</div>

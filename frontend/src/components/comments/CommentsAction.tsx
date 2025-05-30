@@ -52,8 +52,7 @@ export function CommentsAction({
 
 	return (
 		<CardFooter className='flex justify-end gap-2 bg-muted/20 px-4 py-2'>
-			{(session?.user.blogger?.id === comment.bloggerId ||
-				session?.role === 'Admin') && (
+			{session?.user.blogger?.id === comment.bloggerId && (
 				<Dialog
 					open={isEditDialogOpen && editingCommentId === comment.id}
 					onOpenChange={setIsEditDialogOpen}

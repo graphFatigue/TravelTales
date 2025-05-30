@@ -62,23 +62,25 @@ export function PostCard() {
 						</div>
 					</div>
 					<div className='space-x-2'>
-						{post.bloggerId === session?.user.blogger?.id ||
-						session?.role === 'Admin' ? (
-							<>
-								<Button
-									className='rounded-full bg-primary px-5 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90'
-									onClick={() => redirect(`/post/${post.id}/edit`)}
-								>
-									Edit
-								</Button>
-								<DeletePost
-									postId={post.id}
-									className={
-										'rounded-full bg-destructive px-5 py-1.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-									}
-								/>
-							</>
-						) : (
+						{post.bloggerId === session?.user.blogger?.id && (
+							<Button
+								className='rounded-full bg-primary px-5 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90'
+								onClick={() => redirect(`/post/${post.id}/edit`)}
+							>
+								Edit
+							</Button>
+						)}
+
+						{(post.bloggerId === session?.user.blogger?.id ||
+							session?.role === 'Admin') && (
+							<DeletePost
+								postId={post.id}
+								className={
+									'rounded-full bg-destructive px-5 py-1.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+								}
+							/>
+						)}
+						{post.bloggerId !== session?.user.blogger?.id && (
 							<FollowButton
 								bloggerId={blogger?.id}
 								isFollowing={blogger?.isFollowing}

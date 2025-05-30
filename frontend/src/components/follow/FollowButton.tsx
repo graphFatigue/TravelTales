@@ -4,6 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFollowMutations } from '@/hooks/bloggers/useFollowMutations';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
+import RestrictedDialog from '../RestrictedDialog';
 
 interface FollowButtonProps {
 	bloggerId: number;
@@ -29,10 +32,16 @@ export default function FollowButton({
 	onSuccess,
 }: FollowButtonProps) {
 	const { followMutation, unfollowMutation } = useFollowMutations(bloggerId);
+	const { data: session } = useSession();
+	const [openRestricted, setOpenRestricted] = useState(false);
 
 	const handleFollow = (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
+		if (!session) {
+			setOpenRestricted(true);
+			return;
+		}
 		if (isFollowing) {
 			unfollowMutation.mutate(undefined, {
 				onSuccess: () => onSuccess?.(),
@@ -47,25 +56,30 @@ export default function FollowButton({
 	const isLoading = followMutation.isPending || unfollowMutation.isPending;
 
 	return (
-		<Button
-			variant={variant}
-			size={size}
-			onClick={handleFollow}
-			disabled={isLoading}
-			aria-label={isFollowing ? 'Unfollow' : 'Follow'}
-			className={cn(
-				'transition-all',
-				isLoading && 'cursor-not-allowed',
-				className,
+		<>
+			<Button
+				variant={variant}
+				size={size}
+				onClick={handleFollow}
+				disabled={isLoading}
+				aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+				className={cn(
+					'transition-all',
+					isLoading && 'cursor-not-allowed',
+					className,
+				)}
+			>
+				{isLoading ? (
+					<Loader2 className='h-4 w-4 animate-spin' />
+				) : isFollowing ? (
+					'Following'
+				) : (
+					'Follow'
+				)}
+			</Button>
+			{openRestricted && (
+				<RestrictedDialog open={openRestricted} setOpen={setOpenRestricted} />
 			)}
-		>
-			{isLoading ? (
-				<Loader2 className='h-4 w-4 animate-spin' />
-			) : isFollowing ? (
-				'Following'
-			) : (
-				'Follow'
-			)}
-		</Button>
+		</>
 	);
 }

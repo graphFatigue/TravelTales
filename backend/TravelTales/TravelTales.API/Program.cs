@@ -59,6 +59,12 @@ builder.Services.AddAuthorization();
 builder.Services.ConfigureApplicationLayerDependencies(builder.Configuration);
 builder.Services.ConfigurePersistenceLayerDependencies(builder.Configuration);
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(5);
+    serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(2);
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

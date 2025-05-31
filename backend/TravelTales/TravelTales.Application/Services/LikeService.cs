@@ -24,10 +24,10 @@ namespace TravelTales.Application.Services
             this.notificationService = notificationService;
         }
 
-        public async Task AddLikeAsync(CreatePostLikeDto createPostLikeDto, CancellationToken cancellationToken = default)
+        public async Task<NotificationDto?> AddLikeAsync(CreatePostLikeDto createPostLikeDto, CancellationToken cancellationToken = default)
         {
             ValidateCreatePostLikeDto(createPostLikeDto);
-            await this.PerformAddOrRemoveLikeAsync(createPostLikeDto);
+            return await this.PerformAddOrRemoveLikeAsync(createPostLikeDto);
         }
 
         public async Task<int> CountLikesByPostIdAsync(long postId)
@@ -40,22 +40,22 @@ namespace TravelTales.Application.Services
             return await this.likeRepository.IsLikedAsync(postId, bloggerId);
         }
 
-        private async Task CreateNotificationForLike(PostLike like, CancellationToken cancellationToken = default)
+        private async Task<NotificationDto?> CreateNotificationForLike(PostLike like, CancellationToken cancellationToken = default)
         {
             // Load post with author information
             var post = await this.unitOfWork.GetRepository<IPostRepository>()
                 .GetByIdFullAsync(like.PostId, cancellationToken);
 
-            if (post == null) return;
+            if (post == null) return null;
 
             // Skip notification if user is liking their own post
-            if (post.BloggerId == like.BloggerId) return;
+            if (post.BloggerId == like.BloggerId) return null;
 
             // Check if author has blocked the liker
             var isBlocked = await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
                 .ExistsAsync(post.BloggerId, like.BloggerId, cancellationToken);
 
-            if (isBlocked) return;
+            if (isBlocked) return null;
 
             var notificationDto = new CreateNotificationDto
             {
@@ -68,7 +68,7 @@ namespace TravelTales.Application.Services
                 LikedBloggerId = like.BloggerId
             };
 
-            await this.notificationService.CreateNotificationAsync(notificationDto, cancellationToken);
+            return await this.notificationService.CreateNotificationAsync(notificationDto, cancellationToken);
         }
 
     private static void ValidateCreatePostLikeDto(CreatePostLikeDto createPostLikeDto)
@@ -76,7 +76,7 @@ namespace TravelTales.Application.Services
             ArgumentNullException.ThrowIfNull(createPostLikeDto);
         }
 
-        private async Task PerformAddOrRemoveLikeAsync(CreatePostLikeDto createPostLikeDto, CancellationToken cancellationToken = default)
+        private async Task<NotificationDto?> PerformAddOrRemoveLikeAsync(CreatePostLikeDto createPostLikeDto, CancellationToken cancellationToken = default)
         {
             var like = this.mapper.Map<PostLike>(createPostLikeDto);
 
@@ -87,11 +87,12 @@ namespace TravelTales.Application.Services
                 await this.likeRepository.RemoveLikeAsync(
                     createPostLikeDto.PostId,
                     createPostLikeDto.BloggerId);
+                return null;
             }
             else
             {
                 await this.likeRepository.AddLikeAsync(like);
-                await CreateNotificationForLike(like, cancellationToken);
+                return await CreateNotificationForLike(like, cancellationToken);
             }
         }
     }

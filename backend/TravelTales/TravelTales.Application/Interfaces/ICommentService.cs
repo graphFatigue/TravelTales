@@ -1,12 +1,13 @@
 ﻿using Sieve.Models;
 using TravelTales.Application.DTOs.Comment;
+using TravelTales.Application.DTOs.Notification;
 using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Interfaces
 {
     public interface ICommentService
     {
-        Task<CommentBroadcastDto> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default);
+        Task<(CommentBroadcastDto comment, NotificationDto? notification)> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default);
 
         Task<CommentBroadcastDto> UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default);
 

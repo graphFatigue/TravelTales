@@ -33,7 +33,7 @@ namespace TravelTales.Application.Services
             this.updateValidator = updateValidator;
         }
 
-        public async Task<CommentBroadcastDto> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
+        public async Task<(CommentBroadcastDto comment, NotificationDto? notification)> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
         {
             await createValidator.ValidateAndThrowAsync(commentDto);
 
@@ -63,10 +63,11 @@ namespace TravelTales.Application.Services
                         CommentId = comment.Id
                     };
                     var notification = await this.notificationService.CreateNotificationAsync(notificationDto);
+                    return (mapper.Map<CommentBroadcastDto>(comment), notification);
                 }
             }
 
-            return mapper.Map<CommentBroadcastDto>(comment);
+            return (mapper.Map<CommentBroadcastDto>(comment), null);
         }
 
         public async Task<CommentBroadcastDto> UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)

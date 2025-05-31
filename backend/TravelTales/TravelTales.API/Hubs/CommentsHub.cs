@@ -22,9 +22,9 @@ namespace TravelTales.API.Hubs
         public async Task SendComment(CreateCommentDto commentDto)
         {
             var bloggerId = await bloggerService.GetCurrentBloggerId();
-            var createdComment = await commentService.CreateCommentAsync(commentDto, bloggerId);
+            var (createdComment, notification) = await commentService.CreateCommentAsync(commentDto, bloggerId);
 
-            if (createdComment.PostAuthorBloggerId != bloggerId)
+            if (createdComment.PostAuthorBloggerId != bloggerId && notification != null)
             {
                 await notificationsHub.Clients
                     .Group(createdComment.PostAuthorBloggerId.ToString())

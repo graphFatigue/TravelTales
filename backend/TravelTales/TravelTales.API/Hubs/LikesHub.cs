@@ -29,15 +29,15 @@ namespace TravelTales.API.Hubs
                 var bloggerId = await bloggerService.GetCurrentBloggerId();
                 createPostLikeDto.BloggerId = bloggerId;
 
-                await this.likeService.AddLikeAsync(createPostLikeDto);
+                var notification = await likeService.AddLikeAsync(createPostLikeDto);
                 var isLiked = await likeService.IsLikedAsync(createPostLikeDto.PostId, bloggerId);
                 var numOfLikes = await likeService.CountLikesByPostIdAsync(createPostLikeDto.PostId);
 
-                if (isLiked)
+                if (isLiked && notification!=null && notification.RecipientBloggerId != bloggerId)
                 {
                     await notificationsHub.Clients
-                        .Group(createPostLikeDto.BloggerId.ToString())
-                        .SendAsync("ReceiveNotification", "New like received!");
+                        .Group(notification.RecipientBloggerId.ToString())
+                        .SendAsync("ReceiveNotification", "New like received!", notification);
                 }
 
                 await Clients.All.SendAsync("ReceiveLikeUpdate", numOfLikes, isLiked, createPostLikeDto.PostId);

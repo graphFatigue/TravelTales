@@ -28,7 +28,7 @@ namespace TravelTales.API.Controllers
             long countryId,
             CancellationToken cancellationToken)
         {
-            var cities = await this.locationService.GetCitiesByCountryAsync(countryId, cancellationToken);
+            var cities = await this.locationService.GetCitiesByCountryAsync(countryId, CancellationToken.None);
             return Ok(cities);
         }
     }

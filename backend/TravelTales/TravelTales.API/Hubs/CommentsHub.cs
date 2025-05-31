@@ -28,7 +28,7 @@ namespace TravelTales.API.Hubs
             {
                 await notificationsHub.Clients
                     .Group(createdComment.PostAuthorBloggerId.ToString())
-                    .SendAsync("ReceiveNotification", "New comment received!", createdComment, notification);
+                    .SendAsync("ReceiveNotification", "New comment received!", notification);
             }
 
             await Clients.Group(commentDto.PostId.ToString())

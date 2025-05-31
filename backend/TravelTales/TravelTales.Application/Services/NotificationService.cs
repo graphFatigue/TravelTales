@@ -91,11 +91,21 @@ namespace TravelTales.Application.Services
         {
             var currentBloggerId = await this.bloggerService.GetCurrentBloggerId(cancellationToken);
 
+            var bloggerFilter = $"RecipientBloggerId=={currentBloggerId}";
+
+            if (string.IsNullOrWhiteSpace(sieveModel.Filters))
+            {
+                sieveModel.Filters = bloggerFilter;
+            }
+            else
+            {
+                sieveModel.Filters += $";{bloggerFilter}";
+            }
+
             var pagedList = await this.unitOfWork.GetRepository<INotificationRepository>()
                 .GetAllWithFilterAsync(sieveModel, cancellationToken);
 
             var filteredNotifications = pagedList.Items?
-                .Where(n => n.RecipientBloggerId == currentBloggerId && !n.IsDeleted)
                 .ToList();
 
             var dtos = this.mapper.Map<List<NotificationDto>>(filteredNotifications);

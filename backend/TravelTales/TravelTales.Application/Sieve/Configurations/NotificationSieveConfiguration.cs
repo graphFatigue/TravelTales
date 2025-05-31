@@ -10,6 +10,10 @@ namespace TravelTales.Application.Sieve.Configurations
             mapper.Property<Notification>(x => x.CreatedAt)
                 .CanFilter()
                 .CanSort();
+
+            mapper.Property<Notification>(x => x.RecipientBloggerId)
+                .CanFilter()
+                .CanSort();
         }
     }
 }

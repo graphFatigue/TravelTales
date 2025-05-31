@@ -1,6 +1,7 @@
 import getTravelerRating from '@/lib/getTravelRating';
 import { useEffect, useState } from 'react';
 
+
 export const useTravelerRating = (visitedCities: number) => {
 	const initialTravelerRating = getTravelerRating(visitedCities || 0);
 

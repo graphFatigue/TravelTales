@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Blogger } from '@/types/types';
 import EditBloggerProfileDialog from './EditProfileDIalog';
+import { useLocationInfo } from '@/hooks/useLocationInfo';
 
 interface EditProfileButtonProps {
 	blogger: Blogger;
@@ -11,6 +12,7 @@ interface EditProfileButtonProps {
 
 export default function EditProfileButton({ blogger }: EditProfileButtonProps) {
 	const [showDialog, setShowDialog] = useState(false);
+	useLocationInfo(blogger.countryId);
 
 	return (
 		<>

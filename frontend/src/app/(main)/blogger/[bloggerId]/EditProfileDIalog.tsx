@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Blogger } from '@/types/types';
 import { useProfileMutations } from '@/hooks/bloggers/useProfileMutations';
-import { useLocationInfo } from '@/hooks/useLocationInfo';
 import {
 	profileFormSchema,
 	UpdateBloggerProfileValues,
@@ -57,8 +56,6 @@ export default function EditBloggerProfileDialog({
 
 	const { watch } = form;
 	const selectedCountryId = watch('countryId');
-
-	const { countries, cities, loading } = useLocationInfo(selectedCountryId);
 
 	useEffect(() => {
 		const subscription = watch((value, { name }) => {
@@ -112,9 +109,6 @@ export default function EditBloggerProfileDialog({
 						<LocationSection
 							control={form.control}
 							selectedCountryId={selectedCountryId}
-							loading={loading}
-							countries={countries}
-							cities={cities}
 							setValue={form.setValue}
 							visitedCountries={blogger.visitedCountries || []}
 							visitedCities={blogger.visitedCities || []}

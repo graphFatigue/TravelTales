@@ -24,9 +24,6 @@ import { MultiSelect } from '../ui/multi-selesct';
 interface LocationSectionProps {
 	control: any;
 	selectedCountryId: number | undefined;
-	loading: boolean;
-	countries: Country[] | undefined;
-	cities: City[] | undefined;
 	setValue: UseFormSetValue<UpdateBloggerProfileValues>;
 	visitedCountries: Country[];
 	visitedCities: City[];
@@ -35,9 +32,6 @@ interface LocationSectionProps {
 export function LocationSection({
 	control,
 	selectedCountryId,
-	loading,
-	countries,
-	cities,
 	setValue,
 	visitedCountries,
 	visitedCities,
@@ -46,9 +40,11 @@ export function LocationSection({
 		string[]
 	>(visitedCountries.map(c => c.id.toString()));
 
-	const { cities: allVisitedCities } = useLocationInfo(
+	const { cities: allVisitedCities, loadingCities } = useLocationInfo(
 		selectedVisitedCountries.map(id => Number(id)),
 	);
+
+	const { countries, cities, loading } = useLocationInfo(selectedCountryId);
 
 	return (
 		<div className='space-y-4'>
@@ -170,7 +166,9 @@ export function LocationSection({
 									field.onChange(values.map(v => parseInt(v)));
 								}}
 								placeholder='Select visited cities...'
-								disabled={selectedVisitedCountries.length === 0}
+								disabled={
+									selectedVisitedCountries.length === 0 || loadingCities
+								}
 								modalPopover={true}
 							/>
 							<FormMessage />

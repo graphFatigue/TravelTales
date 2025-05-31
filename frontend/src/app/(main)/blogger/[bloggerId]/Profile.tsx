@@ -14,15 +14,12 @@ import {
 } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Blogger } from '@/types/types';
-import { useLocationInfo } from '@/hooks/useLocationInfo';
 import BloggersPosts from '@/components/bloggers/BloggersPosts';
 import { useTravelerRating } from '@/hooks/useTravelRating';
 
 export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const [activeTab, setActiveTab] = useState('overview');
 	const travelerRating = useTravelerRating(blogger.visitedCities?.length || 0);
-
-	const { countries, cities, loading } = useLocationInfo(blogger.countryId);
 
 	return (
 		<div className='container mx-auto max-w-5xl px-4 py-8'>
@@ -80,9 +77,13 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 										Location
 									</h3>
 									<p>
-										{loading
+										{/* {loading
 											? 'Loading...'
-											: `${cities?.find(c => c.id === blogger.cityId)?.name}, ${countries?.find(c => c.id === blogger.countryId)?.name}`}
+											: `${cities?.find(c => c.id === blogger.cityId)?.name}, ${countries?.find(c => c.id === blogger.countryId)?.name}`} */}
+
+										{blogger.city
+											? `${blogger.city?.name}, ${blogger.country?.name}`
+											: 'No data'}
 									</p>
 								</div>
 							</div>

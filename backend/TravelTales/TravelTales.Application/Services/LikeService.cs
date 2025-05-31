@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using System.Threading;
+using TravelTales.Application.DTOs.Notification;
 using TravelTales.Application.DTOs.PostLike;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
+using TravelTales.Persistence;
 using TravelTales.Persistence.Interfaces;
 
 namespace TravelTales.Application.Services
@@ -10,14 +13,18 @@ namespace TravelTales.Application.Services
     {
         private readonly ILikeRepository likeRepository;
         private readonly IMapper mapper;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly INotificationService notificationService;
 
-        public LikeService(ILikeRepository likeRepository, IMapper mapper)
+        public LikeService(ILikeRepository likeRepository, IMapper mapper, IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             this.likeRepository = likeRepository;
             this.mapper = mapper;
+            this.unitOfWork = unitOfWork;
+            this.notificationService = notificationService;
         }
 
-        public async Task AddLikeAsync(CreatePostLikeDto createPostLikeDto)
+        public async Task AddLikeAsync(CreatePostLikeDto createPostLikeDto, CancellationToken cancellationToken = default)
         {
             ValidateCreatePostLikeDto(createPostLikeDto);
             await this.PerformAddOrRemoveLikeAsync(createPostLikeDto);
@@ -33,22 +40,58 @@ namespace TravelTales.Application.Services
             return await this.likeRepository.IsLikedAsync(postId, bloggerId);
         }
 
-        private static void ValidateCreatePostLikeDto(CreatePostLikeDto createPostLikeDto)
+        private async Task CreateNotificationForLike(PostLike like, CancellationToken cancellationToken = default)
+        {
+            // Load post with author information
+            var post = await this.unitOfWork.GetRepository<IPostRepository>()
+                .GetByIdFullAsync(like.PostId, cancellationToken);
+
+            if (post == null) return;
+
+            // Skip notification if user is liking their own post
+            if (post.BloggerId == like.BloggerId) return;
+
+            // Check if author has blocked the liker
+            var isBlocked = await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
+                .ExistsAsync(post.BloggerId, like.BloggerId, cancellationToken);
+
+            if (isBlocked) return;
+
+            var notificationDto = new CreateNotificationDto
+            {
+                Message = "Someone liked your post",
+                RecipientBloggerId = (long)post.BloggerId,
+                TriggeredByBloggerId = like.BloggerId,
+                LikeId = like.Id,
+                PostId = like.PostId,
+                LikedPostId = like.PostId,
+                LikedBloggerId = like.BloggerId
+            };
+
+            await this.notificationService.CreateNotificationAsync(notificationDto, cancellationToken);
+        }
+
+    private static void ValidateCreatePostLikeDto(CreatePostLikeDto createPostLikeDto)
         {
             ArgumentNullException.ThrowIfNull(createPostLikeDto);
         }
 
-        private async Task PerformAddOrRemoveLikeAsync(CreatePostLikeDto createPostLikeDto)
+        private async Task PerformAddOrRemoveLikeAsync(CreatePostLikeDto createPostLikeDto, CancellationToken cancellationToken = default)
         {
             var like = this.mapper.Map<PostLike>(createPostLikeDto);
 
             if (await this.IsLikedAsync(createPostLikeDto.PostId, createPostLikeDto.BloggerId))
             {
-                await this.likeRepository.RemoveLikeAsync(like);
+                //await this.likeRepository.RemoveLikeAsync(like);
+                //await unitOfWork.SaveChangesAsync(cancellationToken);
+                await this.likeRepository.RemoveLikeAsync(
+                    createPostLikeDto.PostId,
+                    createPostLikeDto.BloggerId);
             }
             else
             {
                 await this.likeRepository.AddLikeAsync(like);
+                await CreateNotificationForLike(like, cancellationToken);
             }
         }
     }

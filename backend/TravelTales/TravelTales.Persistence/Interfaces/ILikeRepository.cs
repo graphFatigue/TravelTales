@@ -8,6 +8,8 @@ namespace TravelTales.Persistence.Interfaces
 
         Task RemoveLikeAsync(PostLike postLike);
 
+        Task RemoveLikeAsync(long postId, long bloggerId);
+
         Task<bool> IsLikedAsync(long postId, long bloggerId);
 
         Task<int> CountLikesByPostIdAsync(long postId);

@@ -18,6 +18,7 @@ namespace TravelTales.Domain.Entities
         // Changed to match PostLike's composite key
         public long? LikedPostId { get; set; }
         public long? LikedBloggerId { get; set; }
+        public long? LikeId { get; set; }
         public PostLike PostLike { get; set; }
 
         public bool IsRead { get; set; }

@@ -35,6 +35,24 @@ namespace TravelTales.Persistence.Repositories
             await this.context.SaveChangesAsync();
         }
 
+        public async Task RemoveLikeAsync(long postId, long bloggerId)
+        {
+            var like = await context.PostLikes
+                .FirstOrDefaultAsync(l => l.PostId == postId && l.BloggerId == bloggerId);
+
+            if (like != null)
+            {
+                var notifications = this.context.Notifications
+                    .Where(n => n.LikeId == like.Id)
+                    .ToList();
+
+                this.context.Notifications.RemoveRange(notifications);
+
+                context.PostLikes.Remove(like);
+                await context.SaveChangesAsync();
+            }
+        }
+
         public async Task<List<PostLike>> GetLikesByPostIdAsync(long postId, CancellationToken cancellationToken = default)
         {
             return await this.context.PostLikes

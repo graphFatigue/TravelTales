@@ -33,7 +33,7 @@ export const NotificationDropdown = () => {
 		if (notification.commentId) {
 			return `commented on your post`;
 		}
-		if (notification.likedPostId) {
+		if (notification.likeId) {
 			return `liked your post`;
 		}
 		return notification.message;

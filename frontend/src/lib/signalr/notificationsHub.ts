@@ -81,26 +81,8 @@ export const onNotificationReceived = (
 
 	if (connection) {
 		connection.off('ReceiveNotification');
-		// for comments notification I receive Comment object (createCommentDTO on backend) and for likes I receive nothing(need to adapt)
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		connection.on('ReceiveNotification', (message: string, data?: any) => {
-			const notification: Notification = {
-				id: Date.now(),
-				message,
-				isRead: false,
-				createdAt: new Date().toISOString(),
-				recipientBloggerId: data?.postAuthorBloggerId || 0,
-				triggeredByBlogger: {
-					id: data?.bloggerId || 0,
-					image: data?.bloggerImage,
-					firstName: data?.bloggerName?.split(' ')[0] || '',
-					lastName: data?.bloggerName?.split(' ')[1] || '',
-				},
-				postId: data?.postId || 0,
-				commentId: data?.id || 0,
-				likedPostId: data?.likedPostId || 0,
-			};
-			callback(notification);
+		connection.on('ReceiveNotification', (message: string, data: Notification) => {
+			callback(data);
 		});
 	}
 };

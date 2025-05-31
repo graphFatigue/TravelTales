@@ -48,7 +48,7 @@ namespace TravelTales.API.Hubs
             var bloggerId = await this.bloggerService.GetCurrentBloggerId();
             await commentService.DeleteCommentAsync(commentId, bloggerId);
             var updatedComments = await commentService.GetCommentsByPostIdAsync(postId);
-            await Clients.Group(postId.ToString()).SendAsync("UpdateComments", updatedComments);
+            await Clients.Group(postId.ToString()).SendAsync("UpdateComments", updatedComments, commentId);
         }
 
         public async Task JoinPostGroup(long postId)

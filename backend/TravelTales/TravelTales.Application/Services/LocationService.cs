@@ -20,7 +20,7 @@ namespace TravelTales.Application.Services
         public async Task<IEnumerable<CountryDto>> GetAllCountriesAsync(CancellationToken cancellationToken = default)
         {
             var countries = await _unitOfWork.GetRepository<ICountryRepository>()
-                .GetAllAsync(cancellationToken);
+                .GetAllAsync(null, cancellationToken);
 
             return _mapper.Map<IEnumerable<CountryDto>>(countries);
         }

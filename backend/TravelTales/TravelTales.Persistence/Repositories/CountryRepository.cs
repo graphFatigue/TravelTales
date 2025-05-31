@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace TravelTales.Persistence.Repositories
 {
@@ -16,8 +18,12 @@ namespace TravelTales.Persistence.Repositories
             this.DbSet = this.context.Set<Country>();
         }
 
-        public async Task<List<Country>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<List<Country>> GetAllAsync(Expression<Func<Country, bool>> predicate, CancellationToken cancellationToken = default)
         {
+            if (predicate != null)
+            {
+                return await this.DbSet.Where(predicate).ToListAsync(cancellationToken);
+            }
             return await this.DbSet.ToListAsync(cancellationToken);
         }
 

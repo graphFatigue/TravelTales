@@ -6,5 +6,7 @@ namespace TravelTales.Persistence.Interfaces
     {
         Task<List<City>> GetAllByCountryIdAsync(long countryId, CancellationToken cancellationToken = default);
         Task<City?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+
+        Task<List<City>> GetByIdsAsync(IEnumerable<long> cityIds, CancellationToken cancellationToken = default);
     }
 }

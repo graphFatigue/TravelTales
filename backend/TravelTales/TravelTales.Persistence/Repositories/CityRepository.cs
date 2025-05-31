@@ -25,5 +25,12 @@ namespace TravelTales.Persistence.Repositories
         {
             return await this.DbSet.FirstOrDefaultAsync(x => x.Id.Equals(id), cancellationToken);
         }
+
+        public async Task<List<City>> GetByIdsAsync(IEnumerable<long> cityIds, CancellationToken cancellationToken = default)
+        {
+            return await this.DbSet
+                .Where(c => cityIds.Contains(c.Id))
+                .ToListAsync(cancellationToken);
+        }
     }
 }

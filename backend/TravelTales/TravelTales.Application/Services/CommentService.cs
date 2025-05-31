@@ -129,18 +129,17 @@ namespace TravelTales.Application.Services
 
             if (comment.BloggerId != bloggerId && !userRoles.Contains("Admin") && comment.Post.BloggerId != bloggerId)
             {
-                throw new PermissionsException();
+                throw new PermissionsException("You don't have permission to modify this comment");
             }
         }
 
         private async Task EnsureUserCanModifyCommentAsync(Comment comment)
         {
             var bloggerId = await this.bloggerService.GetCurrentBloggerId();
-            var userRoles = this.contextAccessor.GetCurrentUserRoles();
 
             if (comment.BloggerId != bloggerId)
             {
-                throw new PermissionsException();
+                throw new PermissionsException("You don't have permission to modify this comment");
             }
         }
 

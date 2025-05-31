@@ -202,29 +202,55 @@ namespace TravelTales.Application.Services
                 blogger.CityId = updateBloggerDto.CityId;
             }
 
-            // Update visited cities
-            blogger.VisitedCities.Clear();
-            foreach (var cityId in updateBloggerDto.VisitedCityIds)
+            // Update visited cities (only remove/add diffs)
+            var existingVisitedCityIds = blogger.VisitedCities.Select(c => c.Id).ToList();
+            var cityIdsToAdd = updateBloggerDto.VisitedCityIds.Except(existingVisitedCityIds).ToList();
+            var cityIdsToRemove = existingVisitedCityIds.Except(updateBloggerDto.VisitedCityIds).ToList();
+
+            foreach (var cityId in cityIdsToRemove)
             {
-                var city = await unitOfWork.GetRepository<ICityRepository>()
-                    .GetByIdAsync(cityId, cancellationToken);
-                if (city == null)
-                    throw new ValidationException($"City with ID {cityId} not found.");
-                blogger.VisitedCities.Add(city);
+                var city = blogger.VisitedCities.FirstOrDefault(c => c.Id == cityId);
+                if (city != null)
+                {
+                    blogger.VisitedCities.Remove(city);
+                }
             }
 
-            // Update visited countries
-            blogger.VisitedCountries.Clear();
-            foreach (var countryId in updateBloggerDto.VisitedCountryIds)
+            if (cityIdsToAdd.Any())
             {
-                var country = await unitOfWork.GetRepository<ICountryRepository>()
-                    .GetByIdAsync(countryId, cancellationToken);
-                if (country == null)
-                    throw new ValidationException($"Country with ID {countryId} not found.");
-                blogger.VisitedCountries.Add(country);
+                var citiesToAdd = await this.unitOfWork.GetRepository<ICityRepository>()
+                    .GetByIdsAsync(cityIdsToAdd, cancellationToken);
+
+                foreach (var city in citiesToAdd)
+                {
+                    blogger.VisitedCities.Add(city);
+                }
             }
 
-            //this.EnsureUserCanModifyPost(post);
+            // Update visited countries (only remove/add diffs)
+            var existingVisitedCountryIds = blogger.VisitedCountries.Select(c => c.Id).ToList();
+            var countryIdsToAdd = updateBloggerDto.VisitedCountryIds.Except(existingVisitedCountryIds).ToList();
+            var countryIdsToRemove = existingVisitedCountryIds.Except(updateBloggerDto.VisitedCountryIds).ToList();
+
+            foreach (var countryId in countryIdsToRemove)
+            {
+                var country = blogger.VisitedCountries.FirstOrDefault(c => c.Id == countryId);
+                if (country != null)
+                {
+                    blogger.VisitedCountries.Remove(country);
+                }
+            }
+
+            if (countryIdsToAdd.Any())
+            {
+                var countriesToAdd = await this.unitOfWork.GetRepository<ICountryRepository>()
+                    .GetAllAsync(c => countryIdsToAdd.Contains(c.Id), cancellationToken);
+
+                foreach (var country in countriesToAdd)
+                {
+                    blogger.VisitedCountries.Add(country);
+                }
+            }
 
             ArgumentNullException.ThrowIfNull(updateBloggerDto);
 

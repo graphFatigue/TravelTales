@@ -29,8 +29,7 @@ namespace TravelTales.Persistence.Repositories
 
             if (follow != null)
             {
-                follow.IsDeleted = true;
-                Update(follow);
+                DbSet.Remove(follow);
             }
         }
 

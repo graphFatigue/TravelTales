@@ -336,8 +336,7 @@ namespace TravelTales.Application.Services
             var follow = await unitOfWork.GetRepository<IBloggerFollowRepository>()
                 .GetAllAsync(bf =>
                     bf.FollowerId == followerId &&
-                    bf.FollowingId == followingId &&
-                    !bf.IsDeleted, cancellationToken);
+                    bf.FollowingId == followingId, cancellationToken);
 
             if (!follow.Any())
                 throw new NotFoundException("Follow relationship not found");

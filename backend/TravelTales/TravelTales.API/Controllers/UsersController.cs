@@ -86,5 +86,25 @@ namespace TravelTales.API.Controllers
             this.logger.LogInformation($"Retrieved filtered users");
             return this.Ok(result);
         }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUserAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            logger.LogTrace("Starting DeleteUserAsync for user ID {Id}", id);
+
+            try
+            {
+                await userService.DeleteUserAsync(id, cancellationToken);
+
+                logger.LogInformation("User with ID {Id} deleted successfully", id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error deleting user with ID {Id}", id);
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

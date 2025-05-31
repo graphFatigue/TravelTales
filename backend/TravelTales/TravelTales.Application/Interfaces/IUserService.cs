@@ -15,5 +15,7 @@ namespace TravelTales.Application.Interfaces
         Task AssignRoleToUserAsync(AssignRoleDto assignRoleDto, CancellationToken cancellationToken = default);
 
         Task<PagedList<UserDto>> GetUsersWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
+
+        Task DeleteUserAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

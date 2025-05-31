@@ -17,7 +17,7 @@ export interface PostsResponse {
 export const useInfinitePosts = (pageSize = 3) => {
 	const searchParams = useSearchParams();
 
-	const searchTerm = searchParams.get('search') || '';
+	const searchTerm = searchParams.get('s') || '';
 	const categories = searchParams.getAll('category');
 	const budgets = searchParams.getAll('budget');
 	const countries = searchParams.getAll('country');
@@ -39,6 +39,7 @@ export const useInfinitePosts = (pageSize = 3) => {
 			};
 
 			const filters = [];
+			console.log("search ",searchTerm);
 
 			if (searchTerm) {
 				filters.push(`title@=*${searchTerm}`);

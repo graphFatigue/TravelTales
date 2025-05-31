@@ -24,6 +24,14 @@ namespace TravelTales.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Comment?> GetByIdFullAsync(long id, CancellationToken cancellationToken = default)
+        {
+            return await this.DbSet
+                .Include(x => x.Post)
+                .Include(s => s.Blogger)
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken);
+        }
+
         public override void Delete(Comment comment)
         {
             // Delete notifications related to this comment first

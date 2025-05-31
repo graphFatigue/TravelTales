@@ -18,19 +18,26 @@ namespace TravelTales.Application.Services
         private readonly INotificationService notificationService;
         private readonly IValidator<CreateCommentDto> createValidator;
         private readonly IValidator<UpdateCommentDto> updateValidator;
+        private readonly IContextAccessor contextAccessor;
+        private readonly IBloggerService bloggerService;
+
 
         public CommentService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             INotificationService notificationService,
             IValidator<CreateCommentDto> createValidator,
-            IValidator<UpdateCommentDto> updateValidator)
+            IValidator<UpdateCommentDto> updateValidator,
+            IContextAccessor contextAccessor,
+            IBloggerService bloggerService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.notificationService = notificationService;
             this.createValidator = createValidator;
             this.updateValidator = updateValidator;
+            this.contextAccessor = contextAccessor;
+            this.bloggerService = bloggerService;
         }
 
         public async Task<(CommentBroadcastDto comment, NotificationDto? notification)> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
@@ -74,7 +81,8 @@ namespace TravelTales.Application.Services
         {
             await updateValidator.ValidateAndThrowAsync(commentDto);
 
-            var comment = await GetCommentWithAuthorization(commentId, bloggerId);
+            var comment = await GetCommentWithAuthorization(commentId);
+            await this.EnsureUserCanModifyCommentAsync(comment);
 
             comment.Content = commentDto.Content;
             comment.ModifiedAt = DateTime.UtcNow;
@@ -87,7 +95,8 @@ namespace TravelTales.Application.Services
 
         public async Task DeleteCommentAsync(long commentId, long bloggerId, CancellationToken cancellationToken = default)
         {
-            var comment = await GetCommentWithAuthorization(commentId, bloggerId);
+            var comment = await GetCommentWithAuthorization(commentId);
+            await this.EnsureUserCanDeleteCommentAsync(comment);
 
             unitOfWork.GetRepository<ICommentRepository>().Delete(comment);
             await unitOfWork.SaveChangesAsync();
@@ -113,10 +122,32 @@ namespace TravelTales.Application.Services
             return PagedList<CommentBroadcastDto>.Copy(pagedList, filteredComments);
         }
 
-        private async Task<Comment> GetCommentWithAuthorization(long commentId, long bloggerId, CancellationToken cancellationToken = default)
+        private async Task EnsureUserCanDeleteCommentAsync(Comment comment)
+        {
+            var bloggerId = await this.bloggerService.GetCurrentBloggerId();
+            var userRoles = this.contextAccessor.GetCurrentUserRoles();
+
+            if (comment.BloggerId != bloggerId && !userRoles.Contains("Admin") && comment.Post.BloggerId != bloggerId)
+            {
+                throw new PermissionsException();
+            }
+        }
+
+        private async Task EnsureUserCanModifyCommentAsync(Comment comment)
+        {
+            var bloggerId = await this.bloggerService.GetCurrentBloggerId();
+            var userRoles = this.contextAccessor.GetCurrentUserRoles();
+
+            if (comment.BloggerId != bloggerId)
+            {
+                throw new PermissionsException();
+            }
+        }
+
+        private async Task<Comment> GetCommentWithAuthorization(long commentId, CancellationToken cancellationToken = default)
         {
             var comment = await unitOfWork.GetRepository<ICommentRepository>()
-                .GetByIdAsync(commentId);
+                .GetByIdFullAsync(commentId);
 
             if (comment == null)
                 throw new NotFoundException("Comment not found");

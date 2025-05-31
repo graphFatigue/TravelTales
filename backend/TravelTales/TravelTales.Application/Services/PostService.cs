@@ -115,7 +115,7 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException($"Post with ID {id} was not found.");
             }
 
-            await this.EnsureUserCanModifyPostAsync(post);
+            await this.EnsureUserCanDeletePostAsync(post);
 
             this.unitOfWork.GetRepository<IPostRepository>().Delete(post);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
@@ -321,6 +321,16 @@ namespace TravelTales.Application.Services
 
 
         private async Task EnsureUserCanModifyPostAsync(Post post)
+        {
+            var bloggerId = await this.bloggerService.GetCurrentBloggerId();
+
+            if (post.BloggerId != bloggerId)
+            {
+                throw new PermissionsException();
+            }
+        }
+
+        private async Task EnsureUserCanDeletePostAsync(Post post)
         {
             var bloggerId = await this.bloggerService.GetCurrentBloggerId();
             var userRoles = this.contextAccessor.GetCurrentUserRoles();

@@ -63,7 +63,7 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException($"Blogger with ID {id} was not found.");
             }
 
-            //this.EnsureUserCanModifyPost(post);
+            await this.EnsureUserCanDeleteBloggerAsync(blogger);
 
             this.unitOfWork.GetRepository<IBloggerRepository>().Delete(blogger);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
@@ -174,6 +174,8 @@ namespace TravelTales.Application.Services
             {
                 throw new NotFoundException($"Blogger with ID {id} was not found.");
             }
+
+            await this.EnsureUserCanModifyBloggerAsync(blogger);
 
             blogger.FirstName = updateBloggerDto.FirstName;
             blogger.LastName = updateBloggerDto.LastName;
@@ -396,6 +398,27 @@ namespace TravelTales.Application.Services
             dto.BirthDate = null;
             dto.Sex = null;
             dto.Image = null;
+        }
+
+        private async Task EnsureUserCanModifyBloggerAsync(Blogger blogger)
+        {
+            var bloggerId = await this.GetCurrentBloggerId();
+
+            if (blogger.Id != bloggerId)
+            {
+                throw new PermissionsException();
+            }
+        }
+
+        private async Task EnsureUserCanDeleteBloggerAsync(Blogger blogger)
+        {
+            var bloggerId = await this.GetCurrentBloggerId();
+            var userRoles = this.contextAccessor.GetCurrentUserRoles();
+
+            if (blogger.Id != bloggerId && !userRoles.Contains("Admin"))
+            {
+                throw new PermissionsException();
+            }
         }
 
         private async Task<long> GetCurrentBloggerIdSafeAsync(CancellationToken cancellationToken)

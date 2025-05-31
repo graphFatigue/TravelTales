@@ -168,7 +168,7 @@ namespace TravelTales.Application.Services
             await this.updateBloggerDtoValidator.ValidateAndThrowAsync(updateBloggerDto, cancellationToken: cancellationToken);
 
             var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
-                .GetByIdAsync(id, cancellationToken);
+                .GetByIdFullAsync(id, cancellationToken);
 
             if (blogger is null)
             {

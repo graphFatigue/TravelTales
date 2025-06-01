@@ -1,7 +1,6 @@
-import { CreatePostButton } from '@/components/Post/CreatePostButton';
-import PostsFeed from '@/components/Post/PostsFeed';
+import { CreatePostButton } from '@/components/post/CreatePostButton';
+import PostsFeed from '@/components/post/PostsFeed';
 import { Suspense } from 'react';
-
 
 export default async function Home() {
 	return (

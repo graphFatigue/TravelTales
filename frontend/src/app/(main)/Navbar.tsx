@@ -1,4 +1,4 @@
-import UserButtons from '@/components/UserButtons/UserButtons';
+import UserButtons from '@/components/userButtons/UserButtons';
 import Link from 'next/link';
 
 export default function Navbar() {

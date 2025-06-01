@@ -21,6 +21,7 @@ import UserAvatar from '../user/UserAvatar';
 import { signOut, useSession } from 'next-auth/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { useBlogger } from '@/hooks/bloggers/useBlogger';
 
 interface UserButtonProps {
 	className?: string;
@@ -32,20 +33,22 @@ export default function UserButton({ className }: UserButtonProps) {
 	const { t } = useTranslation();
 	const { data: session } = useSession();
 
+	const { data: blogger } = useBlogger(session?.user.blogger?.id);
+
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<button className={cn('flex-none rounded-full', className)}>
-					<UserAvatar avatarUrl={session?.user.blogger?.image} size={40} />
+					<UserAvatar avatarUrl={blogger?.image} size={40} />
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
 				<DropdownMenuLabel>
 					{t('dashboard.logedinAs', {
 						name:
-							session?.user.blogger?.firstName +
+							blogger?.firstName +
 								' ' +
-								session?.user.blogger?.lastName || 'unknown',
+								blogger?.lastName || 'unknown',
 					})}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />

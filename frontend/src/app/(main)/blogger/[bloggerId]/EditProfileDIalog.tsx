@@ -16,12 +16,12 @@ import {
 	profileFormSchema,
 	UpdateBloggerProfileValues,
 } from '@/lib/validation';
-import { AvatarSection } from '@/components/EditProfile/AvatarSection';
-import { BasicInfoSection } from '@/components/EditProfile/BasicInfoSection';
-import { BirthDateField } from '@/components/EditProfile/BirthDateField';
-import { GenderField } from '@/components/EditProfile/GenderField';
-import { BioField } from '@/components/EditProfile/BioField';
-import { LocationSection } from '@/components/EditProfile/LocationSection';
+import { AvatarSection } from '@/components/editProfile/AvatarSection';
+import { BasicInfoSection } from '@/components/editProfile/BasicInfoSection';
+import { BirthDateField } from '@/components/editProfile/BirthDateField';
+import { GenderField } from '@/components/editProfile/GenderField';
+import { BioField } from '@/components/editProfile/BioField';
+import { LocationSection } from '@/components/editProfile/LocationSection';
 
 interface EditBloggerProfileDialogProps {
 	blogger: Blogger;

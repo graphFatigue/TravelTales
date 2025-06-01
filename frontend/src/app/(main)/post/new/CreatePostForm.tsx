@@ -1,6 +1,6 @@
 'use client';
 
-import { PostForm } from '@/components/Post/PostForm';
+import { PostForm } from '@/components/post/PostForm';
 import { useSession } from 'next-auth/react';
 
 export function CreatePostForm() {

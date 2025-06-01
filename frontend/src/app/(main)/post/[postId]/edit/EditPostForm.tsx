@@ -1,7 +1,7 @@
 'use client';
 
-import { PostForm } from '@/components/Post/PostForm';
-import PostLoader from '@/components/Post/PostLoader';
+import { PostForm } from '@/components/post/PostForm';
+import PostLoader from '@/components/post/PostLoader';
 import { usePost } from '@/hooks/posts/usePost';
 import { useSession } from 'next-auth/react';
 import { useParams } from 'next/navigation';

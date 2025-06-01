@@ -1,7 +1,7 @@
 import { useInfiniteBloggerPosts } from '@/hooks/bloggers/useBloggerPosts';
-import PostLoader from '../Post/PostLoader';
+import PostLoader from '../post/PostLoader';
 import InfiniteScrollContainer from '../InfiniteScrollContainer';
-import { PostCardPreview } from '../Post/PostCardPreview';
+import { PostCardPreview } from '../post/PostCardPreview';
 import { Loader2 } from 'lucide-react';
 
 export default function BloggersPosts({ bloggerId }: { bloggerId: number }) {

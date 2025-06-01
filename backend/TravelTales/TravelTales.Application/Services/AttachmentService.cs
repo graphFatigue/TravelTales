@@ -56,26 +56,47 @@ namespace TravelTales.Application.Services
         public async Task<AttachmentDto> UploadAttachmentAsync(UploadAttachmentDto uploadAttachmentDto, CancellationToken cancellationToken = default)
         {
             var createAttachmentDto = new CreateAttachmentDto();
+
             if (uploadAttachmentDto.AttachmentBytes != null)
             {
-                var stream = new MemoryStream(uploadAttachmentDto.AttachmentBytes);
+                using var stream = new MemoryStream(uploadAttachmentDto.AttachmentBytes);
 
-                // Generate unique filename with GUID
-                string fileName = $"post-{uploadAttachmentDto.PostId}-{Guid.NewGuid()}.jpg";
+                // Determine file extension based on MIME type
+                string extension = GetFileExtension(uploadAttachmentDto.MimeType);
+                string fileName = $"post-{uploadAttachmentDto.PostId}-{Guid.NewGuid()}{extension}";
 
-                var blobUri = await this.blobStorageService.UploadAsync(stream, "attachments", fileName);
+                var blobUri = await blobStorageService.UploadAsync(
+                    stream,
+                    "attachments",
+                    fileName,
+                    uploadAttachmentDto.MimeType);
 
                 createAttachmentDto.Uri = blobUri;
+                createAttachmentDto.MimeType = uploadAttachmentDto.MimeType; // Store MIME type
                 createAttachmentDto.PostId = uploadAttachmentDto.PostId;
-                createAttachmentDto.Number = uploadAttachmentDto.Number; // Ensure Number is set
+                createAttachmentDto.Number = uploadAttachmentDto.Number;
             }
 
-            var attachment = this.mapper.Map<Attachment>(createAttachmentDto);
+            var attachment = mapper.Map<Attachment>(createAttachmentDto);
+            await unitOfWork.GetRepository<IAttachmentRepository>().AddAsync(attachment, cancellationToken);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            await this.unitOfWork.GetRepository<IAttachmentRepository>().AddAsync(attachment, cancellationToken);
-            await this.unitOfWork.SaveChangesAsync(cancellationToken);
+            return mapper.Map<AttachmentDto>(attachment);
+        }
 
-            return this.mapper.Map<AttachmentDto>(attachment);
+        private string GetFileExtension(string mimeType)
+        {
+            return mimeType?.ToLower() switch
+            {
+                "mp4" => ".mp4",
+                "mov" => ".mov",
+                "avi" => ".avi",
+                "webm" => ".webm",
+                "jpeg" or "jpg" => ".jpg",
+                "png" => ".png",
+                "gif" => ".gif",
+                _ => ".bin" // Default extension
+            };
         }
 
         private static (string containerName, string fileName) ExtractBlobInfo(string uri)

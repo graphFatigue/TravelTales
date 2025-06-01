@@ -129,7 +129,7 @@ namespace TravelTales.Application.Services
 
             if (comment.BloggerId != bloggerId && !userRoles.Contains("Admin") && comment.Post.BloggerId != bloggerId)
             {
-                throw new PermissionsException("You don't have permission to modify this comment");
+                throw new PermissionsException("You don't have permission to delete this comment");
             }
         }
 

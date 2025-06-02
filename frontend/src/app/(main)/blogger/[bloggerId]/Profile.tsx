@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Blogger } from '@/types/types';
 import BloggersPosts from '@/components/bloggers/BloggersPosts';
 import { useTravelerRating } from '@/hooks/useTravelRating';
+import { redirect } from 'next/navigation';
 
 export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const [activeTab, setActiveTab] = useState('overview');
@@ -179,7 +180,7 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 										<p className='mt-2 text-sm text-muted-foreground'>
 											Posts will appear here once created.
 										</p>
-										<Button className='mt-4'>Create a Post</Button>
+										<Button className='mt-4' onClick={() => redirect('/post/new')}>Create a Post</Button>
 									</div>
 								</div>
 							)}

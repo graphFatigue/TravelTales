@@ -39,7 +39,7 @@ export const useInfinitePosts = (pageSize = 3) => {
 			};
 
 			const filters = [];
-			console.log("search ",searchTerm);
+			console.log('search ', searchTerm);
 
 			if (searchTerm) {
 				filters.push(`title@=*${searchTerm}`);
@@ -66,11 +66,13 @@ export const useInfinitePosts = (pageSize = 3) => {
 
 			if (filters.length > 0) {
 				params.filters = filters.join(',');
-            }
-            
-            console.log(filters);
+			}
 
-			const response = await api.get('/api/Posts/filter', { params });
+			console.log(filters);
+
+			const response = await api.get('/api/Posts/filter', {
+				params: { ...params, sorts: '-createdAt' },
+			});
 			return response.data;
 		},
 		getNextPageParam: lastPage => {

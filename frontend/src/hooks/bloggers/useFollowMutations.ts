@@ -1,11 +1,13 @@
-// hooks/useFollowMutations.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api/api';
 import { toast } from 'sonner';
 import { Blogger } from '@/types/types';
+import { useSession } from 'next-auth/react';
 
 export function useFollowMutations(bloggerId: number) {
 	const queryClient = useQueryClient();
+
+	const {data: session} = useSession();
 
 	const followMutation = useMutation({
 		mutationFn: async () => {
@@ -42,6 +44,7 @@ export function useFollowMutations(bloggerId: number) {
 		onSuccess: () => {
 			toast.success('Followed successfully');
 			queryClient.invalidateQueries({ queryKey: ['blogger', bloggerId] });
+			queryClient.invalidateQueries({ queryKey: ['blogger', session?.user.blogger?.id] });
 		},
 	});
 
@@ -79,6 +82,9 @@ export function useFollowMutations(bloggerId: number) {
 		onSuccess: () => {
 			toast.success('Unfollowed successfully');
 			queryClient.invalidateQueries({ queryKey: ['blogger', bloggerId] });
+			queryClient.invalidateQueries({
+				queryKey: ['blogger', session?.user.blogger?.id],
+			});
 		},
 	});
 

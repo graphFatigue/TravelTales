@@ -11,6 +11,7 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Loader2 } from 'lucide-react';
 import UserAvatar from '../user/UserAvatar';
+import { useBlogger } from '@/hooks/bloggers/useBlogger';
 
 export const CommentsSection = ({
 	post,
@@ -20,6 +21,8 @@ export const CommentsSection = ({
 	changeCommentsAmount: React.Dispatch<React.SetStateAction<number>>;
 }) => {
 	const { data: session } = useSession();
+
+	const { data: blogger } = useBlogger(session?.user.blogger?.id);
 
 	const {
 		comments,
@@ -46,8 +49,6 @@ export const CommentsSection = ({
 		setContent('');
 		changeCommentsAmount(prev=>prev+1);
 	};
-
-	console.log(comments);
 
 	return (
 		<div className='w-full space-y-4'>
@@ -118,7 +119,7 @@ export const CommentsSection = ({
 			{session ? (
 				<div className='mt-8 space-y-4'>
 					<div className='mx-1 flex items-center gap-3'>
-						<UserAvatar avatarUrl={session.user.blogger?.image} />
+						<UserAvatar avatarUrl={blogger?.image} />
 						<Label htmlFor='comment' className='text-sm font-medium'>
 							Add a comment
 						</Label>

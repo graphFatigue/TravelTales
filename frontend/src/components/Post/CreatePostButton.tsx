@@ -20,7 +20,7 @@ export function CreatePostButton() {
 					}
 				}}
 			>
-				<Link href={session ? '/post/create' : '/login'}>
+				<Link href={session ? '/post/new' : '/login'}>
 					{t('post.create')}
 				</Link>
 			</Button>

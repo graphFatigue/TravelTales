@@ -14,15 +14,20 @@ export const registrationSchema = z.object({
 		.string()
 		.min(6, 'Password must be at least 6 characters')
 		.max(100, 'Password must be at most 100 characters'),
-	birthDate: z.date({
-		required_error: 'Birthdate is required',
-		invalid_type_error: 'Invalid date',
-	}),
-	// .min(new Date(1900, 0, 1), 'Birthdate must be after Jan 1, 1900')
-	// .max(
-	// 	new Date(new Date().setFullYear(new Date().getFullYear() - 13)),
-	// 	'You must be at least 13 years old',
-	// ),
+	birthDate: z
+		.string()
+		.refine(val => !isNaN(new Date(val).getTime()), { message: 'Invalid date' })
+		.refine(val => new Date(val) > new Date(1900, 0, 1), {
+			message: 'Birthdate must be after Jan 1, 1900',
+		})
+		.refine(
+			val =>
+				new Date(val) <=
+				new Date(new Date().setFullYear(new Date().getFullYear() - 13)),
+			{
+				message: 'You must be at least 13 years old',
+			},
+		),
 });
 
 export const postFormSchema = z.object({

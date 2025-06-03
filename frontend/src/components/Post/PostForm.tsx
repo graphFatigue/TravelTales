@@ -33,6 +33,7 @@ import api from '@/lib/api/api';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { Post } from '@/types/types';
+import { getFileType } from '@/lib/utils';
 
 interface PostFormProps {
 	post?: Post;
@@ -60,6 +61,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 					id: attachment.id,
 					number: attachment.number,
 					previewUrl: attachment.uri,
+					type: getFileType(attachment.uri),
 				})) || [],
 			cityId: post?.cityId || undefined,
 			countryId: post?.countryId || undefined,
@@ -78,6 +80,18 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 			const file = e.target.files?.[0];
 			if (!file) return;
 
+			const validTypes = [
+				'image/jpeg',
+				'image/png',
+				'image/avi',
+				'video/mp4',
+				'video/mov',
+			];
+			if (!validTypes.includes(file.type)) {
+				toast.error('Unsupported file type. Please upload an image or video.');
+				return;
+			}
+
 			const reader = new FileReader();
 			reader.onloadend = () => {
 				const updatedAttachments = [...(currentAttachments || [])];
@@ -86,6 +100,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 					number: index + 1,
 					file,
 					previewUrl: reader.result as string,
+					type: file.type.startsWith('video/') ? 'video' : 'image',
 				};
 				setValue('attachments', updatedAttachments);
 			};
@@ -425,13 +440,26 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 									>
 										{attachment.previewUrl ? (
 											<div className='relative h-40 w-full'>
-												<Image
-													src={attachment.previewUrl}
-													alt={`Preview ${attachment.number}`}
-													fill
-													className='object-contain'
-													sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-												/>
+												{attachment.type === 'video' ? (
+													<video
+														controls
+														className='h-full w-full object-contain'
+													>
+														<source
+															src={attachment.previewUrl}
+															type={attachment.file?.type}
+														/>
+														Your browser does not support the video tag.
+													</video>
+												) : (
+													<Image
+														src={attachment.previewUrl}
+														alt={`Preview ${attachment.number}`}
+														fill
+														className='object-contain'
+														sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
+													/>
+												)}
 											</div>
 										) : (
 											<div className='text-center text-muted-foreground'>

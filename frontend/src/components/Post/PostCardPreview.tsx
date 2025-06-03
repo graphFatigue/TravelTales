@@ -114,13 +114,14 @@ export function PostCardPreview({ post }: { post: Post }) {
 				</div>
 
 				{post.attachments && post.attachments.length > 0 && (
-					<div className='flex gap-3'>
+					<div className='flex gap-3 flex-wrap'>
 						<PostAttachments
 							attachments={displayedAttachments}
+							variant='preview'
 							classname='flex gap-2 overflow-x-auto'
 						/>
 						{remainingAttachments > 0 && (
-							<div className='relative flex h-[80px] min-w-[120px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-gray-100'>
+							<div className='relative flex h-[90px] min-w-[160px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-gray-100'>
 								<span className='font-medium text-gray-600'>
 									+{remainingAttachments} more
 								</span>

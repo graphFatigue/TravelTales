@@ -77,6 +77,7 @@ export interface Attachment {
 	createdAt: string;
 	modifiedAt: string;
 	isDeleted: boolean;
+	type?: 'image' | 'video' | string;
 }
 
 export interface PostLike {

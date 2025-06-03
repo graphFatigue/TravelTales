@@ -139,8 +139,8 @@ export function PostCard() {
 
 				<PostAttachments
 					attachments={post.attachments}
-					width={400}
-					height={200}
+					variant='card'
+					classname='my-4'
 				/>
 			</CardContent>
 

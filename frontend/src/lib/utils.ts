@@ -15,12 +15,14 @@ export function formatDate(dateString?: string) {
 	});
 }
 
-export const getFileType = (uri: string) => {
+export function getFileType(uri: string): string | 'image' | 'video' | 'unknown' {
 	const extension = uri.split('.').pop()?.toLowerCase();
 	if (!extension) return 'unknown';
 
 	const imageTypes = ['jpg', 'jpeg', 'png'];
+	const videoTypes = ['mp4', 'mov', 'avi'];
 	if (imageTypes.includes(extension)) return 'image';
+	if (videoTypes.includes(extension)) return 'video';
 
 	return extension;
 };

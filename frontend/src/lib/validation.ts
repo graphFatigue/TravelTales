@@ -53,6 +53,7 @@ export const postFormSchema = z.object({
 				file: z.instanceof(File).optional(),
 				previewUrl: z.string().optional(),
 				id: z.number().int().positive().optional(),
+				type: z.string().optional(),
 			}),
 		)
 		.max(10)

@@ -30,9 +30,9 @@ export default function RootLayout({
 						>
 							<I18nProvider>
 								<NotificationProvider>{children}</NotificationProvider>
+								<Toaster position='bottom-left' />
 							</I18nProvider>
 						</ThemeProvider>
-						<Toaster position='bottom-left' />
 					</AuthProvider>
 				</ReactQueryProvider>
 			</body>

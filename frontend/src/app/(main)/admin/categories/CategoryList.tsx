@@ -17,6 +17,7 @@ import { Category } from '@/types/types';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { CategoryForm } from './CategoryForm';
+import { CategoryFormValues } from '@/lib/validation';
 
 export function CategoryList() {
 	const { data: categories, isLoading, error } = useCategories();
@@ -28,10 +29,7 @@ export function CategoryList() {
 	const createCategory = useCreateCategory();
 	const updateCategory = useUpdateCategory();
 
-	const handleCreateSubmit = (values: {
-		name: string;
-		description: string;
-	}) => {
+	const handleCreateSubmit = (values: CategoryFormValues) => {
 		createCategory.mutate(values, {
 			onSuccess: () => {
 				setIsCreateDialogOpen(false);
@@ -39,10 +37,7 @@ export function CategoryList() {
 		});
 	};
 
-	const handleUpdateSubmit = (values: {
-		name: string;
-		description: string;
-	}) => {
+	const handleUpdateSubmit = (values: CategoryFormValues) => {
 		if (!editingCategory) return;
 
 		updateCategory.mutate(
@@ -88,8 +83,16 @@ export function CategoryList() {
 						className='flex items-center justify-between p-4 hover:bg-gray-50'
 					>
 						<div>
-							<h3 className='font-medium'>{category.name}</h3>
-							<p className='text-sm text-gray-500'>{category.description}</p>
+							<div>
+								<h3 className='font-medium'>{category.name}</h3>
+								<p className='text-sm text-gray-500'>{category.description}</p>
+							</div>
+							<div>
+								<h3 className='font-medium'>{category.nameUa}</h3>
+								<p className='text-sm text-gray-500'>
+									{category.descriptionUa}
+								</p>
+							</div>
 						</div>
 						<div className='flex space-x-2'>
 							<Button
@@ -136,6 +139,8 @@ export function CategoryList() {
 							defaultValues={{
 								name: editingCategory.name,
 								description: editingCategory.description,
+								nameUa: editingCategory.nameUa,
+								descriptionUa: editingCategory.descriptionUa,
 							}}
 							onSubmit={handleUpdateSubmit}
 							isSubmitting={updateCategory.isPending}

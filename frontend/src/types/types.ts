@@ -53,9 +53,11 @@ export interface Category {
 	id: number;
 	name: string;
 	description: string;
-	createdAt: string;
-	modifiedAt: string | null;
-	isDeleted: boolean;
+	nameUa: string;
+	descriptionUa: string;
+	createdAt?: string;
+	modifiedAt?: string | null;
+	isDeleted?: boolean;
 }
 
 export interface City {

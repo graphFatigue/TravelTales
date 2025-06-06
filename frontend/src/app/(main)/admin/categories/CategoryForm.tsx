@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { CategoryFormValues, formSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 
 interface CategoryFormProps {
@@ -27,11 +28,14 @@ export function CategoryForm({
 	onSubmit,
 	isSubmitting,
 }: CategoryFormProps) {
+	const { t } = useTranslation();
 	const form = useForm<CategoryFormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: defaultValues || {
 			name: '',
 			description: '',
+			nameUa: '',
+			descriptionUa: '',
 		},
 	});
 
@@ -43,9 +47,12 @@ export function CategoryForm({
 					name='name'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Name</FormLabel>
+							<FormLabel>{t('categories.name')}</FormLabel>
 							<FormControl>
-								<Input placeholder='Category name' {...field} />
+								<Input
+									placeholder={t('categories.namePlaceholder')}
+									{...field}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
@@ -56,16 +63,51 @@ export function CategoryForm({
 					name='description'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Description</FormLabel>
+							<FormLabel>{t('categories.description')}</FormLabel>
 							<FormControl>
-								<Textarea placeholder='Category description' {...field} />
+								<Textarea
+									placeholder={t('categories.descriptionPlaceholder')}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name='nameUa'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>{t('categories.name')}</FormLabel>
+							<FormControl>
+								<Input
+									placeholder={t('categories.namePlaceholder')}
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name='descriptionUa'
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>{t('categories.description')}</FormLabel>
+							<FormControl>
+								<Textarea
+									placeholder={t('categories.descriptionPlaceholder')}
+									{...field}
+								/>
 							</FormControl>
 							<FormMessage />
 						</FormItem>
 					)}
 				/>
 				<Button type='submit' disabled={isSubmitting}>
-					{isSubmitting ? 'Saving...' : 'Save'}
+					{isSubmitting ? t('categories.saving') : t('categories.save')}
 				</Button>
 			</form>
 		</Form>

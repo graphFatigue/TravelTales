@@ -7,6 +7,8 @@ namespace TravelTales.Domain.Entities
         public long Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
+        public string NameUa { get; set; }
+        public string DescriptionUa { get; set; }
         public ICollection<Post>? Posts { get; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

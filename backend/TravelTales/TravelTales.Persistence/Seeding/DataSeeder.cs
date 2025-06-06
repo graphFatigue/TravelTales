@@ -62,43 +62,57 @@ public class DataSeeder : IHostedService
                 new Category
                 {
                     Name = "Traveler",
+                    NameUa = "Мандрівник",
                     Description = "Profiles and stories of individual travelers",
+                    DescriptionUa = "Профілі та історії окремих мандрівників",
                     CreatedAt = DateTime.UtcNow
                 },
                 new Category
                 {
                     Name = "Blog",
+                    NameUa = "Блог",
                     Description = "General travel blogs and guides",
+                    DescriptionUa = "Загальні туристичні блоги та путівники",
                     CreatedAt = DateTime.UtcNow
                 },
                 new Category
                 {
                     Name = "Travel Story",
+                    NameUa = "Історія подорожі",
                     Description = "Personal travel narratives and experiences",
+                    DescriptionUa = "Особисті розповіді та досвід подорожей",
                     CreatedAt = DateTime.UtcNow
                 },
                 new Category
                 {
                     Name = "Tips",
+                    NameUa = "Поради",
                     Description = "Advice and practical tips for travelers",
+                    DescriptionUa = "Поради та практичні рекомендації для мандрівників",
                     CreatedAt = DateTime.UtcNow
                 },
                 new Category
                 {
                     Name = "Communication",
+                    NameUa = "Спілкування",
                     Description = "Forums and discussion around travel",
+                    DescriptionUa = "Форуми та обговорення, пов’язані з подорожами",
                     CreatedAt = DateTime.UtcNow
                 },
                 new Category
                 {
                     Name = "Tips Exchange",
+                    NameUa = "Обмін порадами",
                     Description = "Peer-to-peer sharing of travel tips",
+                    DescriptionUa = "Обмін порадами між мандрівниками",
                     CreatedAt = DateTime.UtcNow
                 },
                 new Category
                 {
                     Name = "Social Network",
+                    NameUa = "Соціальна мережа",
                     Description = "Connecting travelers in a digital community",
+                    DescriptionUa = "Об'єднання мандрівників у цифрову спільноту",
                     CreatedAt = DateTime.UtcNow
                 }
             );

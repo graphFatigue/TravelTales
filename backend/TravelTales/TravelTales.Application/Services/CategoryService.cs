@@ -105,6 +105,8 @@ namespace TravelTales.Application.Services
 
             category.Name = updateCategoryDto.Name;
             category.Description = updateCategoryDto.Description;
+            category.NameUa = updateCategoryDto.NameUa;
+            category.DescriptionUa = updateCategoryDto.DescriptionUa;
 
             this.unitOfWork.GetRepository<ICategoryRepository>().Update(category);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);

@@ -20,6 +20,8 @@ using TravelTales.Application.MappingProfiles;
 using TravelTales.Application.Options;
 using TravelTales.Application.Services;
 using TravelTales.Application.Sieve;
+using TravelTales.Application.Sieve.Filters;
+using TravelTales.Application.Sieve.Sorts;
 using TravelTales.Application.Utility;
 using TravelTales.Application.Validation.Post;
 using TravelTales.Domain.Entities;
@@ -261,6 +263,8 @@ namespace TravelTales.Application
 
         private static void AddSieveServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<ISieveCustomFilterMethods, SieveCustomFilterMethods>();
+            services.AddScoped<ISieveCustomSortMethods, SieveCustomSortMethods>();
             services.Configure<SieveOptions>(configuration.GetSection("Sieve"));
             services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
         }

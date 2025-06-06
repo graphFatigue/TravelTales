@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Sieve.Models;
 using System;
 using System.Collections.Generic;
@@ -41,11 +42,9 @@ namespace TravelTales.Persistence.SharedFiles
 
         public bool HasNext => this.CurrentPage < this.TotalPages;
 
-        public static PagedList<TEntity> Copy<TIn>(
-            PagedList<TIn> pagedList,
-            IEnumerable<TEntity> mappedModels)
+        public static PagedList<TEntity> Copy<TIn>(PagedList<TIn> pagedList, IEnumerable<TEntity> mappedModels)
         {
-            ArgumentNullException.ThrowIfNull(pagedList);
+            if (pagedList == null) throw new ArgumentNullException(nameof(pagedList));
 
             return new PagedList<TEntity>
             {
@@ -70,19 +69,53 @@ namespace TravelTales.Persistence.SharedFiles
             ArgumentNullException.ThrowIfNull(sieveModel);
         }
 
-        private static async Task<PagedList<TEntity>> CreatePagedListAsync(
+        public static async Task<PagedList<TEntity>> CreatePagedListAsync(
             IQueryable<TEntity> source,
-            SieveModel sieveModel)
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
         {
-            var count = await source.CountAsync();
+            if (sieveModel == null)
+                throw new ArgumentNullException(nameof(sieveModel));
 
-            sieveModel.Page ??= 1;
-            sieveModel.PageSize ??= count;
+            // Determine whether EF Core can do async
+            bool isAsyncProvider = (source.Provider is IAsyncQueryProvider);
 
-            var items = await source
-                .Skip((sieveModel.Page!.Value - 1) * sieveModel.PageSize!.Value)
-                .Take(sieveModel.PageSize.Value)
-                .ToListAsync();
+            int count;
+            List<TEntity> items = new List<TEntity>();
+
+            if (isAsyncProvider)
+            {
+                // EF Core async path
+                count = await source.CountAsync(cancellationToken).ConfigureAwait(false);
+
+                sieveModel.Page ??= 1;
+                sieveModel.PageSize ??= (count == 0 ? 1 : count);
+
+                int skip = (sieveModel.Page.Value - 1) * sieveModel.PageSize.Value;
+                items = await source
+                    .Skip(skip)
+                    .Take(sieveModel.PageSize.Value)
+                    .ToListAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            else
+            {
+                // In‐memory fallback path (e.g. after AsEnumerable)
+                count = source.Count();
+
+                sieveModel.Page ??= 1;
+                sieveModel.PageSize ??= (count == 0 ? 1 : count);
+
+                int skip = (sieveModel.Page.Value - 1) * sieveModel.PageSize.Value;
+                if (source != null)
+                {
+                    items = source
+                        .Skip(skip)
+                        .Take(sieveModel.PageSize.Value)
+                        .ToList();
+                }
+
+            }
 
             return new PagedList<TEntity>(items, count, sieveModel.Page.Value, sieveModel.PageSize.Value);
         }

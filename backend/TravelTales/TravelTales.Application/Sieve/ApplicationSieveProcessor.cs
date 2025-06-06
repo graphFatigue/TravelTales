@@ -6,8 +6,11 @@ namespace TravelTales.Application.Sieve
 {
     public class ApplicationSieveProcessor : SieveProcessor
     {
-        public ApplicationSieveProcessor(IOptions<SieveOptions> options)
-            : base(options)
+        public ApplicationSieveProcessor(
+            IOptions<SieveOptions> options,
+            ISieveCustomSortMethods customSortMethods,
+            ISieveCustomFilterMethods customFilterMethods)
+            : base(options, customSortMethods, customFilterMethods)
         {
         }
 

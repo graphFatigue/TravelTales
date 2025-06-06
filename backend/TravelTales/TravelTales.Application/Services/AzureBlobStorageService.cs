@@ -44,7 +44,6 @@ namespace TravelTales.Application.Services
             var blobContainerClient = GetBlobContainerClient(containerName);
             var blobClient = blobContainerClient.GetBlobClient(fileName);
 
-            // Set content type based on file type
             var blobHttpHeaders = new BlobHttpHeaders
             {
                 ContentType = GetContentType(contentType)

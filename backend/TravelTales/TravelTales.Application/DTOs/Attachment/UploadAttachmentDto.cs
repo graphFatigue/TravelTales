@@ -12,7 +12,6 @@ namespace TravelTales.Application.DTOs.Attachment
         [JsonIgnore]
         public byte[]? AttachmentBytes { get; set; }
 
-        // property for MIME type detection
         [JsonIgnore]
         public string? MimeType { get; set; }
 
@@ -28,7 +27,6 @@ namespace TravelTales.Application.DTOs.Attachment
                     return;
                 }
 
-                // Detect MIME type from base64 prefix
                 if (value.StartsWith("data:video/"))
                 {
                     MimeType = value.Split(';')[0].Split('/')[1];
@@ -39,7 +37,7 @@ namespace TravelTales.Application.DTOs.Attachment
                 }
                 else
                 {
-                    MimeType = "jpeg"; // Default to jpeg
+                    MimeType = "jpeg";
                 }
 
                 AttachmentBytes = !string.IsNullOrEmpty(value)

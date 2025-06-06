@@ -13,11 +13,11 @@ namespace TravelTales.API.Controllers
     public class BloggerFollowController : ControllerBase
     {
         private readonly IBloggerService bloggerService;
-        private readonly ILogger<BloggerBlockController> logger;
+        private readonly ILogger<BloggerFollowController> logger;
 
         public BloggerFollowController(
             IBloggerService bloggerService,
-            ILogger<BloggerBlockController> logger)
+            ILogger<BloggerFollowController> logger)
         {
             this.bloggerService = bloggerService;
             this.logger = logger;

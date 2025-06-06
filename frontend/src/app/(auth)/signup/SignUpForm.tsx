@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { toast } from 'sonner';
-import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import {
 	CardContent,
@@ -17,24 +16,22 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { registrationSchema } from '@/lib/validation';
 import api from '@/lib/api/api';
 import { useTranslation } from 'react-i18next';
 import { BirthDateField } from '@/components/editProfile/BirthDateField';
 import { Form } from '@/components/ui/form';
 import { useState } from 'react';
-
-type RegistrationSchema = z.infer<typeof registrationSchema>;
+import { getRegistrationSchema, registrationValues } from '@/lib/validation';
 
 export default function RegistrationForm() {
 	const router = useRouter();
-	const form = useForm<RegistrationSchema>({
-		resolver: zodResolver(registrationSchema),
+	const { t } = useTranslation();
+	const form = useForm<registrationValues>({
+		resolver: zodResolver(getRegistrationSchema(t)),
 	});
 	const [isLoading, setIsLoading] = useState(false);
-	const { t } = useTranslation();
 
-	const onSubmit = async (data: RegistrationSchema) => {
+	const onSubmit = async (data: registrationValues) => {
 		setIsLoading(true);
 
 		try {
@@ -73,7 +70,6 @@ export default function RegistrationForm() {
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)}>
 					<CardContent className='space-y-4'>
-						{/* First Name */}
 						<div className='space-y-2'>
 							<Label htmlFor='firstname'>{t('auth.firstName')}</Label>
 							<Input
@@ -88,7 +84,6 @@ export default function RegistrationForm() {
 							)}
 						</div>
 
-						{/* Last Name */}
 						<div className='space-y-2'>
 							<Label htmlFor='lastname'>{t('auth.lastName')}</Label>
 							<Input
@@ -103,10 +98,8 @@ export default function RegistrationForm() {
 							)}
 						</div>
 
-						{/* Birth Date - Using the new BirthDateField component */}
 						<BirthDateField control={form.control} />
 
-						{/* Email */}
 						<div className='space-y-2'>
 							<Label htmlFor='email'>{t('auth.email')}</Label>
 							<Input id='email' type='email' {...form.register('email')} />
@@ -117,7 +110,6 @@ export default function RegistrationForm() {
 							)}
 						</div>
 
-						{/* Password */}
 						<div className='space-y-2'>
 							<Label htmlFor='password'>{t('auth.password')}</Label>
 							<Input

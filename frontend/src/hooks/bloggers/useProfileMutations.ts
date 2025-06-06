@@ -1,8 +1,8 @@
-// hooks/useProfileMutations.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api/api';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export interface UpdateBloggerProfileValues {
 	firstName: string;
@@ -17,6 +17,7 @@ export interface UpdateBloggerProfileValues {
 export function useProfileMutations(bloggerId: number) {
 	const queryClient = useQueryClient();
 	const router = useRouter();
+	const {t} = useTranslation();
 
 	const mutation = useMutation({
 		mutationFn: async ({
@@ -51,11 +52,12 @@ export function useProfileMutations(bloggerId: number) {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['blogger', bloggerId] });
+			toast.success(t('profile.updateSuccess'));
 			router.refresh();
 		},
 		onError(error) {
 			console.error(error);
-			toast.error('Failed to update profile. Please try again.');
+			toast.error(t('profile.updateError'));
 		},
 	});
 

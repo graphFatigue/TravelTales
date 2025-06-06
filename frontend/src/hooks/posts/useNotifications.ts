@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import api from '@/lib/api/api';
 import {
-    getNotificationsConnection,
+	getNotificationsConnection,
 	joinNotificationGroup,
 	onNotificationReceived,
 } from '@/lib/signalr/notificationsHub';

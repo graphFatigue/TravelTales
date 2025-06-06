@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { CategoryFormValues, formSchema } from '@/lib/validation';
+import { CategoryFormValues, getCategoryFormSchema } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +30,7 @@ export function CategoryForm({
 }: CategoryFormProps) {
 	const { t } = useTranslation();
 	const form = useForm<CategoryFormValues>({
-		resolver: zodResolver(formSchema),
+		resolver: zodResolver(getCategoryFormSchema(t)),
 		defaultValues: defaultValues || {
 			name: '',
 			description: '',

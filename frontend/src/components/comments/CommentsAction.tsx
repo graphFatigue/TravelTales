@@ -16,6 +16,7 @@ import { Button } from '../ui/button';
 import { Edit2 } from 'lucide-react';
 import { Textarea } from '../ui/textarea';
 import ConfirmationDialog from '../ConfirmationDialog';
+import { useTranslation } from 'react-i18next';
 
 interface CommentsActionProps {
 	edit: (commentId: number, data: UpdateComment) => Promise<void>;
@@ -35,6 +36,7 @@ export function CommentsAction({
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [editingContent, setEditingContent] = useState(comment.content);
 	const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+	const {t} = useTranslation();
 
 	const handleEdit = (commentId: number, currentContent: string) => {
 		setEditingCommentId(commentId);
@@ -64,15 +66,13 @@ export function CommentsAction({
 							onClick={() => handleEdit(comment.id, comment.content)}
 						>
 							<Edit2 className='mr-1 h-4 w-4' />
-							Edit
+							{t('common.edit')}
 						</Button>
 					</DialogTrigger>
 					<DialogContent>
 						<DialogHeader>
-							<DialogTitle>Edit Comment</DialogTitle>
-							<DialogDescription>
-								Make changes to your comment below.
-							</DialogDescription>
+							<DialogTitle>{t('comments.edit')}</DialogTitle>
+							<DialogDescription>{t('comments.makeChanges')}</DialogDescription>
 						</DialogHeader>
 						<div className='py-4'>
 							<Textarea
@@ -86,9 +86,9 @@ export function CommentsAction({
 								variant='outline'
 								onClick={() => setIsEditDialogOpen(false)}
 							>
-								Cancel
+								{t('common.cancel')}
 							</Button>
-							<Button onClick={submitEdit}>Save changes</Button>
+							<Button onClick={submitEdit}>{t('common.save')}</Button>
 						</DialogFooter>
 					</DialogContent>
 				</Dialog>
@@ -97,10 +97,8 @@ export function CommentsAction({
 			{(session?.user.blogger?.id === comment.bloggerId ||
 				session?.role === 'Admin') && (
 				<ConfirmationDialog
-					title={'Delete Comment'}
-					description={
-						'Are you sure you want to delete this comment? This action cannot be undone.'
-					}
+					title={t('comments.delete')}
+					description={t('comments.deleteConfirm')}
 					remove={() => {
 						remove(comment.id);
 						changeCommentsAmount(prev => prev - 1);

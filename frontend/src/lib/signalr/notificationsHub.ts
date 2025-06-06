@@ -81,8 +81,11 @@ export const onNotificationReceived = (
 
 	if (connection) {
 		connection.off('ReceiveNotification');
-		connection.on('ReceiveNotification', (message: string, data: Notification) => {
-			callback(data);
-		});
+		connection.on(
+			'ReceiveNotification',
+			(message: string, data: Notification) => {
+				callback(data);
+			},
+		);
 	}
 };

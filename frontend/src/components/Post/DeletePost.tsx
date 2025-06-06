@@ -2,6 +2,7 @@ import { useDeletePost } from '@/hooks/posts/useDeletePost';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface DeletePostProps {
 	postId: number;
@@ -11,6 +12,7 @@ interface DeletePostProps {
 export default function DeletePost({ postId, className }: DeletePostProps) {
 	const deletePostMutation = useDeletePost(postId);
 	const router = useRouter();
+	const { t } = useTranslation();
 
 	const handleDelete = () => {
 		deletePostMutation.mutate();
@@ -24,8 +26,8 @@ export default function DeletePost({ postId, className }: DeletePostProps) {
 
 	return (
 		<ConfirmationDialog
-			title='Delete Post'
-			description='Are you sure you want to delete this post? This action cannot be undone.'
+			title={t('post.deleteConfirm')}
+			description={t('post.deleteDescription')}
 			remove={handleDelete}
 			className={className}
 		/>

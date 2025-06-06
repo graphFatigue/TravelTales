@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api/api';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export const useDeletePost = (postId: number) => {
 	const queryClient = useQueryClient();
+	const { t } = useTranslation();
 
 	return useMutation({
 		mutationFn: async () => {
@@ -13,11 +15,11 @@ export const useDeletePost = (postId: number) => {
 			queryClient.invalidateQueries({ queryKey: ['posts'] });
 			queryClient.removeQueries({ queryKey: ['post', postId] });
 
-			toast.success('Post has been deleted successfully.');
+			toast.success(t('post.deleteSuccess'));
 		},
-		onError: (error) => {
+		onError: error => {
 			console.error(error);
-			toast.error('Failed to delete post.');
+			toast.error(t('post.deleteError'));
 		},
 	});
 };

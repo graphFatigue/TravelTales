@@ -28,12 +28,13 @@ import { Plus, Trash, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { postFormSchema, PostFormValues } from '@/lib/validation';
+import { getPostFormSchema, PostFormValues } from '@/lib/validation';
 import api from '@/lib/api/api';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { Post } from '@/types/types';
 import { getFileType } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface PostFormProps {
 	post?: Post;
@@ -46,9 +47,11 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 	const router = useRouter();
 	const { data: categories } = useCategories();
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { t, i18n } = useTranslation();
+	const currentLanguage = i18n.language;
 
 	const form = useForm<PostFormValues>({
-		resolver: zodResolver(postFormSchema),
+		resolver: zodResolver(getPostFormSchema(t)),
 		defaultValues: {
 			title: post?.title || '',
 			content: post?.content || '',
@@ -88,7 +91,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 				'video/mov',
 			];
 			if (!validTypes.includes(file.type)) {
-				toast.error('Unsupported file type. Please upload an image or video.');
+				toast.error(t('post.typeError'));
 				return;
 			}
 
@@ -106,7 +109,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 			};
 			reader.readAsDataURL(file);
 		},
-		[currentAttachments, setValue],
+		[currentAttachments, setValue, t],
 	);
 
 	const addAttachmentField = () => {
@@ -168,14 +171,13 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 					id => !currentAttachmentIds.includes(id),
 				);
 
-
 				const response = await api.put(`/api/Posts/${post.id}`, {
 					...commonPayload,
 					newAttachments: attachmentsWithBase64,
 					attachmentsToDelete,
 				});
 				router.push(`/post/${response.data.id}`);
-				toast.success('Post updated successfully!');
+				toast.success(t('post.updateSuccess'));
 			} else {
 				console.log({
 					...commonPayload,
@@ -187,16 +189,14 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 					bloggerId: values.bloggerId,
 					attachments: attachmentsWithBase64,
 				});
-				toast.success('Post created successfully!');
+				toast.success(t('post.createSuccess'));
 				router.push(`/post/${response.data.id}`);
 				return;
 			}
 
 			router.refresh();
 		} catch (error) {
-			toast.error(
-				isEditing ? 'Failed to update post' : 'Failed to create post',
-			);
+			toast.error(isEditing ? t('post.updateError') : t('post.createError'));
 			console.error('Error:', error);
 		} finally {
 			setIsSubmitting(false);
@@ -215,9 +215,9 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 						name='title'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Title</FormLabel>
+								<FormLabel>{t('post.title')}</FormLabel>
 								<FormControl>
-									<Input placeholder='Enter post title' {...field} />
+									<Input placeholder={t('post.enterTitle')} {...field} />
 								</FormControl>
 								<FormMessage />
 							</FormItem>
@@ -229,10 +229,10 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 						name='content'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Content</FormLabel>
+								<FormLabel>{t('post.content')}</FormLabel>
 								<FormControl>
 									<Textarea
-										placeholder='Write your post content here...'
+										placeholder={t('post.writeContent')}
 										className='min-h-[200px]'
 										{...field}
 									/>
@@ -248,7 +248,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 							name='countryId'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>Country</FormLabel>
+									<FormLabel>{t('post.country')}</FormLabel>
 									<Select
 										onValueChange={value => {
 											field.onChange(Number(value));
@@ -261,7 +261,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 											<SelectTrigger>
 												<SelectValue
 													placeholder={
-														selectedCountry?.name || 'Select a country'
+														selectedCountry?.name || t('post.selectCountry')
 													}
 												>
 													{selectedCountry?.name}
@@ -289,7 +289,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 							name='cityId'
 							render={({ field }) => (
 								<FormItem>
-									<FormLabel>City</FormLabel>
+									<FormLabel>{t('post.city')}</FormLabel>
 									<Select
 										onValueChange={value => field.onChange(Number(value))}
 										value={field.value?.toString()}
@@ -298,7 +298,9 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 										<FormControl>
 											<SelectTrigger>
 												<SelectValue
-													placeholder={selectedCity?.name || 'Select a city'}
+													placeholder={
+														selectedCity?.name || t('post.selectCity')
+													}
 												>
 													{selectedCity?.name}
 												</SelectValue>
@@ -323,7 +325,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 						name='budget'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Budget Level</FormLabel>
+								<FormLabel>{t('post.budget')}</FormLabel>
 								<div className='flex items-center gap-4'>
 									<input
 										type='range'
@@ -345,7 +347,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 						name='categoryIds'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Categories</FormLabel>
+								<FormLabel>{t('dashboard.categories')}</FormLabel>
 								<div className='flex flex-wrap gap-2'>
 									{categories?.map(category => (
 										<Badge
@@ -363,7 +365,9 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 												field.onChange(newValue);
 											}}
 										>
-											{category.name}
+											{currentLanguage === 'en'
+												? category.name
+												: category.nameUa}
 										</Badge>
 									))}
 								</div>
@@ -377,10 +381,10 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 						name='tags'
 						render={({ field }) => (
 							<FormItem>
-								<FormLabel>Tags</FormLabel>
+								<FormLabel>{t('post.tags')}</FormLabel>
 								<FormControl>
 									<Input
-										placeholder='Add tags (press Enter or Space to add)'
+										placeholder={t('post.addTags')}
 										onKeyDown={e => {
 											if (['Enter', ' '].includes(e.key)) {
 												e.preventDefault();
@@ -424,7 +428,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 					/>
 
 					<div>
-						<FormLabel>Attachments</FormLabel>
+						<FormLabel>{t('post.attachments')}</FormLabel>
 						<div className='space-y-4'>
 							{currentAttachments?.map((attachment, index) => (
 								<div key={index} className='flex items-center gap-4'>
@@ -449,7 +453,6 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 															src={attachment.previewUrl}
 															type={attachment.file?.type}
 														/>
-														Your browser does not support the video tag.
 													</video>
 												) : (
 													<Image
@@ -464,7 +467,9 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 										) : (
 											<div className='text-center text-muted-foreground'>
 												<Plus className='mx-auto h-8 w-8' />
-												<p>Click to upload attachment {attachment.number}</p>
+												<p>
+													{t('post.addAttachments')} {attachment.number}
+												</p>
 											</div>
 										)}
 									</label>
@@ -484,7 +489,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 								onClick={addAttachmentField}
 							>
 								<Plus className='mr-2 h-4 w-4' />
-								Add Attachment
+								{t('post.addAttachmentsButton')}
 							</Button>
 						</div>
 					</div>
@@ -492,11 +497,11 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 					<Button type='submit' disabled={isSubmitting}>
 						{isSubmitting
 							? isEditing
-								? 'Updating...'
-								: 'Creating...'
+								? t('post.saving')
+								: t('post.creating')
 							: isEditing
-								? 'Update Post'
-								: 'Create Post'}
+								? t('post.save')
+								: t('post.createPostButton')}
 					</Button>
 				</form>
 			</Form>

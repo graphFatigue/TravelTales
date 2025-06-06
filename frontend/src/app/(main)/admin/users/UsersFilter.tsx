@@ -12,10 +12,12 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { useTranslation } from 'react-i18next';
 
 export default function UserFilterComponent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const { t } = useTranslation();
 	const [searchField, setSearchField] = useState<
 		'id' | 'email' | 'blogger.firstName' | 'blogger.lastName'
 	>((searchParams.get('field') as any) || 'blogger.firstName');
@@ -37,40 +39,45 @@ export default function UserFilterComponent() {
 	};
 
 	return (
-		<div className='flex gap-2'>
+		<div className='flex items-center gap-2'>
 			<Select
 				value={searchField}
 				onValueChange={value => setSearchField(value as any)}
 			>
 				<SelectTrigger className='w-[180px]'>
-					<SelectValue placeholder='Search by' />
+					<SelectValue placeholder={t('users.searchBy')} />
 				</SelectTrigger>
 				<SelectContent>
 					<SelectItem value='id'>ID</SelectItem>
-					<SelectItem value='email'>Email</SelectItem>
-					<SelectItem value='blogger.firstName'>First Name</SelectItem>
-					<SelectItem value='blogger.lastName'>Last Name</SelectItem>
+					<SelectItem value='email'>{t('users.email')}</SelectItem>
+					<SelectItem value='blogger.firstName'>
+						{t('users.firstName')}
+					</SelectItem>
+					<SelectItem value='blogger.lastName'>
+						{t('users.lastName')}
+					</SelectItem>
 				</SelectContent>
 			</Select>
-
-			<Input
-				type='text'
-				value={searchValue}
-				onChange={e => setSearchValue(e.target.value)}
-				placeholder={`Search by ${searchField.replace('blogger.', '')}...`}
-				className='w-[300px]'
-				onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()}
-			/>
-
-			<Button onClick={handleSearchSubmit}>Search</Button>
-      <Button
-        variant={'secondary'}
+			<div className='relative flex-1'>
+				<Input
+					placeholder={t('users.searchByField', {
+						field: searchField.replace('blogger.', ''),
+					})}
+					className='pl-10'
+					value={searchValue}
+					onChange={e => setSearchValue(e.target.value)}
+					onKeyDown={e => e.key === 'Enter' && handleSearchSubmit()}
+				/>
+			</div>
+			<Button onClick={handleSearchSubmit}>{t('users.search')}</Button>
+			<Button
+				variant={'secondary'}
 				onClick={() => {
 					setSearchValue('');
 					handleSearchSubmit();
 				}}
 			>
-				Reset
+				{t('users.reset')}
 			</Button>
 		</div>
 	);

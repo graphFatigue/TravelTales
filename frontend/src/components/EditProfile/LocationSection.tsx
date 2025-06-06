@@ -20,6 +20,7 @@ import { City, Country } from '@/types/types';
 import { useState } from 'react';
 import { UseFormSetValue } from 'react-hook-form';
 import { MultiSelect } from '../ui/multi-selesct';
+import { useTranslation } from 'react-i18next';
 
 interface LocationSectionProps {
 	control: any;
@@ -36,6 +37,7 @@ export function LocationSection({
 	visitedCountries,
 	visitedCities,
 }: LocationSectionProps) {
+	const { t } = useTranslation();
 	const [selectedVisitedCountries, setSelectedVisitedCountries] = useState<
 		string[]
 	>(visitedCountries.map(c => c.id.toString()));
@@ -54,7 +56,7 @@ export function LocationSection({
 					name='countryId'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Country</FormLabel>
+							<FormLabel>{t('profile.country')}</FormLabel>
 							<Select
 								onValueChange={value => {
 									field.onChange(parseInt(value));
@@ -65,7 +67,7 @@ export function LocationSection({
 							>
 								<FormControl>
 									<SelectTrigger>
-										<SelectValue placeholder='Select country' />
+										<SelectValue placeholder={t('profile.selectCountry')} />
 									</SelectTrigger>
 								</FormControl>
 								<SelectContent>
@@ -90,7 +92,7 @@ export function LocationSection({
 					name='cityId'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>City</FormLabel>
+							<FormLabel>{t('profile.city')}</FormLabel>
 							<Select
 								onValueChange={value => field.onChange(parseInt(value))}
 								value={field.value?.toString()}
@@ -98,7 +100,7 @@ export function LocationSection({
 							>
 								<FormControl>
 									<SelectTrigger>
-										<SelectValue placeholder='Select city' />
+										<SelectValue placeholder={t('profile.selectCity')} />
 									</SelectTrigger>
 								</FormControl>
 								<SelectContent>
@@ -126,7 +128,7 @@ export function LocationSection({
 					name='visitedCountryIds'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Visited Countries</FormLabel>
+							<FormLabel>{t('profile.visitedCountries')}</FormLabel>
 							<MultiSelect
 								options={
 									countries?.map(c => ({
@@ -141,7 +143,7 @@ export function LocationSection({
 									setValue('visitedCityIds', []);
 								}}
 								modalPopover={true}
-								placeholder='Select visited countries...'
+								placeholder={t('profile.selectVisitedCountries')}
 							/>
 							<FormMessage />
 						</FormItem>
@@ -153,7 +155,7 @@ export function LocationSection({
 					name='visitedCityIds'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Visited Cities</FormLabel>
+							<FormLabel>{t('profile.visitedCities')}</FormLabel>
 							<MultiSelect
 								options={
 									allVisitedCities?.map(c => ({
@@ -165,7 +167,7 @@ export function LocationSection({
 								onValueChange={values => {
 									field.onChange(values.map(v => parseInt(v)));
 								}}
-								placeholder='Select visited cities...'
+								placeholder={t('profile.selectVisitedCities')}
 								disabled={
 									selectedVisitedCountries.length === 0 || loadingCities
 								}

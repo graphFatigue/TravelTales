@@ -1,106 +1,145 @@
 import { z } from 'zod';
 
-export const registrationSchema = z.object({
-	firstName: z
-		.string()
-		.min(2, 'First name must be at least 2 characters')
-		.max(30, 'First name must be at most 30 characters'),
-	lastName: z
-		.string()
-		.min(2, 'Last name must be at least 2 characters')
-		.max(40, 'Last name must be at most 40 characters'),
-	email: z.string().email('Invalid email address'),
-	password: z
-		.string()
-		.min(6, 'Password must be at least 6 characters')
-		.max(100, 'Password must be at most 100 characters'),
-	birthDate: z
-		.string()
-		.refine(val => !isNaN(new Date(val).getTime()), { message: 'Invalid date' })
-		.refine(val => new Date(val) > new Date(1900, 0, 1), {
-			message: 'Birthdate must be after Jan 1, 1900',
-		})
-		.refine(
-			val =>
-				new Date(val) <=
-				new Date(new Date().setFullYear(new Date().getFullYear() - 13)),
-			{
-				message: 'You must be at least 13 years old',
-			},
-		),
-});
+type TranslationFunction = (
+	key: string,
+	options?: Record<string, unknown>,
+) => string;
 
-export const postFormSchema = z.object({
-	title: z.string().trim().min(1, 'Title is required').max(100),
-	content: z.string().trim().min(1, 'Content is required').max(5000),
-	bloggerId: z.number().int().positive(),
-	cityId: z.number().int().positive().optional(),
-	countryId: z.number().int().positive().optional(),
-	budget: z.number().int().min(0).max(4).default(0),
-	categoryIds: z
-		.array(z.number().int().positive())
-		.min(1, 'At least one category is required'),
-	tags: z
-		.array(z.string().min(1).max(30))
-		.optional()
-		.refine(tags => tags?.length === new Set(tags).size, {
-			message: 'Tags must be unique',
-		}),
-	attachments: z
-		.array(
-			z.object({
-				number: z.number().int().positive(),
-				file: z.instanceof(File).optional(),
-				previewUrl: z.string().optional(),
-				id: z.number().int().positive().optional(),
-				type: z.string().optional(),
-			}),
-		)
-		.max(10)
-		.optional(),
-});
-
-export type PostFormValues = z.infer<typeof postFormSchema>;
-
-export const formSchema = z.object({
-	name: z.string().min(1, 'Name is required').max(100),
-	description: z.string().min(1, 'Description is required').max(500),
-});
-
-export type CategoryFormValues = z.infer<typeof formSchema>;
-
-export const profileFormSchema = z.object({
-	firstName: z.string().min(1, 'First name is required'),
-	lastName: z.string().min(1, 'Last name is required'),
-	birthDate: z.string().optional(),
-	sex: z.number(),
-	bio: z.string().optional(),
-	countryId: z.number().optional(),
-	cityId: z.number().optional(),
-	visitedCityIds: z.array(z.number()).optional(),
-	visitedCountryIds: z.array(z.number()).optional(),
-});
-
-export type UpdateBloggerProfileValues = z.infer<typeof profileFormSchema>;
-
-export const forgotPasswordFormSchema = z.object({
-	email: z.string().email('Please enter a valid email address'),
-});
-
-export type forgotPasswordValues = z.infer<typeof forgotPasswordFormSchema>;
-
-export const resetPasswordFormSchema = z
-	.object({
-		email: z.string().email(),
-		token: z.string().min(1, 'Token is required'),
-		newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-		confirmPassword: z
+export const getRegistrationSchema = (t: TranslationFunction) =>
+	z.object({
+		firstName: z
 			.string()
-			.min(8, 'Password must be at least 8 characters'),
-	})
-	.refine(data => data.newPassword === data.confirmPassword, {
-		message: "Passwords don't match",
-		path: ['confirmPassword'],
+			.min(2, t('validation.firstName.min'))
+			.max(30, t('validation.firstName.max')),
+		lastName: z
+			.string()
+			.min(2, t('validation.lastName.min'))
+			.max(40, t('validation.lastName.max')),
+		email: z.string().email(t('validation.email')),
+		password: z
+			.string()
+			.min(6, t('validation.password.min'))
+			.max(100, t('validation.password.max')),
+		birthDate: z
+			.string()
+			.refine(val => !isNaN(new Date(val).getTime()), {
+				message: t('validation.invalidDate'),
+			})
+			.refine(val => new Date(val) > new Date(1900, 0, 1), {
+				message: t('validation.birthDateMin'),
+			})
+			.refine(
+				val =>
+					new Date(val) <=
+					new Date(new Date().setFullYear(new Date().getFullYear() - 13)),
+				{
+					message: t('validation.minAge'),
+				},
+			),
 	});
 
-export type ResetPasswordValues = z.infer<typeof resetPasswordFormSchema>;
+export const getPostFormSchema = (t: (key: string) => string) =>
+	z.object({
+		title: z
+			.string()
+			.trim()
+			.min(1, t('validation.title.required'))
+			.max(100, t('validation.title.max')),
+		content: z
+			.string()
+			.trim()
+			.min(1, t('validation.content.required'))
+			.max(5000, t('validation.content.max')),
+		bloggerId: z.number().int().positive(),
+		cityId: z.number().int().positive().optional(),
+		countryId: z.number().int().positive().optional(),
+		budget: z.number().int().min(0).max(4).default(0),
+		categoryIds: z
+			.array(z.number().int().positive())
+			.min(1, t('validation.categories.required')),
+		tags: z
+			.array(z.string().min(1).max(30, t('validation.tags.max')))
+			.optional()
+			.refine(tags => tags?.length === new Set(tags).size, {
+				message: t('validation.uniqueTags'),
+			}),
+		attachments: z
+			.array(
+				z.object({
+					number: z.number().int().positive(),
+					file: z.instanceof(File).optional(),
+					previewUrl: z.string().optional(),
+					id: z.number().int().positive().optional(),
+					type: z.string().optional(),
+				}),
+			)
+			.max(10, t('validation.attachments.max'))
+			.optional(),
+	});
+
+export const getCategoryFormSchema = (t: (key: string) => string) =>
+	z.object({
+		name: z
+			.string()
+			.min(1, t('validation.name.required'))
+			.max(100, t('validation.name.max')),
+		description: z
+			.string()
+			.min(1, t('validation.description.required'))
+			.max(500, t('validation.description.max')),
+		nameUa: z
+			.string()
+			.min(1, t('validation.name.required'))
+			.max(100, t('validation.name.max')),
+		descriptionUa: z
+			.string()
+			.min(1, t('validation.description.required'))
+			.max(500, t('validation.description.max')),
+	});
+
+export const getProfileFormSchema = (t: (key: string) => string) =>
+	z.object({
+		firstName: z.string().min(1, t('validation.firstName.min')),
+		lastName: z.string().min(1, t('validation.lastName.min')),
+		birthDate: z.string().optional(),
+		sex: z.number(),
+		bio: z.string().optional(),
+		countryId: z.number().optional(),
+		cityId: z.number().optional(),
+		visitedCityIds: z.array(z.number()).optional(),
+		visitedCountryIds: z.array(z.number()).optional(),
+	});
+
+export const getForgotPasswordFormSchema = (t: (key: string) => string) =>
+	z.object({
+		email: z.string().email(t('validation.email')),
+	});
+
+export const getResetPasswordFormSchema = (t: TranslationFunction) =>
+	z
+		.object({
+			email: z.string().email(t('validation.email')),
+			token: z.string().min(1, t('validation.required', { field: 'Token' })),
+			newPassword: z.string().min(8, t('validation.password.min')),
+			confirmPassword: z.string().min(8, t('validation.password.min')),
+		})
+		.refine(data => data.newPassword === data.confirmPassword, {
+			message: t('validation.passwordsMatch'),
+			path: ['confirmPassword'],
+		});
+
+export type registrationValues = z.infer<ReturnType<typeof getRegistrationSchema>>;
+
+export type PostFormValues = z.infer<ReturnType<typeof getPostFormSchema>>;
+export type CategoryFormValues = z.infer<
+	ReturnType<typeof getCategoryFormSchema>
+>;
+export type UpdateBloggerProfileValues = z.infer<
+	ReturnType<typeof getProfileFormSchema>
+>;
+export type ForgotPasswordValues = z.infer<
+	ReturnType<typeof getForgotPasswordFormSchema>
+>;
+export type ResetPasswordValues = z.infer<
+	ReturnType<typeof getResetPasswordFormSchema>
+>;

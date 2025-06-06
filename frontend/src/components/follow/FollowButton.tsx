@@ -1,12 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { Loader2, UserMinus, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useFollowMutations } from '@/hooks/bloggers/useFollowMutations';
 import { useSession } from 'next-auth/react';
 import { useState } from 'react';
 import RestrictedDialog from '../RestrictedDialog';
+import { useTranslation } from 'react-i18next';
 
 interface FollowButtonProps {
 	bloggerId: number;
@@ -34,6 +35,7 @@ export default function FollowButton({
 	const { followMutation, unfollowMutation } = useFollowMutations(bloggerId);
 	const { data: session } = useSession();
 	const [openRestricted, setOpenRestricted] = useState(false);
+	const { t } = useTranslation();
 
 	const handleFollow = (e: React.MouseEvent) => {
 		e.preventDefault();
@@ -62,7 +64,7 @@ export default function FollowButton({
 				size={size}
 				onClick={handleFollow}
 				disabled={isLoading}
-				aria-label={isFollowing ? 'Unfollow' : 'Follow'}
+				aria-label={isFollowing ? t('follow.unfollow') : t('follow.follow')}
 				className={cn(
 					'transition-all',
 					isLoading && 'cursor-not-allowed',
@@ -72,9 +74,15 @@ export default function FollowButton({
 				{isLoading ? (
 					<Loader2 className='h-4 w-4 animate-spin' />
 				) : isFollowing ? (
-					'Following'
+					<>
+						<UserMinus className='mr-2 h-4 w-4' />
+						{t('follow.unfollow')}
+					</>
 				) : (
-					'Follow'
+					<>
+						<UserPlus className='mr-2 h-4 w-4' />
+						{t('follow.follow')}
+					</>
 				)}
 			</Button>
 			{openRestricted && (

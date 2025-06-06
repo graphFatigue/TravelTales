@@ -18,13 +18,15 @@ import Link from 'next/link';
 import { authService } from '@/lib/api/auth';
 import { toast } from 'sonner';
 import {
-	forgotPasswordFormSchema,
-	forgotPasswordValues,
+	ForgotPasswordValues,
+	getForgotPasswordFormSchema,
 } from '@/lib/validation';
+import { useTranslation } from 'react-i18next';
 
 export default function ForgotPasswordPage() {
-	const form = useForm<forgotPasswordValues>({
-		resolver: zodResolver(forgotPasswordFormSchema),
+	const { t } = useTranslation();
+	const form = useForm<ForgotPasswordValues>({
+		resolver: zodResolver(getForgotPasswordFormSchema(t)),
 		defaultValues: {
 			email: '',
 		},
@@ -40,7 +42,7 @@ export default function ForgotPasswordPage() {
 		},
 	});
 
-	const onSubmit = (values: forgotPasswordValues) => {
+	const onSubmit = (values: ForgotPasswordValues) => {
 		mutation.mutate(values.email);
 	};
 

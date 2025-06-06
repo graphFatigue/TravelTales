@@ -8,12 +8,12 @@ import {
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import {  useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Blogger } from '@/types/types';
 import { useProfileMutations } from '@/hooks/bloggers/useProfileMutations';
 import {
-	profileFormSchema,
+	getProfileFormSchema,
 	UpdateBloggerProfileValues,
 } from '@/lib/validation';
 import { AvatarSection } from '@/components/editProfile/AvatarSection';
@@ -22,6 +22,7 @@ import { BirthDateField } from '@/components/editProfile/BirthDateField';
 import { GenderField } from '@/components/editProfile/GenderField';
 import { BioField } from '@/components/editProfile/BioField';
 import { LocationSection } from '@/components/editProfile/LocationSection';
+import { useTranslation } from 'react-i18next';
 
 interface EditBloggerProfileDialogProps {
 	blogger: Blogger;
@@ -37,10 +38,12 @@ export default function EditBloggerProfileDialog({
 	const [croppedAvatar, setCroppedAvatar] = useState<Blob | null | undefined>(
 		undefined,
 	);
+
+	const {t} = useTranslation();
 	const mutation = useProfileMutations(blogger.id);
 
 	const form = useForm<UpdateBloggerProfileValues>({
-		resolver: zodResolver(profileFormSchema),
+		resolver: zodResolver(getProfileFormSchema(t)),
 		defaultValues: {
 			firstName: blogger.firstName,
 			lastName: blogger.lastName,
@@ -67,7 +70,6 @@ export default function EditBloggerProfileDialog({
 	}, [watch]);
 
 	async function onSubmit(values: UpdateBloggerProfileValues) {
-		console.log('Submitting form with values:', values);
 		try {
 			await mutation.mutateAsync(
 				{
@@ -90,7 +92,7 @@ export default function EditBloggerProfileDialog({
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className='max-h-[95vh] overflow-y-auto'>
 				<DialogHeader>
-					<DialogTitle>Edit profile</DialogTitle>
+					<DialogTitle>{t('profile.edit')}</DialogTitle>
 				</DialogHeader>
 
 				<Form {...form}>
@@ -120,10 +122,10 @@ export default function EditBloggerProfileDialog({
 								variant='outline'
 								onClick={() => onOpenChange(false)}
 							>
-								Cancel
+								{t('common.cancel')}
 							</Button>
 							<Button type='submit' disabled={mutation.isPending}>
-								{mutation.isPending ? 'Saving...' : 'Save changes'}
+								{mutation.isPending ? t('post.saving') : t('post.save')}
 							</Button>
 						</DialogFooter>
 					</form>

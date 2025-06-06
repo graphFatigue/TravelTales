@@ -27,16 +27,18 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { resetPasswordFormSchema, ResetPasswordValues } from '@/lib/validation';
+import { getResetPasswordFormSchema, ResetPasswordValues } from '@/lib/validation';
+import { useTranslation } from 'react-i18next';
 
 
 
 export default function ResetPasswordPage() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const { t } = useTranslation();
 
 	const form = useForm<ResetPasswordValues>({
-		resolver: zodResolver(resetPasswordFormSchema),
+		resolver: zodResolver(getResetPasswordFormSchema(t)),
 		defaultValues: {
 			email: searchParams.get('email') || '',
 			token: searchParams.get('token') || '',

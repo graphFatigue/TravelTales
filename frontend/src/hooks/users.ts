@@ -13,7 +13,7 @@ export function useUsers(filters: Record<string, any> = {}) {
 				typeof context.pageParam === 'number' ? context.pageParam : 1;
 			const params = new URLSearchParams();
 			params.set('Page', pageParam.toString());
-			params.set('PageSize', '6');
+			params.set('PageSize', '10');
 
 			if (filters.field && filters.value) {
 				const backendField = filters.field.toLowerCase();

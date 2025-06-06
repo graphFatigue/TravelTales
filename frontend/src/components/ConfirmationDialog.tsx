@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from './ui/button';
 import { Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ConfirmationDialogProps {
 	title: string;
@@ -25,6 +26,7 @@ export default function ConfirmationDialog({
 	remove,
 	className,
 }: ConfirmationDialogProps) {
+	const { t } = useTranslation();
 	return (
 		<AlertDialog>
 			<AlertDialogTrigger asChild>
@@ -37,7 +39,7 @@ export default function ConfirmationDialog({
 					}
 				>
 					{!className && <Trash2 className='mr-1 h-4 w-4' />}
-					Delete
+					{t('post.delete')}
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
@@ -46,12 +48,12 @@ export default function ConfirmationDialog({
 					<AlertDialogDescription>{description}</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel>Cancel</AlertDialogCancel>
+					<AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
 					<AlertDialogAction
 						className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
 						onClick={remove}
 					>
-						Delete
+						{t('post.delete')}
 					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>

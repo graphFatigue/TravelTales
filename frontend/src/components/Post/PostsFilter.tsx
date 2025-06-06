@@ -8,10 +8,12 @@ import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { MultiSelect } from '../ui/multi-selesct';
+import { useTranslation } from 'react-i18next';
 
 export function PostsFilter() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const { t } = useTranslation();
 
 	const currentSearch = searchParams.get('s') || '';
 	const currentCategories = searchParams.getAll('category');
@@ -77,7 +79,7 @@ export function PostsFilter() {
 				<div className='relative flex-1'>
 					<Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground' />
 					<Input
-						placeholder='Search posts by title or tags...'
+						placeholder={t('post.searchPlaceholder')}
 						className='pl-10'
 						value={searchTerm}
 						onChange={e => setSearchTerm(e.target.value)}
@@ -100,14 +102,14 @@ export function PostsFilter() {
 					}
 					defaultValue={selectedCategories}
 					onValueChange={setSelectedCategories}
-					placeholder='Select categories...'
+					placeholder={t('post.selectCategories')}
 				/>
 
 				<MultiSelect
 					options={budgetOptions}
 					defaultValue={selectedBudgets}
 					onValueChange={setSelectedBudgets}
-					placeholder='Select budgets...'
+					placeholder={t('post.selectBudgets')}
 				/>
 
 				<MultiSelect
@@ -122,7 +124,7 @@ export function PostsFilter() {
 						setSelectedCountries(values);
 						setSelectedCities([]);
 					}}
-					placeholder='Select countries...'
+					placeholder={t('post.selectCountries')}
 				/>
 
 				<MultiSelect
@@ -134,7 +136,7 @@ export function PostsFilter() {
 					}
 					defaultValue={selectedCities}
 					onValueChange={setSelectedCities}
-					placeholder='Select cities...'
+					placeholder={t('post.selectCities')}
 					disabled={selectedCountries.length === 0}
 				/>
 			</div>

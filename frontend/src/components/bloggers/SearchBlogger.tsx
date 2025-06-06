@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 export default function SearchBloggers({
 	onSearch,
@@ -16,9 +17,9 @@ export default function SearchBloggers({
 	const [searchTerm, setSearchTerm] = useState(initialValue);
 	const router = useRouter();
 	const searchParams = useSearchParams();
+	const { t } = useTranslation();
 
 	useEffect(() => {
-		// Sync with URL on component mount
 		const search = searchParams.get('s');
 		if (search) {
 			setSearchTerm(search);
@@ -52,7 +53,7 @@ export default function SearchBloggers({
 		<div className='relative flex w-full max-w-md items-center space-x-2'>
 			<Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground' />
 			<Input
-				placeholder='Search bloggers by name, city, or country...'
+				placeholder={t('bloggers.searchPlaceholder')}
 				className='pl-10'
 				value={searchTerm}
 				onChange={e => setSearchTerm(e.target.value)}
@@ -65,7 +66,7 @@ export default function SearchBloggers({
 				/>
 			)}
 			<Button onClick={handleSearch} type='button'>
-				Search
+				{t('users.search')}
 			</Button>
 		</div>
 	);

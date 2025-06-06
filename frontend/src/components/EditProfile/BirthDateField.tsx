@@ -7,6 +7,7 @@ import {
 	FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from 'react-i18next';
 
 interface BirthDateFieldProps {
 	control: any;
@@ -18,13 +19,14 @@ function formatDateForInput(date: string | Date): string {
 }
 
 export function BirthDateField({ control }: BirthDateFieldProps) {
+	const { t } = useTranslation();
 	return (
 		<FormField
 			control={control}
 			name='birthDate'
 			render={({ field }) => (
 				<FormItem>
-					<FormLabel>Birth Date</FormLabel>
+					<FormLabel>{t('auth.birthDate')}</FormLabel>
 					<FormControl>
 						<div className='relative'>
 							<Input
@@ -37,7 +39,6 @@ export function BirthDateField({ control }: BirthDateFieldProps) {
 									field.onChange(date ? new Date(date).toISOString() : null);
 								}}
 							/>
-							{/* <CalendarIcon className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 transform' /> */}
 						</div>
 					</FormControl>
 					<FormMessage />

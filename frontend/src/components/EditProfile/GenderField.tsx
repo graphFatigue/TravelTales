@@ -13,32 +13,34 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
+import { useTranslation } from 'react-i18next';
 
 interface GenderFieldProps {
 	control: any;
 }
 
 export function GenderField({ control }: GenderFieldProps) {
+	const { t } = useTranslation();
 	return (
 		<FormField
 			control={control}
 			name='sex'
 			render={({ field }) => (
 				<FormItem>
-					<FormLabel>Gender</FormLabel>
+					<FormLabel>{t('profile.gender')}</FormLabel>
 					<Select
 						onValueChange={value => field.onChange(parseInt(value))}
 						value={field.value.toString()}
 					>
 						<FormControl>
 							<SelectTrigger>
-								<SelectValue placeholder='Select gender' />
+								<SelectValue placeholder={t('profile.selectGender')} />
 							</SelectTrigger>
 						</FormControl>
 						<SelectContent>
-							<SelectItem value='0'>Male</SelectItem>
-							<SelectItem value='1'>Female</SelectItem>
-							<SelectItem value='2'>Other</SelectItem>
+							<SelectItem value='0'>{t('profile.male')}</SelectItem>
+							<SelectItem value='1'>{t('profile.female')}</SelectItem>
+							<SelectItem value='2'>{t('profile.other')}</SelectItem>
 						</SelectContent>
 					</Select>
 					<FormMessage />

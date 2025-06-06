@@ -18,7 +18,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 			<Button
 				variant='ghost'
 				className='flex items-center justify-start gap-3'
-				title='Home'
+				title={t('dashboard.home')}
 				asChild
 			>
 				<Link href='/'>
@@ -29,7 +29,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 			<Button
 				variant='ghost'
 				className='flex items-center justify-start gap-3'
-				title='Bloggers'
+				title={t('dashboard.bloggers')}
 				asChild
 			>
 				<Link href='/blogger'>
@@ -43,7 +43,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 					<Button
 						variant='ghost'
 						className='flex items-center justify-start gap-3'
-						title='Users'
+						title={t('dashboard.users')}
 						asChild
 					>
 						<Link href={`/admin/users`}>
@@ -54,7 +54,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 					<Button
 						variant='ghost'
 						className='flex items-center justify-start gap-3'
-						title='Categories'
+						title={t('dashboard.categories')}
 						asChild
 					>
 						<Link href={`/admin/categories`}>
@@ -72,12 +72,10 @@ export default function MenuBar({ className }: MenuBarProps) {
 					<Button
 						variant='ghost'
 						className='flex items-center justify-start gap-3'
-						title='Followers Posts'
+						title={t('dashboard.followersPosts')}
 						asChild
 					>
-						<Link
-							href={`/blogger/${session?.user.blogger?.id}/followers/posts`}
-						>
+						<Link href={`/blogger/${session?.user.blogger?.id}/followers/posts`}>
 							<NotebookText />
 							<span className='hidden lg:inline'>
 								{t('dashboard.followersPosts')}
@@ -87,7 +85,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 					<Button
 						variant='ghost'
 						className='flex items-center justify-start gap-3'
-						title='Followers'
+						title={t('dashboard.followers')}
 						asChild
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/followers`}>
@@ -100,7 +98,7 @@ export default function MenuBar({ className }: MenuBarProps) {
 					<Button
 						variant='ghost'
 						className='flex items-center justify-start gap-3'
-						title='Following'
+						title={t('dashboard.following')}
 						asChild
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/following`}>

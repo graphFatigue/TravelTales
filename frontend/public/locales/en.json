@@ -4,7 +4,9 @@
 		"greeting": "Hello, {{name}}!",
 		"edit": "Edit",
 		"delete": "Delete",
-		"cancel": "Cancel"
+		"cancel": "Cancel",
+		"loading": "Loading...",
+		"save": "Save"
 	},
 	"validation": {
 		"required": "{{field}} is required",
@@ -97,6 +99,7 @@
 		"edit": "Edit Profile",
 		"country": "Country",
 		"city": "City",
+		"avatar": "Avatar",
 		"selectCountry": "Select country",
 		"selectCity": "Select city",
 		"visitedCountries": "Visited Countries",
@@ -109,7 +112,9 @@
 		"female": "Female",
 		"other": "Other",
 		"bio": "Bio",
-		"bioPlaceholder": "Tell us about yourself..."
+		"bioPlaceholder": "Tell us about yourself...",
+		"updateError": "Error updating profile",
+		"updateSuccess": "Profile updated successfully"
 	},
 	"post": {
 		"title": "Post",
@@ -127,15 +132,26 @@
 		"addTags": "Add tags (press Enter or Space to add)",
 		"saving": "Saving...",
 		"save": "Save",
+		"creating": "Creating...",
+		"createPostButton": "Create post",
 		"searchPlaceholder": "Search posts by title or tags...",
 		"selectCategories": "Select categories...",
 		"selectBudgets": "Select budgets...",
 		"selectCountries": "Select countries...",
 		"selectCities": "Select cities...",
-		"delete": "Delete Post",
+		"delete": "Delete",
 		"deleteConfirm": "Delete Post?",
 		"deleteDescription": "Are you sure you want to delete this post? This action cannot be undone.",
-		"deleting": "Deleting..."
+		"attachments": "Attachments",
+		"addAttachmentsButton": "Add attachment",
+		"addAttachments": "Click to upload attachment",
+		"typeError": "Unsupported file type. Please upload an image or video.",
+		"updateSuccess": "Post updated successfully",
+		"createSuccess": "Post created successfully",
+		"updateError": "Failed to update post",
+		"createError": "Failed to create post",
+		"deleteSuccess": "Post deleted successfully",
+		"deleteError": "Failed to delete post"
 	},
 	"comments": {
 		"noCommentsYet": "No comments yet. Be the first to comment!",
@@ -147,8 +163,8 @@
 		"delete": "Delete Comment",
 		"deleteConfirm": "Are you sure you want to delete this comment?",
 		"edit": "Edit Comment",
-		"save": "Save",
-		"cancel": "Cancel"
+		"makeChanges": "Make changes to your comment below.",
+		"moreComments": "Load more comments"
 	},
 	"bloggers": {
 		"searchPlaceholder": "Search bloggers by name, city, or country..."

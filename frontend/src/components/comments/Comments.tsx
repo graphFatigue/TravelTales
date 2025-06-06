@@ -12,6 +12,7 @@ import { Textarea } from '../ui/textarea';
 import { Loader2 } from 'lucide-react';
 import UserAvatar from '../user/UserAvatar';
 import { useBlogger } from '@/hooks/bloggers/useBlogger';
+import { useTranslation } from 'react-i18next';
 
 export const CommentsSection = ({
 	post,
@@ -21,6 +22,7 @@ export const CommentsSection = ({
 	changeCommentsAmount: React.Dispatch<React.SetStateAction<number>>;
 }) => {
 	const { data: session } = useSession();
+	const { t } = useTranslation();
 
 	const { data: blogger } = useBlogger(session?.user.blogger?.id);
 
@@ -47,7 +49,7 @@ export const CommentsSection = ({
 		};
 		await send(comment);
 		setContent('');
-		changeCommentsAmount(prev=>prev+1);
+		changeCommentsAmount(prev => prev + 1);
 	};
 
 	return (
@@ -61,9 +63,7 @@ export const CommentsSection = ({
 						>
 							<CardContent className='p-4'>
 								<div className='flex items-start gap-3'>
-									<UserAvatar
-										avatarUrl={comment.bloggerImage || ''}
-									/>
+									<UserAvatar avatarUrl={comment.bloggerImage || ''} />
 									<div className='flex-1 space-y-1.5'>
 										<div className='flex items-center justify-between'>
 											<p className='text-sm font-medium'>
@@ -99,10 +99,10 @@ export const CommentsSection = ({
 								{isFetchingNextPage ? (
 									<>
 										<Loader2 className='mr-2 h-4 w-4 animate-spin' />
-										Loading...
+										{t('common.loading')}
 									</>
 								) : (
-									'Load more comments'
+									<>{t('comments.moreComments')}</>
 								)}
 							</Button>
 						</div>
@@ -110,9 +110,7 @@ export const CommentsSection = ({
 				</>
 			) : (
 				<div className='py-8 text-center'>
-					<p className='text-muted-foreground'>
-						No comments yet. Be the first to comment!
-					</p>
+					<p className='text-muted-foreground'>{t('comments.noCommentsYet')}</p>
 				</div>
 			)}
 
@@ -121,16 +119,16 @@ export const CommentsSection = ({
 					<div className='mx-1 flex items-center gap-3'>
 						<UserAvatar avatarUrl={blogger?.image} />
 						<Label htmlFor='comment' className='text-sm font-medium'>
-							Add a comment
+							{t('comments.addComment')}
 						</Label>
 					</div>
 
 					<Textarea
 						id='comment'
-						placeholder='Share your thoughts...'
+						placeholder={t('comments.placeholder')}
 						value={content}
 						onChange={e => setContent(e.target.value)}
-						className='min-h-[120px] resize-none'
+						className='min-h-[100px]'
 					/>
 
 					<div className='flex justify-end'>
@@ -139,15 +137,13 @@ export const CommentsSection = ({
 							disabled={!content.trim()}
 							className='transition-all'
 						>
-							Post Comment
+							{t('comments.submit')}
 						</Button>
 					</div>
 				</div>
 			) : (
 				<div className='mt-8 rounded-md border bg-muted/20 p-4 text-center'>
-					<p className='text-muted-foreground'>
-						Please sign in to leave a comment.
-					</p>
+					<p className='text-muted-foreground'>{t('comments.pleaseSignIn')}</p>
 				</div>
 			)}
 		</div>

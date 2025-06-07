@@ -39,17 +39,16 @@ export const useInfinitePosts = (pageSize = 3) => {
 			};
 
 			const filters = [];
-			console.log('search ', searchTerm);
 
 			if (searchTerm) {
-				filters.push(`title@=*${searchTerm}`);
-				// need to add tags
-				// filters.push(`(title@=*${searchTerm}|tags@=*${searchTerm})`);
+				// filters.push(`title@=*${searchTerm}`);
+				//filters.push(`title@=*${searchTerm}|TagsFilter@=*${searchTerm}`);
+				// filters.push(`TagsFilter@=*${searchTerm}`);
+				filters.push(`(title|TagsFilter)@=*${searchTerm}`);
 			}
 
 			if (categories.length > 0) {
-				// i don't know how to do this
-				filters.push(`categoryId==${categories.join('|')}`);
+				filters.push(`CategoryId==${categories.join(' ')}`);
 			}
 
 			if (budgets.length > 0) {
@@ -67,8 +66,6 @@ export const useInfinitePosts = (pageSize = 3) => {
 			if (filters.length > 0) {
 				params.filters = filters.join(',');
 			}
-
-			console.log(filters);
 
 			const response = await api.get('/api/Posts/filter', {
 				params: { ...params, sorts: '-createdAt' },

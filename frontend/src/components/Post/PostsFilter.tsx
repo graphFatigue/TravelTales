@@ -13,7 +13,9 @@ import { useTranslation } from 'react-i18next';
 export function PostsFilter() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
+
+	const currentLanguage = i18n.language;
 
 	const currentSearch = searchParams.get('s') || '';
 	const currentCategories = searchParams.getAll('category');
@@ -64,6 +66,10 @@ export function PostsFilter() {
 		router.push(`?${params.toString()}`, { scroll: false });
 	};
 
+	const getCategoryLabel = (category: { name: string; nameUa: string }) => {
+		return currentLanguage === 'en' ? category.name : category.nameUa;
+	};
+
 	// const resetFilters = () => {
 	// 	setSearchTerm('');
 	// 	setSelectedCategories([]);
@@ -97,7 +103,7 @@ export function PostsFilter() {
 					options={
 						categories?.map(c => ({
 							value: c.id.toString(),
-							label: c.name,
+							label: getCategoryLabel(c),
 						})) || []
 					}
 					defaultValue={selectedCategories}

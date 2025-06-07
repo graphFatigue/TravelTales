@@ -60,6 +60,17 @@ namespace TravelTales.Persistence.Repositories
             return await query.ToListAsync(cancellationToken);
         }
 
+        public override void Delete(Post post)
+        {
+            var comments = this.context.Comments
+                .Where(n => n.PostId == post.Id)
+                .ToList();
+
+            this.context.Comments.RemoveRange(comments);
+
+            base.Delete(post);
+        }
+
         public override async Task<PagedList<Post>> GetAllWithFilterAsync(
             SieveModel sieveModel,
             CancellationToken cancellationToken = default)

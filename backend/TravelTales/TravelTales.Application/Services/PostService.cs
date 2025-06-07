@@ -346,7 +346,7 @@ namespace TravelTales.Application.Services
                 .ToList();
 
             var sieveModelClone = CloneSieveModel(sieveModel);
-            sieveModelClone.Filters = $"BloggerId=={string.Join(",", followedBloggerIds)}";
+            sieveModelClone.Filters = $"BloggerId=={string.Join("|", followedBloggerIds)}";
 
             if (blockerIds.Any())
             {

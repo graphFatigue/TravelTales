@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { Loader2 } from 'lucide-react';
-import { useInfinitePosts } from '@/hooks/posts/usePosts';
 import PostLoader from '@/components/post/PostLoader';
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import { PostCardPreview } from '@/components/post/PostCardPreview';
+import { useInfiniteFollowingPosts } from '@/hooks/posts/useFollowersPosts';
 
 export default function FollowersPostsFeed() {
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-		useInfinitePosts();
+		useInfiniteFollowingPosts();
 
 	const posts = data?.pages.flatMap(page => page.items) || [];
 
@@ -22,6 +22,13 @@ export default function FollowersPostsFeed() {
 					hasNextPage && !isFetchingNextPage && fetchNextPage()
 				}
 			>
+				{
+					posts.length == 0 && status === 'success' && !hasNextPage && (
+						<div className='col-span-full py-8 text-center text-muted-foreground'>
+							No posts yet
+						</div>
+					)
+				}
 				{posts.map(post => (
 					<PostCardPreview key={post.id} post={post} />
 				))}

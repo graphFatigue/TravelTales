@@ -39,7 +39,7 @@ export default function ConfirmationDialog({
 					}
 				>
 					{!className && <Trash2 className='mr-1 h-4 w-4' />}
-					{t('post.delete')}
+					{t('common.delete')}
 				</Button>
 			</AlertDialogTrigger>
 			<AlertDialogContent>
@@ -53,7 +53,7 @@ export default function ConfirmationDialog({
 						className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
 						onClick={remove}
 					>
-						{t('post.delete')}
+						{t('coommon.delete')}
 					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>

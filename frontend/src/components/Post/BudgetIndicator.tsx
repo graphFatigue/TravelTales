@@ -1,7 +1,6 @@
 import { BudgetLevel } from '@/types/types';
 import { DollarSign } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
 
 interface BudgetIndicatorProps {
 	level: BudgetLevel;
@@ -33,7 +32,7 @@ export function BudgetIndicator({
 
 	return (
 		<div
-			className={`flex items-center rounded-full px-3 py-1 text-sm font-medium ${budgetInfo.class} ${className}`}
+			className={`flex items-center rounded-full px-3 py-1 text-sm font-medium min-w-fit ${budgetInfo.class} ${className}`}
 			title={t('post.budgetLevel', { level })}
 		>
 			<DollarSign className='mr-1 h-4 w-4' />

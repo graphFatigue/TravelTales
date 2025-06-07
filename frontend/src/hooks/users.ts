@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
 import api from '../lib/api/api';
 import { AssignRoleRequest, Role, UsersResponse } from '@/types/types';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useUsers(filters: Record<string, any> = {}) {
 	return useInfiniteQuery<UsersResponse, Error>({
 		queryKey: ['users', filters],
@@ -13,7 +13,7 @@ export function useUsers(filters: Record<string, any> = {}) {
 				typeof context.pageParam === 'number' ? context.pageParam : 1;
 			const params = new URLSearchParams();
 			params.set('Page', pageParam.toString());
-			params.set('PageSize', '10');
+			params.set('PageSize', '5');
 
 			if (filters.field && filters.value) {
 				const backendField = filters.field.toLowerCase();
@@ -29,6 +29,9 @@ export function useUsers(filters: Record<string, any> = {}) {
 			return lastPage.hasNext ? lastPage.currentPage + 1 : undefined;
 		},
 		initialPageParam: 1,
+		enabled: !!filters,
+		staleTime: 60 * 1000,
+		refetchOnWindowFocus: false,
 	});
 }
 

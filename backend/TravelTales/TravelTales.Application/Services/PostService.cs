@@ -7,6 +7,7 @@ using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.Repositories;
 using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Services
@@ -317,6 +318,54 @@ namespace TravelTales.Application.Services
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
 
             return this.mapper.Map<PostDto>(post);
+        }
+
+        public async Task<PagedList<PostDto>> GetFollowedBloggersPostsAsync(
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
+        {
+            var currentBloggerId = await bloggerService.GetCurrentBloggerId(cancellationToken);
+
+            var following = await unitOfWork.GetRepository<IBloggerFollowRepository>()
+                .GetAllAsync(bf =>
+                    bf.FollowerId == currentBloggerId &&
+                    !bf.IsDeleted,
+                    cancellationToken);
+
+            var followedBloggerIds = following
+                .Select(f => f.FollowingId)
+                .ToList();
+
+            if (!followedBloggerIds.Any())
+            {
+                return new PagedList<PostDto>();
+            }
+
+            var blockerIds = (await unitOfWork.GetRepository<IBloggerBlockRepository>()
+                .GetBlockerIdsAsync(currentBloggerId, cancellationToken))
+                .ToList();
+
+            var sieveModelClone = CloneSieveModel(sieveModel);
+            sieveModelClone.Filters = $"BloggerId=={string.Join(",", followedBloggerIds)}";
+
+            if (blockerIds.Any())
+            {
+                sieveModelClone.Filters += $",BloggerId!={string.Join(",", blockerIds)}";
+            }
+
+            var pagedList = await unitOfWork.GetRepository<IPostRepository>()
+                .GetAllWithFilterAsync(sieveModelClone, cancellationToken);
+
+            var postDtos = mapper.Map<List<PostDto>>(pagedList.Items);
+
+            foreach (var postDto in postDtos)
+            {
+                var comments = await unitOfWork.GetRepository<ICommentRepository>()
+                    .GetCommentsByPostIdAsync(postDto.Id);
+                postDto.Comments = mapper.Map<List<CommentBroadcastDto>>(comments);
+            }
+
+            return PagedList<PostDto>.Copy(pagedList, postDtos);
         }
 
 

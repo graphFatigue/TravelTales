@@ -11,7 +11,7 @@ namespace TravelTales.Persistence.SharedFiles
 {
     public class PagedList<TEntity>
     {
-        private PagedList(
+        public PagedList(
             IEnumerable<TEntity> items,
             int count,
             int pageNumber,
@@ -24,8 +24,9 @@ namespace TravelTales.Persistence.SharedFiles
             this.Items = items;
         }
 
-        private PagedList()
+        public PagedList()
         {
+            this.Items = [];
         }
 
         public IEnumerable<TEntity>? Items { get; set; }

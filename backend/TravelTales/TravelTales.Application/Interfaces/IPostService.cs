@@ -17,5 +17,7 @@ namespace TravelTales.Application.Interfaces
         Task DeletePostAsync(long id, CancellationToken cancellationToken = default);
 
         Task<PagedList<PostDto>> GetPostsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
+
+        Task<PagedList<PostDto>> GetFollowedBloggersPostsAsync(SieveModel sieveModel, CancellationToken cancellationToken = default);
     }
 }

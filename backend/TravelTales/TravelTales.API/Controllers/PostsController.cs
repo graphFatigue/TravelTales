@@ -90,5 +90,19 @@ namespace TravelTales.API.Controllers
             return this.NoContent();
 
         }
+
+        [Authorize]
+        [HttpGet("followed")]
+        public async Task<IActionResult> GetFollowedBloggersPosts(
+            [FromQuery] SieveModel sieveModel,
+            CancellationToken cancellationToken)
+        {
+            logger.LogTrace("Starting GetFollowedBloggersPosts action in PostsController");
+
+            var posts = await postService.GetFollowedBloggersPostsAsync(sieveModel, cancellationToken);
+            logger.LogInformation("Successfully retrieved posts from followed bloggers");
+
+            return Ok(posts);
+        }
     }
 }

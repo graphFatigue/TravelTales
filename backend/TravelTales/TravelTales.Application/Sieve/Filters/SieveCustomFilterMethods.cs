@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Sieve.Services;
 using TravelTales.Domain.Entities;
 
@@ -101,7 +102,7 @@ namespace TravelTales.Application.Sieve.Filters
             return source
                 .AsEnumerable()
                 .Where(post =>
-                    tagsToMatch.All(filterTag =>
+                    tagsToMatch.Any(filterTag =>
                         post.Tags != null &&
                         post.Tags.Any(postTag =>
                             postTag != null && postTag.ToLower().Contains(filterTag)
@@ -110,5 +111,24 @@ namespace TravelTales.Application.Sieve.Filters
                 )
                 .AsQueryable();
         }
+
+
+        public IQueryable<Post> SearchQuery(IQueryable<Post> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0 || string.IsNullOrWhiteSpace(values[0]))
+                return source;
+
+            var searchTerm = values[0].ToLower();
+
+            return source
+                .AsEnumerable()
+                .Where(post =>
+                    post.Title.Contains(searchTerm) ||
+                    (post.Tags != null &&
+                    post.Tags.Any(tag => tag != null && tag.ToLower().Contains(searchTerm)))
+                )
+                .AsQueryable();
+        }
+
     }
 }

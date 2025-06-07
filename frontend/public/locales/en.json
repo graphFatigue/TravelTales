@@ -80,16 +80,16 @@
 	},
 	"dashboard": {
 		"home": "Home",
-        "bloggers": "Bloggers",
-        "profile": "Profile",
-        "followers": "Followers",
-        "following": "Following",
-        "notifications": "Notifications",
-        "logedinAs": "Logged in as {{name}}",
-        "theme": "Theme",
-        "light": "Light",
-        "dark": "Dark",
-        "system": "System",
+		"bloggers": "Bloggers",
+		"profile": "Profile",
+		"followers": "Followers",
+		"following": "Following",
+		"notifications": "Notifications",
+		"logedinAs": "Logged in as {{name}}",
+		"theme": "Theme",
+		"light": "Light",
+		"dark": "Dark",
+		"system": "System",
 		"users": "Users",
 		"categories": "Categories",
 		"followersPosts": "Followers posts"
@@ -189,5 +189,14 @@
 	"follow": {
 		"follow": "Follow",
 		"unfollow": "Unfollow"
+	},
+	"stats": {
+		"loading": "Loading statistics...",
+		"yourStatistics": "Your Statistics",
+		"totalLikes": "Total Likes",
+		"allTimeLikes": "All-time received likes",
+		"totalComments": "Total Comments",
+		"allTimeComments": "All-time received comments",
+		"mostPopularPost": "Most Popular Post"
 	}
 }

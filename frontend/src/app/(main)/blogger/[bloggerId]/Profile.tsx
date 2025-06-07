@@ -17,6 +17,7 @@ import { Blogger } from '@/types/types';
 import BloggersPosts from '@/components/bloggers/BloggersPosts';
 import { useTravelerRating } from '@/hooks/useTravelRating';
 import { redirect } from 'next/navigation';
+import { StatisticsTab } from '@/components/bloggers/BloggerStats';
 
 export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const [activeTab, setActiveTab] = useState('overview');
@@ -189,7 +190,7 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 				</TabsContent>
 
 				{/* Statistics Tab*/}
-				<TabsContent value='statistics' className='mt-6'>
+				{/* <TabsContent value='statistics' className='mt-6'>
 					<Card>
 						<CardHeader>
 							<CardTitle>Statistic</CardTitle>
@@ -198,7 +199,8 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 							<p> *Statistics* </p>
 						</CardContent>
 					</Card>
-				</TabsContent>
+				</TabsContent> */}
+				<StatisticsTab bloggerId={blogger.id} />
 			</Tabs>
 		</div>
 	);

@@ -189,5 +189,14 @@
 	"follow": {
 		"follow": "Підписатися",
 		"unfollow": "Відписатися"
+	},
+	"stats": {
+		"loading": "Завантаження статистики...",
+		"yourStatistics": "Статистика",
+		"totalLikes": "Всього вподобайок",
+		"allTimeLikes": "Вподобайки за весь час",
+		"totalComments": "Всього коментарів",
+		"allTimeComments": "Коментарі за весь час",
+		"mostPopularPost": "Найпопулярніший пост"
 	}
 }

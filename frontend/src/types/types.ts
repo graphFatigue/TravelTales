@@ -178,3 +178,11 @@ export interface AssignRoleRequest {
 	userId: string;
 	roleId: string;
 }
+
+
+export interface BloggerStats {
+	bloggerId: number;
+	totalLikes: number;
+	totalComments: number;
+	mostPopularPost: Post;
+}

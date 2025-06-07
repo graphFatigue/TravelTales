@@ -53,7 +53,7 @@ export default function ConfirmationDialog({
 						className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
 						onClick={remove}
 					>
-						{t('coommon.delete')}
+						{t('common.delete')}
 					</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>

@@ -17,6 +17,8 @@ import DeletePost from '@/components/post/DeletePost';
 import { useSession } from 'next-auth/react';
 import { useBlogger } from '@/hooks/bloggers/useBlogger';
 import FollowButton from '@/components/follow/FollowButton';
+import { useTranslation } from 'react-i18next';
+import { CategoryBadge } from '@/components/post/CategoryBadge';
 
 export function PostCard() {
 	const { postId } = useParams();
@@ -25,6 +27,8 @@ export function PostCard() {
 	const { data: blogger } = useBlogger(post?.bloggerId, {
 		initialData: post?.blogger,
 	});
+	const { i18n } = useTranslation();
+	const currentLanguage = i18n.language;
 
 	if (isLoading) return <PostLoader />;
 
@@ -110,14 +114,13 @@ export function PostCard() {
 						</Badge>
 					)}
 
-					{post.categories?.map(categorie => (
-						<Badge
-							key={categorie.id}
-							variant='secondary'
+					{post.categories?.map(category => (
+						<CategoryBadge
+							key={category.id}
+							category={category}
+							language={currentLanguage}
 							className='bg-purple-100 text-purple-800 hover:bg-purple-200'
-						>
-							{categorie.name}
-						</Badge>
+						/>
 					))}
 
 					{post.tags?.map((tag, index) => (

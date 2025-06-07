@@ -35,6 +35,7 @@ import Image from 'next/image';
 import { Post } from '@/types/types';
 import { getFileType } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { CategoryBadge } from './CategoryBadge';
 
 interface PostFormProps {
 	post?: Post;
@@ -350,25 +351,19 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 								<FormLabel>{t('dashboard.categories')}</FormLabel>
 								<div className='flex flex-wrap gap-2'>
 									{categories?.map(category => (
-										<Badge
+										<CategoryBadge
 											key={category.id}
-											variant={
-												field.value?.includes(category.id)
-													? 'default'
-													: 'outline'
-											}
-											className='cursor-pointer'
+											category={category}
+											language={currentLanguage}
 											onClick={() => {
 												const newValue = field.value?.includes(category.id)
 													? field.value.filter(id => id !== category.id)
 													: [...(field.value || []), category.id];
 												field.onChange(newValue);
 											}}
-										>
-											{currentLanguage === 'en'
-												? category.name
-												: category.nameUa}
-										</Badge>
+											selected={field.value?.includes(category.id)}
+											className='cursor-pointer'
+										/>
 									))}
 								</div>
 								<FormMessage />

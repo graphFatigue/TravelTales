@@ -9,6 +9,8 @@ import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 import PostAttachments from './PostAttachments';
 import { PostCardFooter } from './PostCardFooter';
+import { useTranslation } from 'react-i18next';
+import { CategoryBadge } from './CategoryBadge';
 
 export function PostCardPreview({ post }: { post: Post }) {
 	const displayedCategories = post.categories?.slice(0, 3) || [];
@@ -26,6 +28,9 @@ export function PostCardPreview({ post }: { post: Post }) {
 		post.content?.length > 150
 			? `${post.content.substring(0, 300)}...`
 			: post.content;
+
+	const {i18n } = useTranslation();
+	const currentLanguage = i18n.language;
 
 	return (
 		<Card className='mx-auto'>
@@ -47,13 +52,12 @@ export function PostCardPreview({ post }: { post: Post }) {
 
 				<div className='flex flex-wrap gap-2'>
 					{displayedCategories.map(category => (
-						<Badge
+						<CategoryBadge
 							key={category.id}
-							variant='secondary'
+							category={category}
+							language={currentLanguage}
 							className='bg-purple-100 text-purple-800 hover:bg-purple-200'
-						>
-							{category.name}
-						</Badge>
+						/>
 					))}
 					{remainingCategories > 0 && (
 						<Badge variant='outline' className='bg-purple-50 text-purple-800'>
@@ -114,7 +118,7 @@ export function PostCardPreview({ post }: { post: Post }) {
 				</div>
 
 				{post.attachments && post.attachments.length > 0 && (
-					<div className='flex gap-3 flex-wrap'>
+					<div className='flex flex-wrap gap-3'>
 						<PostAttachments
 							attachments={displayedAttachments}
 							variant='preview'

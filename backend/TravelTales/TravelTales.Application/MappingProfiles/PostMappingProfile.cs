@@ -15,6 +15,7 @@ namespace TravelTales.Application.MappingProfiles
                 .ForMember(dest => dest.Country, opt => opt.MapFrom(src => src.Country));
             this.CreateMap<CreatePostDto, Post>()
                 .ForMember(dest => dest.Attachments, opt => opt.Ignore());
+            this.CreateMap<PostDto, PostShortInfoDto>();
             this.CreateMap<Post, PostShortInfoDto>()
                 //.ForMember(dest => dest.CategoryIds, opt =>
                 //    opt.MapFrom(src => src.Categories!.Select(c => c.Id)))

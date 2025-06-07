@@ -33,6 +33,32 @@ namespace TravelTales.Application.Sieve.Filters
             .AsQueryable();
         }
 
+        public IQueryable<Post> CategoryId(IQueryable<Post> source, string op, string[] values)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return source;
+            }
+            values = values[0].Split(' ');
+
+            var categoriesToMatch = values
+                .Where(v => !string.IsNullOrWhiteSpace(v))
+                .Select(category => Int64.Parse(category))
+                .ToList();
+
+            return source
+                .AsEnumerable()
+                .Where(post =>
+                    categoriesToMatch.All(filterCategory =>
+                        post.Categories != null &&
+                        post.Categories.Any(category =>
+                            category != null && category.Id == filterCategory
+                        )
+                    )
+                )
+            .AsQueryable();
+        }
+
         public IQueryable<Post> CategoryNameUa(IQueryable<Post> source, string op, string[] values)
         {
             if (values == null || values.Length == 0)
@@ -78,7 +104,7 @@ namespace TravelTales.Application.Sieve.Filters
                     tagsToMatch.All(filterTag =>
                         post.Tags != null &&
                         post.Tags.Any(postTag =>
-                            postTag != null && postTag.ToLower() == filterTag
+                            postTag != null && postTag.ToLower().Contains(filterTag)
                         )
                     )
                 )

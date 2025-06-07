@@ -6,6 +6,7 @@ using Sieve.Models;
 using System.Linq;
 using TravelTales.Application.DTOs.Blogger;
 using TravelTales.Application.DTOs.BloggerFollow;
+using TravelTales.Application.DTOs.Comment;
 using TravelTales.Application.DTOs.Post;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
@@ -388,6 +389,57 @@ namespace TravelTales.Application.Services
                 .GetAllAsync(bf => bf.FollowerId == bloggerId && !bf.IsDeleted, cancellationToken);
 
             return mapper.Map<IEnumerable<BloggerFollowDto>>(following);
+        }
+
+        public async Task<BloggerStatsDto> GetBloggerStatsAsync(long bloggerId, CancellationToken cancellationToken = default)
+        {
+            var blogger = await this.unitOfWork.GetRepository<IBloggerRepository>()
+                .GetByIdAsync(bloggerId, cancellationToken);
+
+            if (blogger is null)
+            {
+                throw new NotFoundException($"Blogger with ID {bloggerId} was not found.");
+            }
+
+            var posts = await unitOfWork.GetRepository<IPostRepository>()
+                .GetAllFullAsync(p => p.BloggerId == bloggerId, cancellationToken);
+
+            var postDtos = mapper.Map<List<PostDto>>(posts);
+
+            foreach (var postDto in postDtos)
+            {
+                var comments = await unitOfWork.GetRepository<ICommentRepository>()
+                    .GetCommentsByPostIdAsync(postDto.Id);
+                postDto.Comments = mapper.Map<List<CommentBroadcastDto>>(comments);
+            }
+
+            var totalLikes = posts.Sum(p => p.Likes?.Count ?? 0);
+            var totalComments = posts.Sum(p => p.Comments?.Count ?? 0);
+
+            PostDto? mostPopularPost = null;
+            int maxPopularity = -1;
+
+            foreach (var post in postDtos)
+            {
+                var popularity = (post.Likes?.Count ?? 0) + (post.Comments?.Count ?? 0);
+                if (popularity > maxPopularity)
+                {
+                    maxPopularity = popularity;
+                    mostPopularPost = post;
+                }
+            }
+
+            var stats = new BloggerStatsDto
+            {
+                BloggerId = bloggerId,
+                TotalLikes = totalLikes,
+                TotalComments = totalComments,
+                MostPopularPost = mostPopularPost != null
+                    ? mostPopularPost
+                    : null
+            };
+
+            return stats;
         }
 
         private void MaskBloggerDetails(BloggerDto dto)

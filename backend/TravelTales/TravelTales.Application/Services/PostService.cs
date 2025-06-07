@@ -350,7 +350,7 @@ namespace TravelTales.Application.Services
 
             if (blockerIds.Any())
             {
-                sieveModelClone.Filters += $",BloggerId!={string.Join(",", blockerIds)}";
+                sieveModelClone.Filters += $",BloggerId!={string.Join("|", blockerIds)}";
             }
 
             var pagedList = await unitOfWork.GetRepository<IPostRepository>()

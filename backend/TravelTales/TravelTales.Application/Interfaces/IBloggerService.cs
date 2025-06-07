@@ -39,5 +39,7 @@ namespace TravelTales.Application.Interfaces
             long bloggerId,
             SieveModel sieveModel,
             CancellationToken cancellationToken = default);
+
+        Task<BloggerStatsDto> GetBloggerStatsAsync(long bloggerId, CancellationToken cancellationToken = default);
     }
 }

@@ -101,5 +101,14 @@ namespace TravelTales.API.Controllers
             this.logger.LogInformation("Blogger image updated successfully for ID {Id}", id);
             return this.NoContent();
         }
+
+        [HttpGet("{id}/stats")]
+        public async Task<IActionResult> GetBloggerStats(
+        long id,
+        CancellationToken cancellationToken)
+        {
+                var stats = await bloggerService.GetBloggerStatsAsync(id, cancellationToken);
+                return Ok(stats);
+        }
     }
 }

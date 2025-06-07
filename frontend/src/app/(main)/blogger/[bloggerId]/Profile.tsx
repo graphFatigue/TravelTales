@@ -18,14 +18,15 @@ import BloggersPosts from '@/components/bloggers/BloggersPosts';
 import { useTravelerRating } from '@/hooks/useTravelRating';
 import { redirect } from 'next/navigation';
 import { StatisticsTab } from '@/components/bloggers/BloggerStats';
+import { useSession } from 'next-auth/react';
 
 export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const [activeTab, setActiveTab] = useState('overview');
 	const travelerRating = useTravelerRating(blogger.visitedCities?.length || 0);
+	const { data: session } = useSession();
 
 	return (
 		<div className='container mx-auto max-w-5xl px-4 py-8'>
-			{/* Tabs */}
 			<Tabs
 				defaultValue='overview'
 				value={activeTab}
@@ -39,7 +40,6 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 					<TabsTrigger value='statistics'>Statistics</TabsTrigger>
 				</TabsList>
 
-				{/* Overview Tab */}
 				<TabsContent value='overview' className='mt-6 space-y-6'>
 					<Card>
 						<CardHeader>
@@ -79,10 +79,6 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 										Location
 									</h3>
 									<p>
-										{/* {loading
-											? 'Loading...'
-											: `${cities?.find(c => c.id === blogger.cityId)?.name}, ${countries?.find(c => c.id === blogger.countryId)?.name}`} */}
-
 										{blogger.city
 											? `${blogger.city?.name}, ${blogger.country?.name}`
 											: 'No data'}
@@ -118,7 +114,6 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 					</Card>
 				</TabsContent>
 
-				{/* Places Tab */}
 				<TabsContent value='places' className='mt-6 space-y-6'>
 					<Card>
 						<CardHeader>
@@ -159,7 +154,6 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 					</Card>
 				</TabsContent>
 
-				{/* Posts Tab */}
 				<TabsContent value='posts' className='mt-6'>
 					<Card>
 						<CardHeader>
@@ -178,10 +172,14 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 										<h3 className='mt-4 text-lg font-medium'>
 											No posts to display
 										</h3>
-										<p className='mt-2 text-sm text-muted-foreground'>
-											Posts will appear here once created.
-										</p>
-										<Button className='mt-4' onClick={() => redirect('/post/new')}>Create a Post</Button>
+										{session?.user.blogger?.id === blogger.id && (
+											<Button
+												className='mt-4'
+												onClick={() => redirect('/post/new')}
+											>
+												Create a Post
+											</Button>
+										)}
 									</div>
 								</div>
 							)}
@@ -189,17 +187,6 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 					</Card>
 				</TabsContent>
 
-				{/* Statistics Tab*/}
-				{/* <TabsContent value='statistics' className='mt-6'>
-					<Card>
-						<CardHeader>
-							<CardTitle>Statistic</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<p> *Statistics* </p>
-						</CardContent>
-					</Card>
-				</TabsContent> */}
 				<StatisticsTab bloggerId={blogger.id} />
 			</Tabs>
 		</div>

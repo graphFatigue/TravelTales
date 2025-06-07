@@ -41,10 +41,7 @@ export const useInfinitePosts = (pageSize = 3) => {
 			const filters = [];
 
 			if (searchTerm) {
-				// filters.push(`title@=*${searchTerm}`);
-				//filters.push(`title@=*${searchTerm}|TagsFilter@=*${searchTerm}`);
-				// filters.push(`TagsFilter@=*${searchTerm}`);
-				filters.push(`(title|TagsFilter)@=*${searchTerm}`);
+				filters.push(`SearchQuery@=*${searchTerm}`);
 			}
 
 			if (categories.length > 0) {

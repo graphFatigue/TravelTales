@@ -123,7 +123,7 @@ namespace TravelTales.Application.Sieve.Filters
             return source
                 .AsEnumerable()
                 .Where(post =>
-                    post.Title.Contains(searchTerm) ||
+                    post.Title.ToLower().Contains(searchTerm) ||
                     (post.Tags != null &&
                     post.Tags.Any(tag => tag != null && tag.ToLower().Contains(searchTerm)))
                 )

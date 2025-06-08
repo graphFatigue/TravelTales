@@ -8,11 +8,11 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 
 export default function SearchBloggers({
-	onSearch,
 	initialValue = '',
+	onSearchChange,
 }: {
-	onSearch: (searchTerm: string) => void;
 	initialValue?: string;
+	onSearchChange?: (searchTerm: string) => void;
 }) {
 	const [searchTerm, setSearchTerm] = useState(initialValue);
 	const router = useRouter();
@@ -23,9 +23,9 @@ export default function SearchBloggers({
 		const search = searchParams.get('s');
 		if (search) {
 			setSearchTerm(search);
-			onSearch(search);
+			onSearchChange?.(search);
 		}
-	}, [searchParams, onSearch]);
+	}, [searchParams, onSearchChange]);
 	const handleSearch = () => {
 		const params = new URLSearchParams();
 		if (searchTerm) {
@@ -34,13 +34,15 @@ export default function SearchBloggers({
 			params.delete('s');
 		}
 		router.push(`?${params.toString()}`, { scroll: false });
-		onSearch(searchTerm);
+		onSearchChange?.(searchTerm);
 	};
 
 	const handleClear = () => {
 		setSearchTerm('');
-		router.push('', { scroll: false });
-		onSearch('');
+		const params = new URLSearchParams();
+		params.delete('s');
+		router.push(`?${params.toString()}`, { scroll: false });
+		onSearchChange?.('');
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {

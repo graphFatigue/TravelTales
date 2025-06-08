@@ -67,7 +67,7 @@ export const CommentsSection = ({
 									<div className='flex-1 space-y-1.5'>
 										<div className='flex items-center justify-between'>
 											<p className='text-sm font-medium'>
-												{comment.bloggerName || 'Anonymous'}
+												{comment.bloggerName || 'Deleted User'}
 											</p>
 											<p className='text-xs text-muted-foreground'>
 												{formatDate(comment.createdAt)}

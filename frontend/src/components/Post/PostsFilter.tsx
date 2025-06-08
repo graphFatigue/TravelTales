@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCategories } from '@/hooks/useCategories';
 import { useLocationInfo } from '@/hooks/useLocationInfo';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { MultiSelect } from '../ui/multi-selesct';
@@ -23,7 +23,7 @@ export function PostsFilter() {
 	const currentCountries = searchParams.getAll('country');
 	const currentCities = searchParams.getAll('city');
 
-    const { data: categories } = useCategories();
+	const { data: categories } = useCategories();
 
 	const [searchTerm, setSearchTerm] = useState(currentSearch);
 	const [selectedCategories, setSelectedCategories] =
@@ -34,8 +34,8 @@ export function PostsFilter() {
 		useState<string[]>(currentCountries);
 	const [selectedCities, setSelectedCities] = useState<string[]>(currentCities);
 
-    const countryIds = selectedCountries.map(id => Number(id));
-		const { countries, cities } = useLocationInfo(countryIds);
+	const countryIds = selectedCountries.map(id => Number(id));
+	const { countries, cities } = useLocationInfo(countryIds);
 
 	const budgetOptions = [
 		{ value: '0', label: '$0 - $100' },
@@ -70,14 +70,10 @@ export function PostsFilter() {
 		return currentLanguage === 'en' ? category.name : category.nameUa;
 	};
 
-	// const resetFilters = () => {
-	// 	setSearchTerm('');
-	// 	setSelectedCategories([]);
-	// 	setSelectedBudgets([]);
-	// 	setSelectedCountries([]);
-	// 	setSelectedCities([]);
-	// 	router.push('/', { scroll: false });
-	// };
+	const resetFilters = () => {
+		setSearchTerm('');
+		router.push('/', { scroll: false });
+	};
 
 	return (
 		<div className='space-y-4'>
@@ -91,11 +87,15 @@ export function PostsFilter() {
 						onChange={e => setSearchTerm(e.target.value)}
 						onKeyDown={e => e.key === 'Enter' && applyFilters()}
 					/>
+					{searchTerm && (
+						<X
+							className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 transform cursor-pointer text-muted-foreground'
+							onClick={resetFilters}
+						/>
+					)}
 				</div>
-				<Button onClick={applyFilters}>Search</Button>
-				{/* <Button variant='outline' onClick={resetFilters}>
-					<X className='h-4 w-4' />
-				</Button> */}
+
+				<Button onClick={applyFilters}>{t('common.search')}</Button>
 			</div>
 
 			<div className='grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4'>

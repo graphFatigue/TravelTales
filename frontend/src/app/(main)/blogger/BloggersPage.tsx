@@ -7,11 +7,11 @@ import { useInfiniteBloggers } from '@/hooks/bloggers/useInfiniteBloggers';
 import BloggerCard from './BloggerCard';
 import SearchBloggers from '@/components/bloggers/SearchBlogger';
 import { useSearchParams } from 'next/navigation';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 
 const BloggersPage = () => {
 	const searchParams = useSearchParams();
-	const searchTerm = searchParams.get('s') || '';
+	const [searchTerm, setSearchTerm] = useState(searchParams.get('s') || '');
 
 	const {
 		data,
@@ -39,8 +39,8 @@ const BloggersPage = () => {
 	return (
 		<div className='space-y-6'>
 			<SearchBloggers
-				onSearch={() => {}}
 				initialValue={searchTerm}
+				onSearchChange={setSearchTerm}
 			/>
 
 			{isLoading ? (

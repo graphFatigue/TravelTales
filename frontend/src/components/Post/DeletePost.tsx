@@ -3,14 +3,15 @@ import ConfirmationDialog from '../ConfirmationDialog';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Post } from '@/types/types';
 
 interface DeletePostProps {
-	postId: number;
+	post: Post;
 	className?: string;
 }
 
-export default function DeletePost({ postId, className }: DeletePostProps) {
-	const deletePostMutation = useDeletePost(postId);
+export default function DeletePost({ post, className }: DeletePostProps) {
+	const deletePostMutation = useDeletePost(post);
 	const router = useRouter();
 	const { t } = useTranslation();
 

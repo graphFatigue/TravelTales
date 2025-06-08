@@ -1,4 +1,3 @@
-
 import { authOptions } from '@/app/api/auth/[...nextauth]/authOptions';
 import { PostForm } from '@/components/post/PostForm';
 import { getServerSession } from 'next-auth';

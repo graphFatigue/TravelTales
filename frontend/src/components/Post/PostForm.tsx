@@ -2,40 +2,28 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCategories } from '@/hooks/useCategories';
-import { useLocationInfo } from '@/hooks/useLocationInfo';
-import { Button } from '@/components/ui/button';
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { BudgetIndicator } from './BudgetIndicator';
-import { Plus, Trash, X } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
+import { useTranslation } from 'react-i18next';
+
+import { Button } from '@/components/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useCategories } from '@/hooks/useCategories';
+import { useLocationInfo } from '@/hooks/useLocationInfo';
 import { getPostFormSchema, PostFormValues } from '@/lib/validation';
 import api from '@/lib/api/api';
-import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import { Post } from '@/types/types';
 import { getFileType } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
-import { CategoryBadge } from './CategoryBadge';
+import { LocationFields } from './PostFormFields/LocationFields';
+import { BudgetField } from './PostFormFields/BudgetField';
+import { CategoriesField } from './PostFormFields/CategoriesField';
+import { TagsField } from './PostFormFields/TagsField';
+import { AttachmentsField } from './PostFormFields/AttachmentsField';
 
 interface PostFormProps {
 	post?: Post;
@@ -169,11 +157,6 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 				router.push(`/post/${response.data.id}`);
 				toast.success(t('post.updateSuccess'));
 			} else {
-				console.log({
-					...commonPayload,
-					bloggerId: values.bloggerId,
-					attachments: attachmentsWithBase64,
-				});
 				const response = await api.post('/api/Posts', {
 					...commonPayload,
 					bloggerId: values.bloggerId,
@@ -232,260 +215,37 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 						)}
 					/>
 
-					<div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
-						<FormField
-							control={form.control}
-							name='countryId'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t('post.country')}</FormLabel>
-									<Select
-										onValueChange={value => {
-											field.onChange(Number(value));
-											form.setValue('cityId', undefined);
-										}}
-										value={field.value?.toString()}
-										disabled={loadingCountries}
-									>
-										<FormControl>
-											<SelectTrigger>
-												<SelectValue
-													placeholder={
-														selectedCountry?.name || t('post.selectCountry')
-													}
-												>
-													{selectedCountry?.name}
-												</SelectValue>
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{countries?.map(country => (
-												<SelectItem
-													key={country.id}
-													value={country.id.toString()}
-												>
-													{country.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<FormField
-							control={form.control}
-							name='cityId'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>{t('post.city')}</FormLabel>
-									<Select
-										onValueChange={value => field.onChange(Number(value))}
-										value={field.value?.toString()}
-										disabled={!countryId || loadingCities}
-									>
-										<FormControl>
-											<SelectTrigger>
-												<SelectValue
-													placeholder={
-														selectedCity?.name || t('post.selectCity')
-													}
-												>
-													{selectedCity?.name}
-												</SelectValue>
-											</SelectTrigger>
-										</FormControl>
-										<SelectContent>
-											{cities?.map(city => (
-												<SelectItem key={city.id} value={city.id.toString()}>
-													{city.name}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
-
-					<FormField
+					<LocationFields
 						control={form.control}
-						name='budget'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('post.budget')}</FormLabel>
-								<div className='flex items-center gap-4'>
-									<input
-										type='range'
-										min='0'
-										max='4'
-										className='w-full'
-										{...field}
-										onChange={e => field.onChange(Number(e.target.value))}
-									/>
-									<BudgetIndicator level={field.value as 0 | 1 | 2 | 3 | 4} />
-								</div>
-								<FormMessage />
-							</FormItem>
-						)}
+						countries={countries || []}
+						cities={cities || []}
+						loadingCities={loadingCities}
+						loadingCountries={loadingCountries}
+						countryId={countryId}
+						selectedCountry={selectedCountry}
+						selectedCity={selectedCity}
+						t={t}
 					/>
 
-					<FormField
+					<BudgetField control={form.control} t={t} />
+
+					<CategoriesField
 						control={form.control}
-						name='categoryIds'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('dashboard.categories')}</FormLabel>
-								<div className='flex flex-wrap gap-2'>
-									{categories?.map(category => (
-										<CategoryBadge
-											key={category.id}
-											category={category}
-											language={currentLanguage}
-											onClick={() => {
-												const newValue = field.value?.includes(category.id)
-													? field.value.filter(id => id !== category.id)
-													: [...(field.value || []), category.id];
-												field.onChange(newValue);
-											}}
-											selected={field.value?.includes(category.id)}
-											className='cursor-pointer'
-										/>
-									))}
-								</div>
-								<FormMessage />
-							</FormItem>
-						)}
+						categories={categories || []}
+						currentLanguage={currentLanguage}
+						t={t}
 					/>
 
-					<FormField
-						control={form.control}
-						name='tags'
-						render={({ field }) => (
-							<FormItem>
-								<FormLabel>{t('post.tags')}</FormLabel>
-								<FormControl>
-									<Input
-										placeholder={t('post.addTags')}
-										onKeyDown={e => {
-											if (['Enter', ' '].includes(e.key)) {
-												e.preventDefault();
-												const value = e.currentTarget.value.trim();
-												if (value) {
-													field.onChange([...(field.value || []), value]);
-													e.currentTarget.value = '';
-												}
-											}
-										}}
-										onBlur={e => {
-											const value = e.target.value.trim();
-											if (value) {
-												field.onChange([...(field.value || []), value]);
-												e.target.value = '';
-											}
-										}}
-									/>
-								</FormControl>
-								<div className='mt-2 flex flex-wrap gap-2'>
-									{field.value?.map((tag, index) => (
-										<Badge key={index} variant='secondary'>
-											#{tag}
-											<button
-												type='button'
-												onClick={() => {
-													field.onChange(
-														field.value?.filter((_, i) => i !== index),
-													);
-												}}
-												className='ml-1'
-											>
-												<X className='h-3 w-3' />
-											</button>
-										</Badge>
-									))}
-								</div>
-								<FormMessage />
-							</FormItem>
-						)}
+					<TagsField control={form.control} t={t} />
+
+					<AttachmentsField
+						attachments={currentAttachments || []}
+						handleFileChange={handleFileChange}
+						removeAttachment={removeAttachment}
+						addAttachmentField={addAttachmentField}
+						errors={form.formState.errors.attachments}
+						t={t}
 					/>
-
-					<div>
-						<FormLabel>{t('post.attachments')}</FormLabel>
-						<div className='space-y-4'>
-							{currentAttachments?.map((attachment, index) => (
-								<div key={index || attachment.id}>
-									<div className='flex items-center gap-4'>
-										<input
-											type='file'
-											id={`attachment-${index}`}
-											className='hidden'
-											onChange={e => handleFileChange(e, index)}
-											accept='image/jpeg, image/png, video/mp4, video/mov'
-										/>
-										<label
-											htmlFor={`attachment-${index}`}
-											className='flex-1 cursor-pointer rounded-md border p-4 hover:bg-accent'
-										>
-											{attachment.previewUrl ? (
-												<div className='relative h-40 w-full'>
-													{attachment.type === 'video' ? (
-														<video
-															controls
-															className='h-full w-full object-contain'
-														>
-															<source
-																src={attachment.previewUrl}
-																type={attachment.file?.type}
-															/>
-														</video>
-													) : (
-														<Image
-															src={attachment.previewUrl}
-															alt={`Preview ${attachment.number}`}
-															fill
-															className='object-contain'
-															sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-														/>
-													)}
-												</div>
-											) : (
-												<div className='text-center text-muted-foreground'>
-													<Plus className='mx-auto h-8 w-8' />
-													<p>
-														{t('post.addAttachments')} {attachment.number}
-													</p>
-												</div>
-											)}
-										</label>
-
-										<Button
-											type='button'
-											variant='ghost'
-											size='icon'
-											onClick={() => removeAttachment(index)}
-										>
-											<Trash className='h-4 w-4 text-destructive' />
-										</Button>
-									</div>
-									{form.formState.errors.attachments?.[index]?.file && (
-										<p className='text-sm text-destructive'>
-											{form.formState.errors.attachments[index]?.file?.message}
-										</p>
-									)}
-								</div>
-							))}
-							<Button
-								type='button'
-								variant='outline'
-								onClick={addAttachmentField}
-							>
-								<Plus className='mr-2 h-4 w-4' />
-								{t('post.addAttachmentsButton')}
-							</Button>
-						</div>
-					</div>
 
 					<Button type='submit' disabled={isSubmitting}>
 						{isSubmitting

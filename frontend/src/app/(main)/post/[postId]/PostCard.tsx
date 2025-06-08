@@ -32,8 +32,9 @@ export function PostCard() {
 
 	if (isLoading) return <PostLoader />;
 
-	if (error || !post || !blogger) return notFound();
+	if (!post) return notFound();
 
+	if (error || !blogger) return <div>Oops...</div>;
 	const bloggerName = `${blogger?.firstName} ${blogger?.lastName}`;
 
 	return (
@@ -76,7 +77,7 @@ export function PostCard() {
 						{(post.bloggerId === session?.user.blogger?.id ||
 							session?.role === 'Admin') && (
 							<DeletePost
-								postId={post.id}
+								post={post}
 								className={
 									'rounded-full bg-destructive px-5 py-1.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
 								}

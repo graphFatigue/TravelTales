@@ -25,30 +25,6 @@ export const useLocationInfo = (
 		staleTime: Infinity,
 	});
 
-	// const {
-	// 	data: cities,
-	// 	isLoading: loadingCities,
-	// 	error: citiesError,
-	// } = useQuery<City[]>({
-	// 	queryKey: ['cities', ...normalizedCountryIds],
-	// 	queryFn: async () => {
-	// 		// if (normalizedCountryIds.length === 0) return Promise.resolve([]);
-	// 		// return Promise.all(
-	// 		// 	normalizedCountryIds.map(id => fetchCitiesByCountry(id)),
-	// 		// ).then(results => results.flat());
-	// 		if (normalizedCountryIds.length === 0) return [];
-	// 		const results = [];
-	// 		for (const countryId of normalizedCountryIds) {
-	// 			const cities = await fetchCitiesByCountry(countryId);
-	// 			results.push(...cities);
-	// 			await delay(500); // 500ms delay between requests
-	// 		}
-	// 		return results;
-	// 	},
-	// 	enabled: normalizedCountryIds.length > 0,
-	// 	staleTime: Infinity,
-	// });
-
 	const cityQueries = useQueries({
 		queries: normalizedCountryIds.map(countryId => ({
 			queryKey: ['cities', countryId],
@@ -58,7 +34,6 @@ export const useLocationInfo = (
 		})),
 	});
 
-	// Combine results
 	const cities = cityQueries.flatMap(query => query.data || []);
 	const loadingCities = cityQueries.some(query => query.isLoading);
 	const citiesError = cityQueries.find(query => query.error)?.error;

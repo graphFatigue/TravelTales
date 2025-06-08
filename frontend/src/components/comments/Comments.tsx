@@ -129,6 +129,7 @@ export const CommentsSection = ({
 						value={content}
 						onChange={e => setContent(e.target.value)}
 						className='min-h-[100px]'
+						maxLength={1000}
 					/>
 
 					<div className='flex justify-end'>

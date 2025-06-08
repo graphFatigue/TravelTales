@@ -25,8 +25,12 @@
 			"max": "First name must be at most 30 characters"
 		},
 		"lastName": {
-			"min": "Last name must be at least 2 characters",
-			"max": "Last name must be at most 40 characters"
+			"min": "Password must be at least 6 characters",
+			"max": "Password must be less than 100 characters",
+			"uppercase": "Password must contain at least one uppercase letter",
+			"lowercase": "Password must contain at least one lowercase letter",
+			"number": "Password must contain at least one number",
+			"special": "Password must contain at least one special character"
 		},
 		"password": {
 			"min": "Password must be at least 6 characters",
@@ -58,6 +62,9 @@
 		"description": {
 			"required": "Description is required",
 			"max": "Description must be at most 500 characters"
+		},
+		"bio": {
+			"max": "Bio must be at most 1000 characters"
 		}
 	},
 	"auth": {

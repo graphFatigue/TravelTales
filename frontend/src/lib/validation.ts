@@ -5,6 +5,16 @@ type TranslationFunction = (
 	options?: Record<string, unknown>,
 ) => string;
 
+export const passwordValidation = (t: TranslationFunction) =>
+	z
+		.string()
+		.min(6, t('validation.password.min'))
+		.max(100, t('validation.password.max'))
+		.regex(/[A-Z]/, t('validation.password.uppercase'))
+		.regex(/[a-z]/, t('validation.password.lowercase'))
+		.regex(/[0-9]/, t('validation.password.number'))
+		.regex(/[^A-Za-z0-9]/, t('validation.password.special'));
+
 export const getRegistrationSchema = (t: TranslationFunction) =>
 	z.object({
 		firstName: z
@@ -16,10 +26,7 @@ export const getRegistrationSchema = (t: TranslationFunction) =>
 			.min(2, t('validation.lastName.min'))
 			.max(40, t('validation.lastName.max')),
 		email: z.string().email(t('validation.email')),
-		password: z
-			.string()
-			.min(6, t('validation.password.min'))
-			.max(100, t('validation.password.max')),
+		password: passwordValidation(t),
 		birthDate: z
 			.string()
 			.refine(val => !isNaN(new Date(val).getTime()), {
@@ -36,6 +43,12 @@ export const getRegistrationSchema = (t: TranslationFunction) =>
 					message: t('validation.minAge'),
 				},
 			),
+	});
+
+export const getLoginFormSchema = (t: TranslationFunction) =>
+	z.object({
+		email: z.string().email(t('validation.email')),
+		password: passwordValidation(t),
 	});
 
 export const getPostFormSchema = (t: TranslationFunction) =>
@@ -98,7 +111,7 @@ export const getPostFormSchema = (t: TranslationFunction) =>
 			.optional(),
 	});
 
-export const getCategoryFormSchema = (t: (key: string) => string) =>
+export const getCategoryFormSchema = (t: TranslationFunction) =>
 	z.object({
 		name: z
 			.string()
@@ -118,20 +131,26 @@ export const getCategoryFormSchema = (t: (key: string) => string) =>
 			.max(500, t('validation.description.max')),
 	});
 
-export const getProfileFormSchema = (t: (key: string) => string) =>
+export const getProfileFormSchema = (t: TranslationFunction) =>
 	z.object({
-		firstName: z.string().min(1, t('validation.firstName.min')),
-		lastName: z.string().min(1, t('validation.lastName.min')),
+		firstName: z
+			.string()
+			.min(2, t('validation.firstName.min'))
+			.max(30, t('validation.firstName.max')),
+		lastName: z
+			.string()
+			.min(2, t('validation.lastName.min'))
+			.max(40, t('validation.lastName.max')),
 		birthDate: z.string().optional(),
 		sex: z.number(),
-		bio: z.string().optional(),
+		bio: z.string().max(1000, t('validation.bio.max')).optional(),
 		countryId: z.number().optional(),
 		cityId: z.number().optional(),
 		visitedCityIds: z.array(z.number()).optional(),
 		visitedCountryIds: z.array(z.number()).optional(),
 	});
 
-export const getForgotPasswordFormSchema = (t: (key: string) => string) =>
+export const getForgotPasswordFormSchema = (t: TranslationFunction) =>
 	z.object({
 		email: z.string().email(t('validation.email')),
 	});
@@ -141,8 +160,8 @@ export const getResetPasswordFormSchema = (t: TranslationFunction) =>
 		.object({
 			email: z.string().email(t('validation.email')),
 			token: z.string().min(1, t('validation.required', { field: 'Token' })),
-			newPassword: z.string().min(8, t('validation.password.min')),
-			confirmPassword: z.string().min(8, t('validation.password.min')),
+			newPassword: passwordValidation(t),
+			confirmPassword: passwordValidation(t),
 		})
 		.refine(data => data.newPassword === data.confirmPassword, {
 			message: t('validation.passwordsMatch'),
@@ -152,6 +171,8 @@ export const getResetPasswordFormSchema = (t: TranslationFunction) =>
 export type registrationValues = z.infer<
 	ReturnType<typeof getRegistrationSchema>
 >;
+
+export type loginFormValues = z.infer<ReturnType<typeof getLoginFormSchema>>;
 
 export type PostFormValues = z.infer<ReturnType<typeof getPostFormSchema>>;
 export type CategoryFormValues = z.infer<

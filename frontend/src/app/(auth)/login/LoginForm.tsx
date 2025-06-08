@@ -19,23 +19,29 @@ import { signIn } from 'next-auth/react';
 import GoogleButton from './GoogleButton';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import { getLoginFormSchema, loginFormValues } from '@/lib/validation';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export default function LoginForm() {
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
 	const [isLoading, setIsLoading] = useState(false);
 	const router = useRouter();
 	const { t } = useTranslation();
+	const form = useForm<loginFormValues>({
+		resolver: zodResolver(getLoginFormSchema(t)),
+		defaultValues: {
+			email: '',
+			password: '',
+		},
+	});
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
+	const onSubmit = async (data: { email: string; password: string }) => {
 		setIsLoading(true);
-
 		try {
 			const result = await signIn('credentials', {
 				redirect: false,
-				email,
-				password,
+				email: data.email,
+				password: data.password,
 				callbackUrl: '/',
 			});
 
@@ -58,7 +64,7 @@ export default function LoginForm() {
 				<CardTitle className='text-2xl font-bold'>{t('auth.login')}</CardTitle>
 				<CardDescription>{t('auth.loginTitle')}</CardDescription>
 			</CardHeader>
-			<form onSubmit={handleSubmit}>
+			<form onSubmit={form.handleSubmit(onSubmit)}>
 				<CardContent className='space-y-4'>
 					<div className='space-y-2'>
 						<Label htmlFor='email'>{t('auth.email')}</Label>
@@ -66,10 +72,13 @@ export default function LoginForm() {
 							id='email'
 							type='email'
 							placeholder='name@example.com'
-							value={email}
-							onChange={e => setEmail(e.target.value)}
-							required
+							{...form.register('email')}
 						/>
+						{form.formState.errors.email && (
+							<p className='text-sm text-destructive'>
+								{form.formState.errors.email.message}
+							</p>
+						)}
 					</div>
 					<div className='space-y-2'>
 						<div className='flex items-center justify-between'>
@@ -86,10 +95,13 @@ export default function LoginForm() {
 						<Input
 							id='password'
 							type='password'
-							value={password}
-							onChange={e => setPassword(e.target.value)}
-							required
+							{...form.register('password')}
 						/>
+						{form.formState.errors.password && (
+							<p className='text-sm text-destructive'>
+								{form.formState.errors.password.message}
+							</p>
+						)}
 					</div>
 				</CardContent>
 				<CardFooter className='mt-5 flex flex-col'>

@@ -79,6 +79,7 @@ export function CommentsAction({
 								value={editingContent}
 								onChange={e => setEditingContent(e.target.value)}
 								className='min-h-[100px]'
+								maxLength={1000}
 							/>
 						</div>
 						<DialogFooter>

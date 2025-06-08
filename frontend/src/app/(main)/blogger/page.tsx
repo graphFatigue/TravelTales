@@ -1,11 +1,11 @@
 import { Suspense } from 'react';
 import BloggersPage from './BloggersPage';
 
-// export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
-// export const generateStaticParams = () => {
-// 	return [];
-// };
+export const generateStaticParams = () => {
+	return [];
+};
 
 export default function Page() {
 	return (

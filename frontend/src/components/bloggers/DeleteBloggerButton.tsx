@@ -1,8 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import api from '@/lib/api/api';
 import { toast } from 'sonner';
 import ConfirmationDialog from '../ConfirmationDialog';
+import { redirect } from 'next/navigation';
 
 interface DeleteBloggerButtonProps {
 	bloggerId: number;
@@ -10,6 +11,7 @@ interface DeleteBloggerButtonProps {
 
 export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 	const queryClient = useQueryClient();
+	const { data: session } = useSession();
 
 	const deleteBloggerMutation = useMutation({
 		mutationFn: async () => {
@@ -18,9 +20,8 @@ export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 		onSuccess: async () => {
 			await queryClient.removeQueries({ queryKey: ['blogger', bloggerId] });
 
-			await signOut({ callbackUrl: '/' });
-
 			queryClient.invalidateQueries({ queryKey: ['bloggers'] });
+			queryClient.invalidateQueries({ queryKey: ['users'] });
 		},
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		onError: (error: any) => {
@@ -29,8 +30,14 @@ export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 		},
 	});
 
-	const handleDelete = () => {
+	const handleDelete = async () => {
 		deleteBloggerMutation.mutate();
+
+		if (session?.user?.blogger?.id === bloggerId) {
+			await signOut({ callbackUrl: '/' });
+		} else {
+			redirect('/');
+		}
 	};
 
 	return (

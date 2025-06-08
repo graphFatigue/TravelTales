@@ -91,138 +91,114 @@ namespace TravelTales.Application.Services
 
         public async Task DeleteUserAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            // 1. Load user with its Blogger navigation
-            var user = await this.unitOfWork
+            var user = await unitOfWork
                 .GetRepository<IUserRepository>()
                 .GetByIdFullAsync(id, cancellationToken);
 
-            if (user is null)
-            {
-                throw new NotFoundException($"User with ID {id} was not found.");
-            }
+            if (user is null) throw new NotFoundException($"User with ID {id} was not found.");
 
             var blogger = user.Blogger;
             if (blogger != null)
             {
-                // 2. Delete all posts by this blogger, including their children (notifications, comments, likes, attachments, categories)
-                var postRepo = this.unitOfWork.GetRepository<IPostRepository>();
-                var commentRepo = this.unitOfWork.GetRepository<ICommentRepository>();
-                var likeRepo = this.unitOfWork.GetRepository<ILikeRepository>();
-                var notificationRepo = this.unitOfWork.GetRepository<INotificationRepository>();
-                var attachmentRepo = this.unitOfWork.GetRepository<IAttachmentRepository>();
+                // 1. Delete notifications related to blogger
+                var notificationRepo = unitOfWork.GetRepository<INotificationRepository>();
+                var notifications = await notificationRepo.GetAllAsync(n =>
+                    n.TriggeredByBloggerId == blogger.Id ||
+                    n.RecipientBloggerId == blogger.Id,
+                    cancellationToken);
 
+                foreach (var notification in notifications)
+                {
+                    notificationRepo.Delete(notification);
+                }
+
+                // 2. Delete all likes by blogger
+                var likeRepo = unitOfWork.GetRepository<ILikeRepository>();
+                var bloggerLikes = await likeRepo.GetAllAsync(l => l.BloggerId == blogger.Id, cancellationToken);
+                foreach (var like in bloggerLikes)
+                {
+                    await likeRepo.RemoveLikeAsync(like);
+                }
+
+                // 3. Process each post
+                var postRepo = unitOfWork.GetRepository<IPostRepository>();
                 var posts = await postRepo.GetAllAsync(p => p.BloggerId == blogger.Id, cancellationToken);
 
                 foreach (var post in posts)
                 {
-                    // 2a. Delete notifications for this post
-                    var notificationsForPost = await notificationRepo.GetAllAsync(n => n.PostId == post.Id, cancellationToken);
-                    foreach (var notification in notificationsForPost)
+                    // 3a. Delete notifications for this post
+                    var postNotifications = await notificationRepo.GetAllAsync(n => n.PostId == post.Id, cancellationToken);
+                    foreach (var notification in postNotifications)
                     {
                         notificationRepo.Delete(notification);
                     }
 
-                    // 2b. Delete all comments on this post (and their notifications)
+                    // 3b. Delete comments and their notifications
+                    var commentRepo = unitOfWork.GetRepository<ICommentRepository>();
                     var comments = await commentRepo.GetAllAsync(c => c.PostId == post.Id, cancellationToken);
                     foreach (var comment in comments)
                     {
-                        // delete notifications for this comment
-                        var notificationsForComment = await notificationRepo.GetAllAsync(n => n.CommentId == comment.Id, cancellationToken);
-                        foreach (var notification in notificationsForComment)
+                        var commentNotifications = await notificationRepo.GetAllAsync(n => n.CommentId == comment.Id, cancellationToken);
+                        foreach (var notification in commentNotifications)
                         {
                             notificationRepo.Delete(notification);
                         }
-
                         commentRepo.Delete(comment);
                     }
 
-                    // 2c. Delete all likes on this post (and their notifications)
-                    var likes = await likeRepo.GetLikesByPostIdAsync(post.Id, cancellationToken);
-                    foreach (var like in likes)
+                    // 3c. Delete likes on this post
+                    var postLikes = await likeRepo.GetLikesByPostIdAsync(post.Id, cancellationToken);
+                    foreach (var like in postLikes)
                     {
-                        var notificationsForLike = await notificationRepo.GetAllAsync(n => n.LikeId == like.Id, cancellationToken);
-                        foreach (var notification in notificationsForLike)
+                        var likeNotifications = await notificationRepo.GetAllAsync(n => n.LikeId == like.Id, cancellationToken);
+                        foreach (var notification in likeNotifications)
                         {
                             notificationRepo.Delete(notification);
                         }
-
                         await likeRepo.RemoveLikeAsync(like);
                     }
 
-                    // 2d. Clear category‐join entries for this post (so the join‐table rows are removed)
-                    var postWithCategories = await postRepo.GetByIdFullAsync(post.Id, cancellationToken);
-                    if (postWithCategories.Categories != null && postWithCategories.Categories.Any())
-                    {
-                        postWithCategories.Categories.Clear();
-                    }
-
-                    // 2e. Delete all attachments for this post
+                    // 3d. Delete attachments
+                    var attachmentRepo = unitOfWork.GetRepository<IAttachmentRepository>();
                     var attachments = await attachmentRepo.GetAllAsync(a => a.PostId == post.Id, cancellationToken);
                     foreach (var attachment in attachments)
                     {
                         attachmentRepo.Delete(attachment);
                     }
 
-                    // 2f. Finally, delete the post itself
+                    // 3e. Clear categories
+                    var postWithCategories = await postRepo.GetByIdFullAsync(post.Id, cancellationToken);
+                    postWithCategories.Categories.Clear();
+
+                    // 3f. Delete post
                     postRepo.Delete(post);
                 }
 
-                // 3. Delete any notifications where the blogger was either recipient or triggerer
-                //    (e.g. if someone liked/commented on their post, or if they triggered a notification somewhere else)
-                var notificationsByTrigger = await notificationRepo.GetAllAsync(n => n.TriggeredByBloggerId == blogger.Id, cancellationToken);
-                foreach (var notification in notificationsByTrigger)
+                // 4. Delete follower/following relationships
+                var followRepo = unitOfWork.GetRepository<IBloggerFollowRepository>();
+                var follows = await followRepo.GetAllAsync(f =>
+                    f.FollowerId == blogger.Id ||
+                    f.FollowingId == blogger.Id,
+                    cancellationToken);
+
+                foreach (var follow in follows)
                 {
-                    notificationRepo.Delete(notification);
+                    followRepo.Delete(follow);
                 }
 
-                var notificationsByRecipient = await notificationRepo.GetAllAsync(n => n.RecipientBloggerId == blogger.Id, cancellationToken);
-                foreach (var notification in notificationsByRecipient)
-                {
-                    notificationRepo.Delete(notification);
-                }
-
-                // 4. Delete all follower/following relationships
-                var followRepo = this.unitOfWork.GetRepository<IBloggerFollowRepository>();
-                var followers = await followRepo.GetAllAsync(f => f.FollowingId == blogger.Id, cancellationToken);
-                foreach (var follower in followers)
-                {
-                    followRepo.Delete(follower);
-                }
-
-                var following = await followRepo.GetAllAsync(f => f.FollowerId == blogger.Id, cancellationToken);
-                foreach (var followRelation in following)
-                {
-                    followRepo.Delete(followRelation);
-                }
-
-                // 5. Delete all block relationships
-                //var blockRepo = this.unitOfWork.GetRepository<IBloggerBlockRepository>();
-                //var blocked = await blockRepo.GetAllAsync(b => b.BlockerId == blogger.Id, cancellationToken);
-                //foreach (var block in blocked)
-                //{
-                //    blockRepo.Delete(block);
-                //}
-
-                //var blockedBy = await blockRepo.GetAllAsync(b => b.BlockedId == blogger.Id, cancellationToken);
-                //foreach (var blockRelation in blockedBy)
-                //{
-                //    blockRepo.Delete(blockRelation);
-                //}
-
-                // 6. Clear “visited cities” and “visited countries” (many‐to‐many join tables)
-                //    EF Core will remove join‐table entries automatically when you clear these collections.
+                // 5. Clear visited cities/countries
                 blogger.VisitedCities.Clear();
                 blogger.VisitedCountries.Clear();
 
-                // 7. Delete the blogger record itself
-                this.unitOfWork.GetRepository<IBloggerRepository>().Delete(blogger);
+                // 6. Delete blogger
+                unitOfWork.GetRepository<IBloggerRepository>().Delete(blogger);
             }
 
-            // 8. Delete the user record
-            this.unitOfWork.GetRepository<IUserRepository>().Delete(user);
+            // 7. Delete user
+            unitOfWork.GetRepository<IUserRepository>().Delete(user);
 
-            // 9. Save everything in one transaction
-            await this.unitOfWork.SaveChangesAsync(cancellationToken);
+            // 8. Save all changes
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
 
         // Add helper method to clone SieveModel

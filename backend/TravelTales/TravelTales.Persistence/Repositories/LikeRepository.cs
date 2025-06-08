@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
 
@@ -51,6 +52,15 @@ namespace TravelTales.Persistence.Repositories
                 context.PostLikes.Remove(like);
                 await context.SaveChangesAsync();
             }
+        }
+
+        public async Task<List<PostLike>> GetAllAsync(Expression<Func<PostLike, bool>> predicate, CancellationToken cancellationToken = default)
+        {
+            if (predicate != null)
+            {
+                return await context.PostLikes.Where(predicate).ToListAsync(cancellationToken);
+            }
+            return await this.context.PostLikes.ToListAsync(cancellationToken);
         }
 
         public async Task<List<PostLike>> GetLikesByPostIdAsync(long postId, CancellationToken cancellationToken = default)

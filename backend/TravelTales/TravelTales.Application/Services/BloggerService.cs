@@ -26,6 +26,7 @@ namespace TravelTales.Application.Services
         private readonly IValidator<UpdateBloggerDto> updateBloggerDtoValidator;
         private readonly IContextAccessor contextAccessor;
         private readonly IStorageService blobStorageService;
+        private readonly IUserService userService;
 
         public BloggerService(
             IUnitOfWork unitOfWork,
@@ -33,7 +34,8 @@ namespace TravelTales.Application.Services
             IValidator<CreateBloggerDto> createBloggerDtoValidator,
             IValidator<UpdateBloggerDto> updateBloggerDtoValidator,
             IContextAccessor contextAccessor,
-            IStorageService blobStorageService)
+            IStorageService blobStorageService,
+            IUserService userService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
@@ -41,6 +43,7 @@ namespace TravelTales.Application.Services
             this.updateBloggerDtoValidator = updateBloggerDtoValidator;
             this.contextAccessor = contextAccessor;
             this.blobStorageService = blobStorageService;
+            this.userService = userService;
         }
 
         public async Task<BloggerDto> CreateBloggerAsync(CreateBloggerDto createBloggerDto, CancellationToken cancellationToken = default)
@@ -54,20 +57,23 @@ namespace TravelTales.Application.Services
             return this.mapper.Map<BloggerDto>(blogger);
         }
 
-        public async Task DeleteBloggerAsync(long id, CancellationToken cancellationToken = default)
+        public async Task DeleteBloggerAsync(long bloggerId, CancellationToken cancellationToken = default)
         {
-            var blogger = await this.unitOfWork
-                .GetRepository<IBloggerRepository>()
-                .GetByIdAsync(id, cancellationToken);
+            var bloggerRepo = unitOfWork.GetRepository<IBloggerRepository>();
+            var blogger = await bloggerRepo
+                .AsQueryable()
+                .Include(b => b.User)
+                .FirstOrDefaultAsync(b => b.Id == bloggerId && !b.IsDeleted, cancellationToken);
+
             if (blogger is null)
-            {
-                throw new NotFoundException($"Blogger with ID {id} was not found.");
-            }
+                throw new NotFoundException($"Blogger with ID {bloggerId} was not found.");
 
-            await this.EnsureUserCanDeleteBloggerAsync(blogger);
+            await EnsureUserCanDeleteBloggerAsync(blogger);
 
-            this.unitOfWork.GetRepository<IBloggerRepository>().Delete(blogger);
-            await this.unitOfWork.SaveChangesAsync(cancellationToken);
+            if (blogger.User is null)
+                throw new NotFoundException("User associated with the blogger not found.");
+
+            await userService.DeleteUserAsync(blogger.User.Id, cancellationToken);
         }
 
         public async Task<long> GetCurrentBloggerId(CancellationToken cancellationToken = default)

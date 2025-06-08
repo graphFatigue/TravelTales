@@ -38,7 +38,7 @@ export const getRegistrationSchema = (t: TranslationFunction) =>
 			),
 	});
 
-export const getPostFormSchema = (t: (key: string) => string) =>
+export const getPostFormSchema = (t: TranslationFunction) =>
 	z.object({
 		title: z
 			.string()
@@ -67,7 +67,28 @@ export const getPostFormSchema = (t: (key: string) => string) =>
 			.array(
 				z.object({
 					number: z.number().int().positive(),
-					file: z.instanceof(File).optional(),
+					file: z
+						.instanceof(File)
+						.optional()
+						.refine(file => !file || file.size <= 2 * 1024 * 1024, {
+							message: t('validation.attachments.fileSize', { maxSize: 2 }),
+						})
+						.refine(
+							file => {
+								if (!file) return true;
+								const validTypes = [
+									'image/jpeg',
+									'image/png',
+									'image/avi',
+									'video/mp4',
+									'video/mov',
+								];
+								return validTypes.includes(file.type);
+							},
+							{
+								message: t('validation.attachments.fileType'),
+							},
+						),
 					previewUrl: z.string().optional(),
 					id: z.number().int().positive().optional(),
 					type: z.string().optional(),
@@ -128,7 +149,9 @@ export const getResetPasswordFormSchema = (t: TranslationFunction) =>
 			path: ['confirmPassword'],
 		});
 
-export type registrationValues = z.infer<ReturnType<typeof getRegistrationSchema>>;
+export type registrationValues = z.infer<
+	ReturnType<typeof getRegistrationSchema>
+>;
 
 export type PostFormValues = z.infer<ReturnType<typeof getPostFormSchema>>;
 export type CategoryFormValues = z.infer<

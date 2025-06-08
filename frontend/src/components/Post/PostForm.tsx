@@ -84,18 +84,6 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 			const file = e.target.files?.[0];
 			if (!file) return;
 
-			const validTypes = [
-				'image/jpeg',
-				'image/png',
-				'image/avi',
-				'video/mp4',
-				'video/mov',
-			];
-			if (!validTypes.includes(file.type)) {
-				toast.error(t('post.typeError'));
-				return;
-			}
-
 			const reader = new FileReader();
 			reader.onloadend = () => {
 				const updatedAttachments = [...(currentAttachments || [])];
@@ -110,7 +98,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 			};
 			reader.readAsDataURL(file);
 		},
-		[currentAttachments, setValue, t],
+		[currentAttachments, setValue],
 	);
 
 	const addAttachmentField = () => {
@@ -126,6 +114,7 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 		setValue(
 			'attachments',
 			updatedAttachments.map((a, i) => ({ ...a, number: i + 1 })),
+			{ shouldValidate: true },
 		);
 	};
 
@@ -426,56 +415,65 @@ export function PostForm({ post, isEditing = false }: PostFormProps) {
 						<FormLabel>{t('post.attachments')}</FormLabel>
 						<div className='space-y-4'>
 							{currentAttachments?.map((attachment, index) => (
-								<div key={index} className='flex items-center gap-4'>
-									<input
-										type='file'
-										id={`attachment-${index}`}
-										className='hidden'
-										onChange={e => handleFileChange(e, index)}
-									/>
-									<label
-										htmlFor={`attachment-${index}`}
-										className='flex-1 cursor-pointer rounded-md border p-4 hover:bg-accent'
-									>
-										{attachment.previewUrl ? (
-											<div className='relative h-40 w-full'>
-												{attachment.type === 'video' ? (
-													<video
-														controls
-														className='h-full w-full object-contain'
-													>
-														<source
+								<div key={index || attachment.id}>
+									<div className='flex items-center gap-4'>
+										<input
+											type='file'
+											id={`attachment-${index}`}
+											className='hidden'
+											onChange={e => handleFileChange(e, index)}
+											accept='image/jpeg, image/png, video/mp4, video/mov'
+										/>
+										<label
+											htmlFor={`attachment-${index}`}
+											className='flex-1 cursor-pointer rounded-md border p-4 hover:bg-accent'
+										>
+											{attachment.previewUrl ? (
+												<div className='relative h-40 w-full'>
+													{attachment.type === 'video' ? (
+														<video
+															controls
+															className='h-full w-full object-contain'
+														>
+															<source
+																src={attachment.previewUrl}
+																type={attachment.file?.type}
+															/>
+														</video>
+													) : (
+														<Image
 															src={attachment.previewUrl}
-															type={attachment.file?.type}
+															alt={`Preview ${attachment.number}`}
+															fill
+															className='object-contain'
+															sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
 														/>
-													</video>
-												) : (
-													<Image
-														src={attachment.previewUrl}
-														alt={`Preview ${attachment.number}`}
-														fill
-														className='object-contain'
-														sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-													/>
-												)}
-											</div>
-										) : (
-											<div className='text-center text-muted-foreground'>
-												<Plus className='mx-auto h-8 w-8' />
-												<p>
-													{t('post.addAttachments')} {attachment.number}
-												</p>
-											</div>
-										)}
-									</label>
-									<Button
-										type='button'
-										variant='ghost'
-										size='icon'
-										onClick={() => removeAttachment(index)}
-									>
-										<Trash className='h-4 w-4 text-destructive' />
-									</Button>
+													)}
+												</div>
+											) : (
+												<div className='text-center text-muted-foreground'>
+													<Plus className='mx-auto h-8 w-8' />
+													<p>
+														{t('post.addAttachments')} {attachment.number}
+													</p>
+												</div>
+											)}
+										</label>
+
+										<Button
+											type='button'
+											variant='ghost'
+											size='icon'
+											onClick={() => removeAttachment(index)}
+										>
+											<Trash className='h-4 w-4 text-destructive' />
+										</Button>
+									</div>
+									{form.formState.errors.attachments?.[index]?.file && (
+										<p className='text-sm text-destructive'>
+											{form.formState.errors.attachments[index]?.file?.message}
+										</p>
+									)}
 								</div>
 							))}
 							<Button

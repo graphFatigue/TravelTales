@@ -47,7 +47,9 @@
 			"max": "Tag must be at most 30 characters"
 		},
 		"attachments": {
-			"max": "Maximum 10 attachments allowed"
+			"max": "Maximum 10 attachments allowed",
+			"fileSize": "File size must be less than {{maxSize}}MB",
+			"fileType": "Only JPEG, PNG, MP4, and MOV files are allowed"
 		},
 		"name": {
 			"required": "Name is required",

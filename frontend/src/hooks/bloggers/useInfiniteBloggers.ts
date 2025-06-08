@@ -26,7 +26,7 @@ export const useInfiniteBloggers = (pageSize = 6, searchTerm?: string) => {
 				params.filters = `(firstName|lastName|cityName|countryName)@=*${searchTerm}`;
 			}
 
-			const response = await api.get('/api/Blogger/filter', { params });
+			const response = await api.get('/api/Blogger/filter', { params: {...params, sorts: '-createdAt'} });
 			return response.data;
 		},
 		getNextPageParam: lastPage => {

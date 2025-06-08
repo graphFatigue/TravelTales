@@ -29,7 +29,7 @@ export function PostCardPreview({ post }: { post: Post }) {
 			? `${post.content.substring(0, 300)}...`
 			: post.content;
 
-	const {i18n } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const currentLanguage = i18n.language;
 
 	return (
@@ -61,7 +61,7 @@ export function PostCardPreview({ post }: { post: Post }) {
 					))}
 					{remainingCategories > 0 && (
 						<Badge variant='outline' className='bg-purple-50 text-purple-800'>
-							+{remainingCategories} more
+							+{remainingCategories} {t('common.more')}
 						</Badge>
 					)}
 
@@ -96,7 +96,7 @@ export function PostCardPreview({ post }: { post: Post }) {
 					))}
 					{remainingTags > 0 && (
 						<Badge variant='outline' className='bg-gray-50 text-gray-700'>
-							+{remainingTags} more
+							+{remainingTags} {t('common.more')}
 						</Badge>
 					)}
 				</div>
@@ -111,7 +111,7 @@ export function PostCardPreview({ post }: { post: Post }) {
 								href={`/post/${post.id}`}
 								className='display-inline text-sm text-primary hover:underline'
 							>
-								read more
+								{t('post.readMore')}
 							</Link>
 						)}
 					</p>
@@ -127,7 +127,7 @@ export function PostCardPreview({ post }: { post: Post }) {
 						{remainingAttachments > 0 && (
 							<div className='relative flex h-[90px] min-w-[160px] flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-gray-100'>
 								<span className='font-medium text-gray-600'>
-									+{remainingAttachments} more
+									+{remainingAttachments} {t('common.more')}
 								</span>
 							</div>
 						)}
@@ -136,7 +136,7 @@ export function PostCardPreview({ post }: { post: Post }) {
 
 				<div className='mt-4 flex items-center space-x-2 text-sm text-muted-foreground'>
 					<Calendar className='h-4 w-4' />
-					<span>Posted: {formatDate(post.createdAt)}</span>
+					<span>{t('post.postedOn')}: {formatDate(post.createdAt, currentLanguage)}</span>
 				</div>
 			</CardContent>
 

@@ -27,14 +27,14 @@ export function PostCard() {
 	const { data: blogger } = useBlogger(post?.bloggerId, {
 		initialData: post?.blogger,
 	});
-	const { i18n } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const currentLanguage = i18n.language;
 
 	if (isLoading) return <PostLoader />;
 
 	if (!post) return notFound();
 
-	if (error || !blogger) return <div>Oops...</div>;
+	if (error || !blogger) return <div>{t('errors.unexpectedError')}</div>;
 	const bloggerName = `${blogger?.firstName} ${blogger?.lastName}`;
 
 	return (
@@ -45,15 +45,18 @@ export function PostCard() {
 						<h2 className='text-2xl font-bold'>{post.title}</h2>
 						<div className='flex items-center space-x-2 text-sm text-muted-foreground'>
 							<Calendar className='h-4 w-4' />
-							<span>Posted: {formatDate(post.createdAt)}</span>
+							<span>
+								{t('post.postedOn')}:{' '}
+								{formatDate(post.createdAt, currentLanguage)}
+							</span>
 						</div>
 					</div>
 
 					{post.budget !== undefined && <BudgetIndicator level={post.budget} />}
 				</div>
 
-				<div className='flex w-full items-center justify-between'>
-					<div className='flex items-center space-x-3'>
+				<div className='flex items-center justify-between'>
+					<div className='flex items-center gap-3'>
 						<UserAvatar size={50} avatarUrl={blogger.image} />
 						<div>
 							<p
@@ -70,7 +73,7 @@ export function PostCard() {
 								className='rounded-full bg-primary px-5 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90'
 								onClick={() => redirect(`/post/${post.id}/edit`)}
 							>
-								Edit
+								{t('common.edit')}
 							</Button>
 						)}
 

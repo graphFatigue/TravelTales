@@ -22,6 +22,15 @@ import {
 	getForgotPasswordFormSchema,
 } from '@/lib/validation';
 import { useTranslation } from 'react-i18next';
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
+import { X } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
 	const { t } = useTranslation();
@@ -35,10 +44,10 @@ export default function ForgotPasswordPage() {
 	const mutation = useMutation({
 		mutationFn: (email: string) => authService.forgotPassword(email),
 		onSuccess: () => {
-			toast.success('Email sent successfully');
+			toast.success(t('auth.resetPassword.emailSent'));
 		},
 		onError: (error: any) => {
-			toast.error(error.message || 'Failed to send reset email');
+			toast.error(error.message || t('auth.resetPassword.emailError'));
 		},
 	});
 
@@ -47,51 +56,45 @@ export default function ForgotPasswordPage() {
 	};
 
 	return (
-		<div className='flex min-h-screen items-center justify-center p-4'>
-			<div className='w-full max-w-md space-y-8 rounded-lg border p-6 shadow-lg'>
-				<div className='text-center'>
-					<h1 className='text-2xl font-bold'>Forgot Password</h1>
-					<p className='mt-2 text-sm text-muted-foreground'>
-						Enter your email to receive a password reset link
-					</p>
-				</div>
+		<div className='flex min-h-[80vh] items-center justify-center'>
+			<Card className='relative w-full max-w-md'>
+				<Link href={'/login'} className='absolute right-5 top-5'>
+					<X />
+				</Link>
+				<CardHeader>
+					<CardTitle>{t('auth.resetPassword.title')}</CardTitle>
+					<CardDescription>
+						{t('auth.resetPassword.description')}
+					</CardDescription>
+				</CardHeader>
 
 				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
-						<FormField
-							control={form.control}
-							name='email'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Email</FormLabel>
-									<FormControl>
-										<Input
-											placeholder='your@email.com'
-											type='email'
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
-						<Button
-							type='submit'
-							className='w-full'
-							disabled={mutation.isPending}
-						>
-							{mutation.isPending ? 'Sending...' : 'Send Reset Link'}
-						</Button>
+					<form onSubmit={form.handleSubmit(onSubmit)}>
+						<CardContent>
+							<FormField
+								control={form.control}
+								name='email'
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel>{t('auth.email')}</FormLabel>
+										<FormControl>
+											<Input type='email' {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</CardContent>
+						<CardFooter className='flex justify-between'>
+							<Button type='submit' disabled={mutation.isPending}>
+								{mutation.isPending
+									? t('common.loading')
+									: t('auth.resetPassword.submit')}
+							</Button>
+						</CardFooter>
 					</form>
 				</Form>
-
-				<div className='text-center text-sm'>
-					<Link href='/login' className='text-primary hover:underline'>
-						Back to login
-					</Link>
-				</div>
-			</div>
+			</Card>
 		</div>
 	);
 }

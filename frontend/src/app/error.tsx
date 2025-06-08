@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 export default function GlobalError({
 	error,
@@ -10,6 +11,8 @@ export default function GlobalError({
 	error: Error;
 	reset: () => void;
 }) {
+	const { t } = useTranslation();
+
 	useEffect(() => {
 		console.error(error);
 	}, [error]);
@@ -17,23 +20,23 @@ export default function GlobalError({
 	return (
 		<div className='flex min-h-screen flex-col items-center justify-center bg-white px-6'>
 			<h1 className='mb-4 text-5xl font-bold text-red-500'>
-				Oops... Something went wrong
+				{t('errors.unexpectedError')}
 			</h1>
 			<p className='mb-6 max-w-md text-center text-lg text-gray-600'>
-				An unexpected error occurred. Please try again later.
+				{t('errors.unexpectedErrorDescription')}
 			</p>
 			<div className='flex space-x-4'>
 				<button
 					onClick={() => reset()}
 					className='rounded-lg border-2 border-primary bg-secondary px-6 py-3 text-lg text-primary transition hover:bg-secondary/80 hover:text-primary/80'
 				>
-					Try Again
+					{t('common.tryAgain')}
 				</button>
 				<Link
 					href='/'
 					className='rounded-lg bg-primary px-6 py-3 text-lg text-white transition hover:bg-primary/80'
 				>
-					Go Home
+					{t('common.goHome')}
 				</Link>
 			</div>
 		</div>

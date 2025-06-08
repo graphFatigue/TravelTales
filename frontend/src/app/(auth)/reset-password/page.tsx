@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useMutation } from '@tanstack/react-query';
-import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { authService } from '@/lib/api/auth';
@@ -27,10 +26,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { getResetPasswordFormSchema, ResetPasswordValues } from '@/lib/validation';
+import {
+	getResetPasswordFormSchema,
+	ResetPasswordValues,
+} from '@/lib/validation';
 import { useTranslation } from 'react-i18next';
-
-
 
 export default function ResetPasswordPage() {
 	const router = useRouter();
@@ -60,20 +60,15 @@ export default function ResetPasswordPage() {
 		mutationFn: (data: { email: string; token: string; newPassword: string }) =>
 			authService.resetPassword(data.email, data.token, data.newPassword),
 		onSuccess: () => {
-			toast.success('Password reset successfully');
+			toast.success(t('auth.resetPassword.success'));
 			router.push('/login');
 		},
 		onError: (error: any) => {
-			toast.error(error.message || 'Failed to reset password');
+			toast.error(error.message || t('auth.resetPassword.error'));
 		},
 	});
 
-    const onSubmit = (values: ResetPasswordValues) => {
-        console.log({
-					email: values.email,
-					token: values.token,
-					newPassword: values.newPassword,
-				});
+	const onSubmit = (values: ResetPasswordValues) => {
 		mutation.mutate({
 			email: values.email,
 			token: values.token,
@@ -83,70 +78,54 @@ export default function ResetPasswordPage() {
 
 	return (
 		<div className='flex min-h-[80vh] items-center justify-center'>
-			<Card className='relative w-full max-w-md'>
+			<Card className='w-full max-w-md'>
 				<CardHeader>
-					<CardTitle>Reset Password</CardTitle>
+					<CardTitle>{t('auth.resetPassword.title')}</CardTitle>
 					<CardDescription>
-						Enter your email to receive a password reset link
+						{t('auth.resetPassword.description')}
 					</CardDescription>
 				</CardHeader>
-				<CardContent>
-					<Form {...form}>
-						<form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+				<Form {...form}>
+					<form onSubmit={form.handleSubmit(onSubmit)}>
+						<CardContent className='space-y-4'>
 							<FormField
 								control={form.control}
 								name='newPassword'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>New Password</FormLabel>
+										<FormLabel>{t('auth.resetPassword.newPassword')}</FormLabel>
 										<FormControl>
-											<Input
-												placeholder='••••••••'
-												type='password'
-												{...field}
-											/>
+											<Input type='password' {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
-
 							<FormField
 								control={form.control}
 								name='confirmPassword'
 								render={({ field }) => (
 									<FormItem>
-										<FormLabel>Confirm Password</FormLabel>
+										<FormLabel>
+											{t('auth.resetPassword.confirmPassword')}
+										</FormLabel>
 										<FormControl>
-											<Input
-												placeholder='••••••••'
-												type='password'
-												{...field}
-											/>
+											<Input type='password' {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
-
-							<Button
-								type='submit'
-								className='w-full'
-								disabled={mutation.isPending}
-							>
-								{mutation.isPending ? 'Resetting...' : 'Reset Password'}
+						</CardContent>
+						<CardFooter className='flex justify-between'>
+							<Button type='submit' disabled={mutation.isPending}>
+								{mutation.isPending
+									? t('common.loading')
+									: t('auth.resetPassword.submit')}
 							</Button>
-						</form>
-					</Form>
-				</CardContent>
-
-				<CardFooter>
-					<div className='text-center text-sm'>
-						<Link href='/login' className='text-primary hover:underline'>
-							Back to login
-						</Link>
-					</div>
-				</CardFooter>
+						</CardFooter>
+					</form>
+				</Form>
 			</Card>
 		</div>
 	);

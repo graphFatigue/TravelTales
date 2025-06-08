@@ -8,7 +8,13 @@
 		"loading": "Loading...",
 		"save": "Save",
 		"search": "Search",
-		"reset": "Reset"
+		"reset": "Reset",
+		"tryAgain": "Try Again",
+		"goHome": "Go Home",
+		"error": "Error",
+		"success": "Success",
+		"more": "more",
+		"view": "View"
 	},
 	"validation": {
 		"required": "{{field}} is required",
@@ -25,16 +31,16 @@
 			"max": "First name must be at most 30 characters"
 		},
 		"lastName": {
+			"min": "Last name must be at least 2 characters",
+			"max": "Last name must be at most 40 characters"
+		},
+		"password": {
 			"min": "Password must be at least 6 characters",
-			"max": "Password must be less than 100 characters",
+			"max": "Password must be at most 100 characters",
 			"uppercase": "Password must contain at least one uppercase letter",
 			"lowercase": "Password must contain at least one lowercase letter",
 			"number": "Password must contain at least one number",
 			"special": "Password must contain at least one special character"
-		},
-		"password": {
-			"min": "Password must be at least 6 characters",
-			"max": "Password must be at most 100 characters"
 		},
 		"title": {
 			"required": "Title is required",
@@ -74,7 +80,7 @@
 		"loginTitle": "Enter your email and password to access your account",
 		"email": "Email",
 		"password": "Password",
-		"logginError": "Login failed",
+		"loginError": "Login failed",
 		"loginSuccess": "You have successfully logged in",
 		"signupSuccess": "You've successfully registered.",
 		"forgotPassword": "Forgot password?",
@@ -87,7 +93,18 @@
 		"passwordDescription": "Password must be at least 6 characters long",
 		"OR": "OR",
 		"loggingin": "Logging in...",
-		"signuping": "Signing up..."
+		"signuping": "Signing up...",
+		"resetPassword": {
+			"title": "Reset Password",
+			"description": "Enter your new password",
+			"newPassword": "New Password",
+			"confirmPassword": "Confirm Password",
+			"submit": "Reset Password",
+			"success": "Password reset successfully",
+			"error": "Failed to reset password",
+			"emailSent": "Email sent successfully",
+			"emailError": "Failed to send reset email"
+		}
 	},
 	"dashboard": {
 		"home": "Home",
@@ -137,7 +154,13 @@
 		"selectCountry": "Select country",
 		"city": "City",
 		"selectCity": "Select city",
-		"budget": "Budget Level",
+		"budget": {
+			"low": "0 - 100",
+			"medium": "100 - 500",
+			"high": "500 - 2000",
+			"veryHigh": "2000 - 5000",
+			"luxury": "5000+"
+		},
 		"selectBudget": "Select budget level",
 		"tags": "Tags",
 		"addTags": "Add tags (press Enter or Space to add)",
@@ -150,7 +173,7 @@
 		"selectBudgets": "Select budgets...",
 		"selectCountries": "Select countries...",
 		"selectCities": "Select cities...",
-		"delete": "Delete",
+		"delete": "Delete Post",
 		"deleteConfirm": "Delete Post?",
 		"deleteDescription": "Are you sure you want to delete this post? This action cannot be undone.",
 		"attachments": "Attachments",
@@ -162,9 +185,12 @@
 		"updateError": "Failed to update post",
 		"createError": "Failed to create post",
 		"deleteSuccess": "Post deleted successfully",
-		"deleteError": "Failed to delete post"
+		"deleteError": "Failed to delete post",
+		"readMore": "read more",
+		"postedOn": "Posted"
 	},
 	"comments": {
+		"title": "comments",
 		"noCommentsYet": "No comments yet. Be the first to comment!",
 		"addComment": "Add a comment",
 		"placeholder": "Share your thoughts...",
@@ -209,5 +235,14 @@
 		"totalComments": "Total Comments",
 		"allTimeComments": "All-time received comments",
 		"mostPopularPost": "Most Popular Post"
+	},
+	"errors": {
+		"unexpectedError": "Oops... Something went wrong",
+		"unexpectedErrorDescription": "An unexpected error occurred. Please try again later.",
+		"contextError": "{{name}} must be used within a {{provider}}"
+	},
+	"language": {
+		"english": "English",
+		"ukrainian": "Ukrainian"
 	}
 }

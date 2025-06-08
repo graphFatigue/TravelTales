@@ -9,9 +9,11 @@ import RestrictedDialog from '../RestrictedDialog';
 import { useSession } from 'next-auth/react';
 import { useLikes } from '@/hooks/posts/useLikes';
 import { Post } from '@/types/types';
+import { useTranslation } from 'react-i18next';
 
 export function PostCardFooter({ post }: { post: Post }) {
 	const { data: session, status } = useSession();
+	const { t } = useTranslation();
 	const [openComments, setOpenComments] = useState(false);
 	const [openLikes, setOpenLikes] = useState(false);
 	const [commentsAmount, setCommentsAmount] = useState<number>(
@@ -29,7 +31,7 @@ export function PostCardFooter({ post }: { post: Post }) {
 		return (
 			<div className='m-5 flex items-center gap-5 space-x-2 text-muted-foreground'>
 				<Loader2 className='animate-spin' />
-				Loading...
+				{t('common.loading')}
 			</div>
 		);
 
@@ -63,7 +65,7 @@ export function PostCardFooter({ post }: { post: Post }) {
 					</Button>
 				</div>
 				<div className='text-base text-muted-foreground'>
-					{commentsAmount} comments
+					{commentsAmount} {t('comments.title')}
 				</div>
 			</div>
 			{openComments && <CommentsSection post={post} changeCommentsAmount={setCommentsAmount} />}

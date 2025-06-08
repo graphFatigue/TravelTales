@@ -115,11 +115,11 @@ namespace TravelTales.Application.Services
 
                 // 2. Delete all likes by blogger
                 var likeRepo = unitOfWork.GetRepository<ILikeRepository>();
-                //var bloggerLikes = await likeRepo.GetAllAsync(l => l.BloggerId == blogger.Id, cancellationToken);
-                //foreach (var like in bloggerLikes)
-                //{
-                //    await likeRepo.RemoveLikeAsync(like);
-                //}
+                var bloggerLikes = await likeRepo.GetAllAsync(l => l.BloggerId == blogger.Id, cancellationToken);
+                foreach (var like in bloggerLikes)
+                {
+                    await likeRepo.RemoveLikeAsync(like);
+                }
 
                 // 3. Process each post
                 var postRepo = unitOfWork.GetRepository<IPostRepository>();

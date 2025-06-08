@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Sieve.Models;
 using TravelTales.Application.DTOs.User;
 using TravelTales.Application.Exceptions;
@@ -114,11 +115,11 @@ namespace TravelTales.Application.Services
 
                 // 2. Delete all likes by blogger
                 var likeRepo = unitOfWork.GetRepository<ILikeRepository>();
-                var bloggerLikes = await likeRepo.GetAllAsync(l => l.BloggerId == blogger.Id, cancellationToken);
-                foreach (var like in bloggerLikes)
-                {
-                    await likeRepo.RemoveLikeAsync(like);
-                }
+                //var bloggerLikes = await likeRepo.GetAllAsync(l => l.BloggerId == blogger.Id, cancellationToken);
+                //foreach (var like in bloggerLikes)
+                //{
+                //    await likeRepo.RemoveLikeAsync(like);
+                //}
 
                 // 3. Process each post
                 var postRepo = unitOfWork.GetRepository<IPostRepository>();
@@ -245,6 +246,14 @@ namespace TravelTales.Application.Services
             }
 
             var result = await this.userManager.AddToRoleAsync(user, role.Name!);
+
+            if (roles.Any())
+            {
+                foreach (var roleToRemove in roles) { 
+                    await this.userManager.RemoveFromRoleAsync(user, roleToRemove!);
+                }
+            }
+            
             if (!result.Succeeded)
             {
                 throw new BusinessException($"Failed to assign role '{role.Name}' to the user.");

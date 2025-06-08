@@ -7,7 +7,7 @@ import { Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { BudgetIndicator } from '@/components/post/BudgetIndicator';
 import UserAvatar from '@/components/user/UserAvatar';
-import { redirect, useParams } from 'next/navigation';
+import { notFound, redirect, useParams } from 'next/navigation';
 import { formatDate } from '@/lib/utils';
 import PostAttachments from '@/components/post/PostAttachments';
 import { PostCardFooter } from '@/components/post/PostCardFooter';
@@ -32,9 +32,7 @@ export function PostCard() {
 
 	if (isLoading) return <PostLoader />;
 
-	if (error) return <div>Error loading post</div>;
-	if (!post) return <div>Post not found</div>;
-	if (!blogger) return <div>Blogger not found</div>;
+	if (error || !post || !blogger) return notFound();
 
 	const bloggerName = `${blogger?.firstName} ${blogger?.lastName}`;
 

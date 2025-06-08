@@ -9,7 +9,7 @@ export default async function RootLayout({
 }) {
     const session = await getServerSession(authOptions);
 
-    if (session?.role !== 'admin') {
+    if (session?.role !== 'Admin') {
         redirect('/');
     }
     return <>{children}</>;

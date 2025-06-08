@@ -25,6 +25,12 @@ const nextConfig: NextConfig = {
 	eslint: {
 		ignoreDuringBuilds: true,
 	},
+	staticPageGenerationTimeout: 60,
+	compiler: {
+		removeConsole: process.env.NODE_ENV === 'production',
+	},
+	poweredByHeader: false,
+	reactStrictMode: true,
 };
 
 export default nextConfig;

@@ -7,8 +7,9 @@ import { useInfiniteBloggers } from '@/hooks/bloggers/useInfiniteBloggers';
 import BloggerCard from './BloggerCard';
 import SearchBloggers from '@/components/bloggers/SearchBlogger';
 import { useSearchParams } from 'next/navigation';
+import { memo } from 'react';
 
-export default function BloggersPage() {
+const BloggersPage = () => {
 	const searchParams = useSearchParams();
 	const searchTerm = searchParams.get('s') || '';
 
@@ -86,4 +87,6 @@ export default function BloggersPage() {
 			)}
 		</div>
 	);
-}
+};
+
+export default memo(BloggersPage);

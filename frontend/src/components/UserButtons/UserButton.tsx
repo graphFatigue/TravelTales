@@ -13,14 +13,7 @@ import {
 	DropdownMenuSubContent,
 } from '../ui/dropdown-menu';
 import Link from 'next/link';
-import {
-	Check,
-	LogOutIcon,
-	Monitor,
-	Moon,
-	Sun,
-	UserIcon,
-} from 'lucide-react';
+import { Check, LogOutIcon, Monitor, Moon, Sun, UserIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
@@ -86,6 +79,16 @@ export default function UserButton({ className }: UserButtonProps) {
 					onClick={() => {
 						queryClient.clear();
 						signOut();
+
+						queryClient.removeQueries({
+							queryKey: ['blogger', session?.user.blogger?.id],
+						});
+						queryClient.removeQueries({
+							queryKey: ['notifications', session?.user.blogger?.id],
+						});
+						queryClient.invalidateQueries({ queryKey: ['bloggers'] });
+						queryClient.invalidateQueries({ queryKey: ['posts'] });
+						queryClient.invalidateQueries({ queryKey: ['users'] });
 						redirect('/');
 					}}
 				>

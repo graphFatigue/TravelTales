@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { signOut, useSession } from 'next-auth/react';
 import api from '@/lib/api/api';
@@ -25,7 +26,6 @@ export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 			queryClient.invalidateQueries({ queryKey: ['bloggers'] });
 			queryClient.invalidateQueries({ queryKey: ['users'] });
 		},
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		onError: (error: any) => {
 			console.error('Failed to delete blogger:', error);
 			toast.error(t('profile.deleteProfile.failedDelete'));
@@ -34,13 +34,20 @@ export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 
 	const handleDelete = async () => {
 		deleteBloggerMutation.mutate();
-
+		queryClient.removeQueries({
+			queryKey: ['blogger', bloggerId],
+		});
 		if (session?.user?.blogger?.id === bloggerId) {
 			await signOut({ callbackUrl: '/' });
-			redirect('/');
-		} else {
-			redirect('/');
+			queryClient.removeQueries({
+				queryKey: ['notifications', bloggerId],
+			});
+			queryClient.invalidateQueries({ queryKey: ['bloggers'] });
+			queryClient.invalidateQueries({ queryKey: ['posts'] });
+			queryClient.invalidateQueries({ queryKey: ['users'] });
 		}
+
+		redirect('/');
 	};
 
 	return (

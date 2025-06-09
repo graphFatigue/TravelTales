@@ -7,6 +7,7 @@ import Link from 'next/link';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import { NotificationDropdown } from '../notifications/NotificationDropDown';
+import ThemeDropdown from '../ThemeDropdown';
 
 export default function UserButtons() {
 	const { data: session } = useSession();
@@ -21,6 +22,7 @@ export default function UserButtons() {
 				</>
 			) : (
 				<div className='flex gap-4'>
+					<ThemeDropdown />
 					<Button variant='default'>
 						<Link href={'/login'}>{t('auth.login')}</Link>
 					</Button>

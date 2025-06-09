@@ -8,7 +8,13 @@ export default function Home() {
 		<main className='h-[200vh] w-full'>
 			<div className='w-full space-y-5'>
 				<CreatePostButton />
-				<Suspense fallback={<PostLoader/>}>
+				<Suspense
+					fallback={
+						<div>
+							<PostLoader />
+						</div>
+					}
+				>
 					<PostsFeed />
 				</Suspense>
 			</div>

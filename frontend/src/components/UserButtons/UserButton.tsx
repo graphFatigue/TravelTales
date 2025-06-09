@@ -13,7 +13,14 @@ import {
 	DropdownMenuSubContent,
 } from '../ui/dropdown-menu';
 import Link from 'next/link';
-import { Check, LogOutIcon, Monitor, Moon, Sun, UserIcon } from 'lucide-react';
+import {
+	Check,
+	LogOutIcon,
+	Monitor,
+	Moon,
+	Sun,
+	UserIcon,
+} from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
@@ -46,10 +53,7 @@ export default function UserButton({ className }: UserButtonProps) {
 			<DropdownMenuContent>
 				<DropdownMenuLabel>
 					{t('dashboard.logedinAs', {
-						name:
-							blogger?.firstName +
-								' ' +
-								blogger?.lastName || 'unknown',
+						name: blogger?.firstName + ' ' + blogger?.lastName || 'unknown',
 					})}
 				</DropdownMenuLabel>
 				<DropdownMenuSeparator />
@@ -64,11 +68,6 @@ export default function UserButton({ className }: UserButtonProps) {
 					</DropdownMenuSubTrigger>
 					<DropdownMenuPortal>
 						<DropdownMenuSubContent>
-							<DropdownMenuItem onClick={() => setTheme('system')}>
-								<Monitor className='mr-2 size-4' />
-								{t('dashboard.system')}
-								{theme === 'system' && <Check className='ms-2 size-4' />}
-							</DropdownMenuItem>
 							<DropdownMenuItem onClick={() => setTheme('light')}>
 								<Sun className='mr-2 size-4' />
 								{t('dashboard.light')}

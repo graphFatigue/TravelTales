@@ -3,6 +3,7 @@
 import { ReactNode, Suspense, useEffect } from 'react';
 import i18n from '@/lib/i18n';
 import { I18nextProvider } from 'react-i18next';
+import { MainLoader } from './MainLoader';
 
 export default function I18nProvider({ children }: { children: ReactNode }) {
 	useEffect(() => {
@@ -10,14 +11,11 @@ export default function I18nProvider({ children }: { children: ReactNode }) {
 		if (savedLang) {
 			i18n.changeLanguage(savedLang);
 		}
-    }, []);
+	}, []);
 
 	return (
 		<I18nextProvider i18n={i18n}>
-			<Suspense fallback={<div>Loading translations...</div>}>
-				{children}
-			</Suspense>
+			<Suspense fallback={<MainLoader />}>{children}</Suspense>
 		</I18nextProvider>
 	);
 }
-

@@ -120,7 +120,7 @@ export function LocationSection({
 					)}
 				/>
 			</div>
-			
+
 			<div className='space-y-2'>
 				<FormField
 					control={control}
@@ -142,6 +142,7 @@ export function LocationSection({
 									setValue('visitedCityIds', []);
 								}}
 								modalPopover={true}
+								searchField={false}
 								placeholder={t('profile.selectVisitedCountries')}
 							/>
 							<FormMessage />
@@ -171,6 +172,7 @@ export function LocationSection({
 									selectedVisitedCountries.length === 0 || loadingCities
 								}
 								modalPopover={true}
+								searchField={false}
 							/>
 							<FormMessage />
 						</FormItem>

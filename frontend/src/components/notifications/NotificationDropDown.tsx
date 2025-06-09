@@ -8,6 +8,7 @@ import {
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { formatDistanceToNow } from 'date-fns';
+import { uk } from 'date-fns/locale/uk';
 import { Badge } from '@/components/ui/badge';
 import { BellIcon } from 'lucide-react';
 import { Notification } from '@/types/types';
@@ -20,7 +21,8 @@ import { useTranslation } from 'react-i18next';
 export const NotificationDropdown = () => {
 	const { notifications, unreadCount, markAsRead, markAllAsRead } =
 		useNotificationContext();
-	const {t} = useTranslation();
+	const { t, i18n } = useTranslation();
+	const currentLanguage = i18n.language;
 
 	const handleNotificationClick = async (notification: Notification) => {
 		if (!notification.isRead) {
@@ -94,6 +96,7 @@ export const NotificationDropdown = () => {
 									<p className='mt-1 text-xs text-muted-foreground'>
 										{formatDistanceToNow(new Date(notification.createdAt), {
 											addSuffix: true,
+											locale: currentLanguage === 'uk' ? uk : undefined,
 										})}
 									</p>
 								</div>

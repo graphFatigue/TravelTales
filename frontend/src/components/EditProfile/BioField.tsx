@@ -21,15 +21,15 @@ export function BioField({ control }: BioFieldProps) {
 			name='bio'
 			render={({ field }) => (
 				<FormItem>
-					<FormLabel>{t('profile.bio')}</FormLabel>
+					<FormLabel className='text-sm sm:text-base'>{t('profile.bio')}</FormLabel>
 					<FormControl>
 						<Textarea
 							placeholder={t('profile.bioPlaceholder')}
-							className='min-h-[100px]'
+							className='min-h-[100px] p-2 text-sm sm:min-h-[150px] sm:p-3 sm:text-base'
 							{...field}
 						/>
 					</FormControl>
-					<FormMessage />
+					<FormMessage className='text-xs sm:text-sm' />
 				</FormItem>
 			)}
 		/>

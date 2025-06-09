@@ -49,14 +49,14 @@ export function LocationSection({
 	const { countries, cities, loading } = useLocationInfo(selectedCountryId);
 
 	return (
-		<div className='space-y-4'>
-			<div className='grid grid-cols-2 gap-4'>
+		<div className='space-y-4 sm:space-y-6'>
+			<div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
 				<FormField
 					control={control}
 					name='countryId'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t('profile.country')}</FormLabel>
+							<FormLabel className='text-sm sm:text-base'>{t('profile.country')}</FormLabel>
 							<Select
 								onValueChange={value => {
 									field.onChange(parseInt(value));
@@ -66,23 +66,24 @@ export function LocationSection({
 								disabled={loading}
 							>
 								<FormControl>
-									<SelectTrigger>
+									<SelectTrigger className='h-9 text-sm sm:h-10 sm:text-base'>
 										<SelectValue placeholder={t('profile.selectCountry')} />
 									</SelectTrigger>
 								</FormControl>
-								<SelectContent>
+								<SelectContent className='text-sm sm:text-base'>
 									{countries?.map(country => (
 										<SelectItem
 											key={country.id}
 											value={country.id.toString()}
 											onClick={e => e.preventDefault()}
+											className='text-sm sm:text-base'
 										>
 											{country.name}
 										</SelectItem>
 									))}
 								</SelectContent>
 							</Select>
-							<FormMessage />
+							<FormMessage className='text-xs sm:text-sm' />
 						</FormItem>
 					)}
 				/>
@@ -92,42 +93,43 @@ export function LocationSection({
 					name='cityId'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t('profile.city')}</FormLabel>
+							<FormLabel className='text-sm sm:text-base'>{t('profile.city')}</FormLabel>
 							<Select
 								onValueChange={value => field.onChange(parseInt(value))}
 								value={field.value?.toString()}
 								disabled={!selectedCountryId || loading}
 							>
 								<FormControl>
-									<SelectTrigger>
+									<SelectTrigger className='h-9 text-sm sm:h-10 sm:text-base'>
 										<SelectValue placeholder={t('profile.selectCity')} />
 									</SelectTrigger>
 								</FormControl>
-								<SelectContent>
+								<SelectContent className='text-sm sm:text-base'>
 									{cities?.map(city => (
 										<SelectItem
 											key={city.id}
 											value={city.id.toString()}
 											onClick={e => e.preventDefault()}
+											className='text-sm sm:text-base'
 										>
 											{city.name}
 										</SelectItem>
 									))}
 								</SelectContent>
 							</Select>
-							<FormMessage />
+							<FormMessage className='text-xs sm:text-sm' />
 						</FormItem>
 					)}
 				/>
 			</div>
 
-			<div className='space-y-2'>
+			<div className='space-y-2 sm:space-y-4'>
 				<FormField
 					control={control}
 					name='visitedCountryIds'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t('profile.visitedCountries')}</FormLabel>
+							<FormLabel className='text-sm sm:text-base'>{t('profile.visitedCountries')}</FormLabel>
 							<MultiSelect
 								options={
 									countries?.map(c => ({
@@ -144,8 +146,9 @@ export function LocationSection({
 								modalPopover={true}
 								searchField={false}
 								placeholder={t('profile.selectVisitedCountries')}
+								className='text-sm sm:text-base'
 							/>
-							<FormMessage />
+							<FormMessage className='text-xs sm:text-sm' />
 						</FormItem>
 					)}
 				/>
@@ -155,7 +158,7 @@ export function LocationSection({
 					name='visitedCityIds'
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>{t('profile.visitedCities')}</FormLabel>
+							<FormLabel className='text-sm sm:text-base'>{t('profile.visitedCities')}</FormLabel>
 							<MultiSelect
 								options={
 									allVisitedCities?.map(c => ({
@@ -173,8 +176,9 @@ export function LocationSection({
 								}
 								modalPopover={true}
 								searchField={false}
+								className='text-sm sm:text-base'
 							/>
-							<FormMessage />
+							<FormMessage className='text-xs sm:text-sm' />
 						</FormItem>
 					)}
 				/>

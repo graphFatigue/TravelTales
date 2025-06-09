@@ -55,7 +55,7 @@ export function CommentsAction({
 	};
 
 	return (
-		<CardFooter className='flex justify-end gap-2 bg-muted/20 px-4 py-2'>
+		<CardFooter className='flex justify-end gap-1.5 bg-muted/20 px-3 py-1.5 sm:gap-2 sm:px-4 sm:py-2'>
 			{session?.user.blogger?.id === comment.bloggerId && (
 				<Dialog
 					open={isEditDialogOpen && editingCommentId === comment.id}
@@ -64,34 +64,44 @@ export function CommentsAction({
 					<DialogTrigger asChild>
 						<Button
 							variant='ghost'
-							className='h-8 px-2 text-muted-foreground hover:text-foreground'
+							className='h-7 px-1.5 text-xs text-muted-foreground hover:text-foreground sm:h-8 sm:px-2 sm:text-sm'
 							onClick={() => handleEdit(comment.id, comment.content)}
 						>
-							<Edit2 className='mr-1 h-4 w-4' />
+							<Edit2 className='mr-1 h-3 w-3 sm:h-4 sm:w-4' />
 							{t('common.edit')}
 						</Button>
 					</DialogTrigger>
-					<DialogContent>
+					<DialogContent className='sm:max-w-[425px]'>
 						<DialogHeader>
-							<DialogTitle>{t('comments.edit')}</DialogTitle>
-							<DialogDescription>{t('comments.makeChanges')}</DialogDescription>
+							<DialogTitle className='text-base sm:text-lg'>
+								{t('comments.edit')}
+							</DialogTitle>
+							<DialogDescription className='text-xs sm:text-sm'>
+								{t('comments.makeChanges')}
+							</DialogDescription>
 						</DialogHeader>
-						<div className='py-4'>
+						<div className='py-3 sm:py-4'>
 							<Textarea
 								value={editingContent}
 								onChange={e => setEditingContent(e.target.value)}
-								className='min-h-[100px]'
+								className='min-h-[80px] text-xs sm:min-h-[100px] sm:text-sm'
 								maxLength={1000}
 							/>
 						</div>
-						<DialogFooter>
+						<DialogFooter className='gap-2'>
 							<Button
 								variant='outline'
 								onClick={() => setIsEditDialogOpen(false)}
+								className='h-8 text-xs sm:h-9 sm:text-sm'
 							>
 								{t('common.cancel')}
 							</Button>
-							<Button onClick={submitEdit}>{t('common.save')}</Button>
+							<Button
+								onClick={submitEdit}
+								className='h-8 text-xs sm:h-9 sm:text-sm'
+							>
+								{t('common.save')}
+							</Button>
 						</DialogFooter>
 					</DialogContent>
 				</Dialog>
@@ -107,6 +117,7 @@ export function CommentsAction({
 						remove(comment.id);
 						changeCommentsAmount(prev => prev - 1);
 					}}
+					className={'h-7 px-1.5 text-xs sm:h-8 sm:px-2 sm:text-sm'}
 				/>
 			)}
 		</CardFooter>

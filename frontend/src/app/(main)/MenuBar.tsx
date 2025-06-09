@@ -17,24 +17,24 @@ export default function MenuBar({ className }: MenuBarProps) {
 		<div className={className}>
 			<Button
 				variant='ghost'
-				className='flex items-center justify-start gap-3'
+				className='flex h-9 w-9 items-center justify-center gap-2 p-0 sm:h-10 sm:w-auto sm:justify-start sm:gap-3 sm:px-3'
 				title={t('dashboard.home')}
 				asChild
 			>
 				<Link href='/'>
-					<Home />
-					<span className='hidden lg:inline'>{t('dashboard.home')}</span>
+					<Home className='h-4 w-4 sm:h-5 sm:w-5' />
+					<span className='hidden sm:inline text-sm'>{t('dashboard.home')}</span>
 				</Link>
 			</Button>
 			<Button
 				variant='ghost'
-				className='flex items-center justify-start gap-3'
+				className='flex h-9 w-9 items-center justify-center gap-2 p-0 sm:h-10 sm:w-auto sm:justify-start sm:gap-3 sm:px-3'
 				title={t('dashboard.bloggers')}
 				asChild
 			>
 				<Link href='/blogger'>
-					<Users />
-					<span className='hidden lg:inline'>{t('dashboard.bloggers')}</span>
+					<Users className='h-4 w-4 sm:h-5 sm:w-5' />
+					<span className='hidden sm:inline text-sm'>{t('dashboard.bloggers')}</span>
 				</Link>
 			</Button>
 
@@ -42,24 +42,24 @@ export default function MenuBar({ className }: MenuBarProps) {
 				<>
 					<Button
 						variant='ghost'
-						className='flex items-center justify-start gap-3'
+						className='flex h-9 w-9 items-center justify-center gap-2 p-0 sm:h-10 sm:w-auto sm:justify-start sm:gap-3 sm:px-3'
 						title={t('dashboard.users')}
 						asChild
 					>
 						<Link href={`/admin/users`}>
-							<ContactRound />
-							<span className='hidden lg:inline'>{t('dashboard.users')}</span>
+							<ContactRound className='h-4 w-4 sm:h-5 sm:w-5' />
+							<span className='hidden sm:inline text-sm'>{t('dashboard.users')}</span>
 						</Link>
 					</Button>
 					<Button
 						variant='ghost'
-						className='flex items-center justify-start gap-3'
+						className='flex h-9 w-9 items-center justify-center gap-2 p-0 sm:h-10 sm:w-auto sm:justify-start sm:gap-3 sm:px-3'
 						title={t('dashboard.categories')}
 						asChild
 					>
 						<Link href={`/admin/categories`}>
-							<ChartBarStacked />
-							<span className='hidden lg:inline'>
+							<ChartBarStacked className='h-4 w-4 sm:h-5 sm:w-5' />
+							<span className='hidden sm:inline text-sm'>
 								{t('dashboard.categories')}
 							</span>
 						</Link>
@@ -71,39 +71,39 @@ export default function MenuBar({ className }: MenuBarProps) {
 				<>
 					<Button
 						variant='ghost'
-						className='flex items-center justify-start gap-3'
+						className='flex h-9 w-9 items-center justify-center gap-2 p-0 sm:h-10 sm:w-auto sm:justify-start sm:gap-3 sm:px-3'
 						title={t('dashboard.followersPosts')}
 						asChild
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/followers/posts`}>
-							<NotebookText />
-							<span className='hidden lg:inline'>
+							<NotebookText className='h-4 w-4 sm:h-5 sm:w-5' />
+							<span className='hidden sm:inline text-sm'>
 								{t('dashboard.followersPosts')}
 							</span>
 						</Link>
 					</Button>
 					<Button
 						variant='ghost'
-						className='flex items-center justify-start gap-3'
+						className='flex h-9 w-9 items-center justify-center gap-2 p-0 sm:h-10 sm:w-auto sm:justify-start sm:gap-3 sm:px-3'
 						title={t('dashboard.followers')}
 						asChild
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/followers`}>
-							<UserRoundPlus />
-							<span className='hidden lg:inline'>
+							<UserRoundPlus className='h-4 w-4 sm:h-5 sm:w-5' />
+							<span className='hidden sm:inline text-sm'>
 								{t('dashboard.followers')}
 							</span>
 						</Link>
 					</Button>
 					<Button
 						variant='ghost'
-						className='flex items-center justify-start gap-3'
+						className='flex h-9 w-9 items-center justify-center gap-2 p-0 sm:h-10 sm:w-auto sm:justify-start sm:gap-3 sm:px-3'
 						title={t('dashboard.following')}
 						asChild
 					>
 						<Link href={`/blogger/${session?.user.blogger?.id}/following`}>
-							<UserRoundCheck />
-							<span className='hidden lg:inline'>
+							<UserRoundCheck className='h-4 w-4 sm:h-5 sm:w-5' />
+							<span className='hidden sm:inline text-sm'>
 								{t('dashboard.following')}
 							</span>
 						</Link>

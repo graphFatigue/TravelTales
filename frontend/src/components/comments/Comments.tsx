@@ -58,7 +58,7 @@ export const CommentsSection = ({
 	};
 
 	return (
-		<div className='w-full space-y-4'>
+		<div className='w-full space-y-3 sm:space-y-4'>
 			{comments.length > 0 ? (
 				<>
 					{comments.map(comment => (
@@ -66,19 +66,23 @@ export const CommentsSection = ({
 							key={comment.id}
 							className='overflow-hidden transition-all hover:shadow-md'
 						>
-							<CardContent className='p-4'>
-								<div className='flex items-start gap-3'>
-									<UserAvatar avatarUrl={comment.bloggerImage || ''} />
-									<div className='flex-1 space-y-1.5'>
+							<CardContent className='p-3 sm:p-4'>
+								<div className='flex items-start gap-2 sm:gap-3'>
+									<UserAvatar 
+										avatarUrl={comment.bloggerImage || ''} 
+										size={32}
+										className='sm:h-10 sm:w-10'
+									/>
+									<div className='flex-1 space-y-1 sm:space-y-1.5'>
 										<div className='flex items-center justify-between'>
-											<p className='text-sm font-medium'>
+											<p className='text-xs sm:text-sm font-medium'>
 												{comment.bloggerName || t('comments.deletedUser')}
 											</p>
-											<p className='text-xs text-muted-foreground'>
+											<p className='text-[10px] sm:text-xs text-muted-foreground'>
 												{formatDate(comment.createdAt, currentLanguage)}
 											</p>
 										</div>
-										<p className='text-sm text-foreground'>{comment.content}</p>
+										<p className='text-xs sm:text-sm text-foreground'>{comment.content}</p>
 									</div>
 								</div>
 							</CardContent>
@@ -96,15 +100,16 @@ export const CommentsSection = ({
 					))}
 
 					{hasNextPage && (
-						<div className='flex justify-center pt-4'>
+						<div className='flex justify-center pt-2 sm:pt-4'>
 							<Button
 								variant='outline'
 								onClick={() => fetchNextPage()}
 								disabled={isFetchingNextPage}
+								className='h-8 text-xs sm:h-10 sm:text-sm'
 							>
 								{isFetchingNextPage ? (
 									<>
-										<Loader2 className='mr-2 h-4 w-4 animate-spin' />
+										<Loader2 className='mr-1.5 h-3 w-3 animate-spin sm:mr-2 sm:h-4 sm:w-4' />
 										{t('common.loading')}
 									</>
 								) : (
@@ -115,16 +120,20 @@ export const CommentsSection = ({
 					)}
 				</>
 			) : (
-				<div className='py-8 text-center'>
-					<p className='text-muted-foreground'>{t('comments.noCommentsYet')}</p>
+				<div className='py-6 sm:py-8 text-center'>
+					<p className='text-xs sm:text-sm text-muted-foreground'>{t('comments.noCommentsYet')}</p>
 				</div>
 			)}
 
 			{session ? (
-				<div className='mt-8 space-y-4'>
-					<div className='mx-1 flex items-center gap-3'>
-						<UserAvatar avatarUrl={blogger?.image} />
-						<Label htmlFor='comment' className='text-sm font-medium'>
+				<div className='mt-6 sm:mt-8 space-y-3 sm:space-y-4'>
+					<div className='mx-1 flex items-center gap-2 sm:gap-3'>
+						<UserAvatar 
+							avatarUrl={blogger?.image} 
+							size={32}
+							className='sm:h-10 sm:w-10'
+						/>
+						<Label htmlFor='comment' className='text-xs sm:text-sm font-medium'>
 							{t('comments.addComment')}
 						</Label>
 					</div>
@@ -134,7 +143,7 @@ export const CommentsSection = ({
 						placeholder={t('comments.placeholder')}
 						value={content}
 						onChange={e => setContent(e.target.value)}
-						className='min-h-[100px]'
+						className='min-h-[80px] text-xs sm:min-h-[100px] sm:text-sm'
 						maxLength={1000}
 					/>
 
@@ -142,15 +151,15 @@ export const CommentsSection = ({
 						<Button
 							onClick={handleSend}
 							disabled={!content.trim()}
-							className='transition-all'
+							className='h-8 text-xs sm:h-10 sm:text-sm transition-all'
 						>
 							{t('comments.submit')}
 						</Button>
 					</div>
 				</div>
 			) : (
-				<div className='mt-8 rounded-md border bg-muted/20 p-4 text-center'>
-					<p className='text-muted-foreground'>{t('comments.pleaseSignIn')}</p>
+				<div className='mt-6 sm:mt-8 rounded-md border bg-muted/20 p-3 sm:p-4 text-center'>
+					<p className='text-xs sm:text-sm text-muted-foreground'>{t('comments.pleaseSignIn')}</p>
 				</div>
 			)}
 		</div>

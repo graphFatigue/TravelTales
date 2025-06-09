@@ -223,6 +223,7 @@
 		"country": "Country",
 		"selectCountry": "Select country",
 		"city": "City",
+		"budget": "Budget",
 		"selectCity": "Select city",
 		"selectBudget": "Select budget level",
 		"tags": "Tags",

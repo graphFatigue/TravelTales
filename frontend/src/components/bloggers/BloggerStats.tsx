@@ -39,33 +39,33 @@ export function StatisticsTab({ bloggerId }: { bloggerId: number }) {
 	if (!stats) return null;
 
 	return (
-		<TabsContent value='statistics' className='mt-6'>
+		<TabsContent value='statistics' className='mt-4 sm:mt-6'>
 			<Card>
-				<CardHeader>
-					<CardTitle className='flex items-center gap-2'>
-						<BarChart2 className='h-5 w-5' />
+				<CardHeader className='p-4 sm:p-6'>
+					<CardTitle className='flex items-center gap-2 text-lg sm:text-xl'>
+						<BarChart2 className='h-4 w-4 sm:h-5 sm:w-5' />
 						{t('stats.yourStatistics')}
 					</CardTitle>
 				</CardHeader>
-				<CardContent className='grid gap-6'>
-					<div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2'>
+				<CardContent className='grid gap-4 p-4 sm:gap-6 sm:p-6'>
+					<div className='grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-2'>
 						<StatCard
 							title={t('stats.totalLikes')}
 							value={stats.totalLikes}
-							icon={<Heart className='h-5 w-5 text-red-500' />}
+							icon={<Heart className='h-4 w-4 sm:h-5 sm:w-5 text-red-500' />}
 							description={t('stats.allTimeLikes')}
 						/>
 						<StatCard
 							title={t('stats.totalComments')}
 							value={stats.totalComments}
-							icon={<MessageCircle className='h-5 w-5 text-blue-500' />}
+							icon={<MessageCircle className='h-4 w-4 sm:h-5 sm:w-5 text-blue-500' />}
 							description={t('stats.allTimeComments')}
 						/>
 					</div>
 
-					<div className='mt-4'>
-						<h3 className='mb-4 flex items-center gap-2 text-lg font-semibold'>
-							<ArrowUp className='h-5 w-5 text-yellow-500' />
+					<div className='mt-2 sm:mt-4'>
+						<h3 className='mb-3 sm:mb-4 flex items-center gap-2 text-base sm:text-lg font-semibold'>
+							<ArrowUp className='h-4 w-4 sm:h-5 sm:w-5 text-yellow-500' />
 							{t('stats.mostPopularPost')}
 						</h3>
 						{stats.mostPopularPost && (
@@ -87,14 +87,14 @@ interface StatCardProps {
 
 function StatCard({ title, value, icon, description }: StatCardProps) {
 	return (
-		<div className='rounded-lg border p-4'>
+		<div className='rounded-lg border p-3 sm:p-4'>
 			<div className='flex items-center justify-between'>
-				<h4 className='text-sm font-medium text-muted-foreground'>{title}</h4>
+				<h4 className='text-xs sm:text-sm font-medium text-muted-foreground'>{title}</h4>
 				{icon}
 			</div>
-			<div className='mt-2'>
-				<p className='text-2xl font-bold'>{value}</p>
-				<p className='mt-1 text-xs text-muted-foreground'>{description}</p>
+			<div className='mt-1.5 sm:mt-2'>
+				<p className='text-xl sm:text-2xl font-bold'>{value}</p>
+				<p className='mt-0.5 sm:mt-1 text-[10px] sm:text-xs text-muted-foreground'>{description}</p>
 			</div>
 		</div>
 	);

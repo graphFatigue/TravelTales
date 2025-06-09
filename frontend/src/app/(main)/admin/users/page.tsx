@@ -11,7 +11,7 @@ export default async function Page({ searchParams }: CustomPageProps) {
 	const resolvedParams = await searchParams;
 
 	return (
-		<div className='container mx-auto py-8'>
+		<div className='container mx-auto py-1'>
 			<div className='mb-6'>
 				<UserFilterComponent />
 			</div>

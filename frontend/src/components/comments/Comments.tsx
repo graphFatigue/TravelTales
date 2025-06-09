@@ -72,7 +72,7 @@ export const CommentsSection = ({
 									<div className='flex-1 space-y-1.5'>
 										<div className='flex items-center justify-between'>
 											<p className='text-sm font-medium'>
-												{comment.bloggerName || 'Deleted User'}
+												{comment.bloggerName || t('comments.deletedUser')}
 											</p>
 											<p className='text-xs text-muted-foreground'>
 												{formatDate(comment.createdAt, currentLanguage)}
@@ -89,6 +89,7 @@ export const CommentsSection = ({
 									remove={remove}
 									comment={comment}
 									changeCommentsAmount={changeCommentsAmount}
+									post={post}
 								/>
 							)}
 						</Card>

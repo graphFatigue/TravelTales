@@ -3,9 +3,11 @@ import api from '@/lib/api/api';
 import { toast } from 'sonner';
 import { Blogger } from '@/types/types';
 import { useSession } from 'next-auth/react';
+import { useTranslation } from 'react-i18next';
 
 export function useFollowMutations(bloggerId: number) {
 	const queryClient = useQueryClient();
+	const {t} = useTranslation();
 
 	const { data: session } = useSession();
 
@@ -39,10 +41,10 @@ export function useFollowMutations(bloggerId: number) {
 					context.previousBlogger,
 				);
 			}
-			toast.error('Failed to follow. Please try again.');
+			toast.error(t('follow.followError'));
 		},
 		onSuccess: () => {
-			toast.success('Followed successfully');
+			toast.success(t('follow.followSuccess'));
 			queryClient.invalidateQueries({ queryKey: ['blogger', bloggerId] });
 			queryClient.invalidateQueries({
 				queryKey: ['blogger', session?.user.blogger?.id],
@@ -82,10 +84,10 @@ export function useFollowMutations(bloggerId: number) {
 					context.previousBlogger,
 				);
 			}
-			toast.error('Failed to unfollow. Please try again.');
+			toast.error(t('follow.unfollowError'));;
 		},
 		onSuccess: () => {
-			toast.success('Unfollowed successfully');
+			toast.success(t('follow.unfollowSuccess'));
 			queryClient.invalidateQueries({ queryKey: ['blogger', bloggerId] });
 			queryClient.invalidateQueries({
 				queryKey: ['blogger', session?.user.blogger?.id],

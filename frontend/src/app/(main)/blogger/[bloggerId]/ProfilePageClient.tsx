@@ -68,7 +68,7 @@ export default function ProfilePageClient({
 							<div className='text-2xl font-bold'>{blogger.followerCount}</div>
 							<Link href={`/blogger/${blogger.id}/followers`}>
 								<div className='text-sm text-muted-foreground hover:underline'>
-									{t('profile.followers')}
+									{t('dashboard.followers')}
 								</div>
 							</Link>
 						</div>
@@ -76,7 +76,7 @@ export default function ProfilePageClient({
 							<div className='text-2xl font-bold'>{blogger.followingCount}</div>
 							<Link href={`/blogger/${blogger.id}/following`}>
 								<div className='text-sm text-muted-foreground hover:underline'>
-									{t('profile.following')}
+									{t('dashboard.following')}
 								</div>
 							</Link>
 						</div>

@@ -5,6 +5,7 @@ import { useUsers } from '@/hooks/users';
 import { UserListItem } from './UserListItem';
 import { UsersSkeleton } from '@/components/user/UserSkeleton';
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function UsersList({ filters }: { filters: Record<string, string> }) {
 	const backendFilters = {
@@ -22,6 +23,8 @@ export function UsersList({ filters }: { filters: Record<string, string> }) {
 		error,
 	} = useUsers(backendFilters);
 
+	const { t } = useTranslation();
+
 	const users = data?.pages.flatMap(page => page.items) || [];
 
 	return (
@@ -29,10 +32,10 @@ export function UsersList({ filters }: { filters: Record<string, string> }) {
 			{isLoading ? (
 				<UsersSkeleton />
 			) : error ? (
-				<div className='text-center text-red-500'>Error loading users</div>
+				<div className='text-center text-red-500'>{t('users.error')}</div>
 			) : users.length === 0 ? (
 				<div className='py-8 text-center text-muted-foreground'>
-					No users found
+					{t('users.noResults')}
 				</div>
 			) : (
 				<InfiniteScrollContainer
@@ -55,7 +58,7 @@ export function UsersList({ filters }: { filters: Record<string, string> }) {
 
 					{!hasNextPage && users.length > 0 && (
 						<div className='py-4 text-center text-sm text-muted-foreground'>
-							You&apos;ve reached the end
+							{t('bloggers.endReached')}
 						</div>
 					)}
 				</InfiniteScrollContainer>

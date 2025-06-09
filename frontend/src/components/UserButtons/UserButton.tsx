@@ -22,6 +22,7 @@ import { signOut, useSession } from 'next-auth/react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useBlogger } from '@/hooks/bloggers/useBlogger';
+import { redirect } from 'next/navigation';
 
 interface UserButtonProps {
 	className?: string;
@@ -86,6 +87,7 @@ export default function UserButton({ className }: UserButtonProps) {
 					onClick={() => {
 						queryClient.clear();
 						signOut();
+						redirect('/');
 					}}
 				>
 					<LogOutIcon className='mr-2 size-4' /> {t('auth.logout')}

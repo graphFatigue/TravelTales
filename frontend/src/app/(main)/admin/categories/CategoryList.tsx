@@ -18,6 +18,7 @@ import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { CategoryForm } from './CategoryForm';
 import { CategoryFormValues } from '@/lib/validation';
+import { useTranslation } from 'react-i18next';
 
 export function CategoryList() {
 	const { data: categories, isLoading, error } = useCategories();
@@ -28,6 +29,7 @@ export function CategoryList() {
 
 	const createCategory = useCreateCategory();
 	const updateCategory = useUpdateCategory();
+	const {t} = useTranslation();
 
 	const handleCreateSubmit = (values: CategoryFormValues) => {
 		createCategory.mutate(values, {
@@ -61,7 +63,7 @@ export function CategoryList() {
 	if (error) {
 		return (
 			<div className='text-red-500'>
-				Error loading categories: {error.message}
+				{t('admin.category.error')} {error.message}
 			</div>
 		);
 	}
@@ -69,10 +71,10 @@ export function CategoryList() {
 	return (
 		<div className='space-y-4'>
 			<div className='flex items-center justify-between'>
-				<h1 className='text-2xl font-bold'>Categories</h1>
+				<h1 className='text-2xl font-bold'>{t('admin.category.title')}</h1>
 				<Button onClick={() => setIsCreateDialogOpen(true)}>
 					<Plus className='mr-2 h-4 w-4' />
-					Add Category
+					{t('admin.category.add')}
 				</Button>
 			</div>
 
@@ -100,7 +102,7 @@ export function CategoryList() {
 								size='sm'
 								onClick={() => setEditingCategory(category)}
 							>
-								Edit
+								{t('common.edit')}
 							</Button>
 							<Button
 								variant='destructive'
@@ -117,7 +119,7 @@ export function CategoryList() {
 			<Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Create New Category</DialogTitle>
+						<DialogTitle>{t('admin.category.create')}</DialogTitle>
 					</DialogHeader>
 					<CategoryForm
 						onSubmit={handleCreateSubmit}
@@ -132,7 +134,7 @@ export function CategoryList() {
 			>
 				<DialogContent>
 					<DialogHeader>
-						<DialogTitle>Edit Category</DialogTitle>
+						<DialogTitle>{t('admin.category.edit')}</DialogTitle>
 					</DialogHeader>
 					{editingCategory && (
 						<CategoryForm

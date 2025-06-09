@@ -37,6 +37,7 @@ export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 
 		if (session?.user?.blogger?.id === bloggerId) {
 			await signOut({ callbackUrl: '/' });
+			redirect('/');
 		} else {
 			redirect('/');
 		}

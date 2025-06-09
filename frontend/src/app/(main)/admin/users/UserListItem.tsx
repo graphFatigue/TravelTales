@@ -14,6 +14,7 @@ import { useAssignRole, useDeleteUser, useRoles } from '@/hooks/users';
 import UserAvatar from '@/components/user/UserAvatar';
 import { User } from '@/types/types';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export function UserListItem({ user }: { user: User }) {
 	const router = useRouter();
@@ -21,6 +22,7 @@ export function UserListItem({ user }: { user: User }) {
 	const { data: roles } = useRoles();
 	const { mutate: deleteUser } = useDeleteUser();
 	const { mutate: assignRole } = useAssignRole();
+	const {t} = useTranslation();
 
 	const handleDelete = () => {
 		deleteUser(user.id, {
@@ -36,11 +38,11 @@ export function UserListItem({ user }: { user: User }) {
 			{
 				onSuccess: () => {
 					queryClient.invalidateQueries({ queryKey: ['users'] });
-					toast.success('Role assigned successfully');
+					toast.success(t('admin.role.assignRoleSuccess'));
 				},
 				onError: error => {
 					console.error('Failed to assign role:', error);
-					toast.error(error.message);
+					toast.error(t('admin.role.assignRoleError', { message: error.message }));
 				},
 			},
 		);
@@ -87,7 +89,7 @@ export function UserListItem({ user }: { user: User }) {
 									handleRoleAssign(role.id);
 								}}
 							>
-								Assign as {role.name}
+								{t('admin.role.assign')} {role.name}
 							</DropdownMenuItem>
 						))}
 					</DropdownMenuContent>

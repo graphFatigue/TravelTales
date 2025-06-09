@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { CardFooter } from '../ui/card';
 import { useSession } from 'next-auth/react';
-import { Comment, UpdateComment } from '@/types/types';
+import { Comment, Post, UpdateComment } from '@/types/types';
 import {
 	Dialog,
 	DialogContent,
@@ -23,6 +23,7 @@ interface CommentsActionProps {
 	remove: (commentId: number) => Promise<void>;
 	comment: Comment;
 	changeCommentsAmount: React.Dispatch<React.SetStateAction<number>>;
+	post: Post;
 }
 
 export function CommentsAction({
@@ -30,13 +31,14 @@ export function CommentsAction({
 	remove,
 	comment,
 	changeCommentsAmount,
+	post,
 }: CommentsActionProps) {
 	const { data: session } = useSession();
 
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [editingContent, setEditingContent] = useState(comment.content);
 	const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 
 	const handleEdit = (commentId: number, currentContent: string) => {
 		setEditingCommentId(commentId);
@@ -96,7 +98,8 @@ export function CommentsAction({
 			)}
 
 			{(session?.user.blogger?.id === comment.bloggerId ||
-				session?.role === 'Admin') && (
+				session?.role === 'Admin' ||
+				post.bloggerId === session?.user.blogger?.id) && (
 				<ConfirmationDialog
 					title={t('comments.delete')}
 					description={t('comments.deleteConfirm')}

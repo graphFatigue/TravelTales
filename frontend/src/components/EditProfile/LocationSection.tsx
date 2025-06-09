@@ -120,8 +120,7 @@ export function LocationSection({
 					)}
 				/>
 			</div>
-
-			{/* Visited Countries and Cities */}
+			
 			<div className='space-y-2'>
 				<FormField
 					control={control}

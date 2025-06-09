@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react';
 import { useLikes } from '@/hooks/posts/useLikes';
 import { Post } from '@/types/types';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 
 export function PostCardFooter({ post }: { post: Post }) {
 	const { data: session, status } = useSession();
@@ -20,6 +21,7 @@ export function PostCardFooter({ post }: { post: Post }) {
 		post.comments?.length || 0,
 	);
 
+	const queryClient = useQueryClient();
 	const { likesCount, isLiked, toggleLike } = useLikes(
 		post.id,
 		post.likes?.length || 0,
@@ -43,6 +45,7 @@ export function PostCardFooter({ post }: { post: Post }) {
 						onClick={() => {
 							if (session) {
 								toggleLike();
+								queryClient.invalidateQueries({ queryKey: ['blogger', 'statistics', post.bloggerId] });
 							} else {
 								setOpenLikes(true);
 							}

@@ -6,10 +6,12 @@ import PostLoader from '@/components/post/PostLoader';
 import InfiniteScrollContainer from '@/components/InfiniteScrollContainer';
 import { PostCardPreview } from '@/components/post/PostCardPreview';
 import { useInfiniteFollowingPosts } from '@/hooks/posts/useFollowersPosts';
+import { useTranslation } from 'react-i18next';
 
 export default function FollowersPostsFeed() {
 	const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
 		useInfiniteFollowingPosts();
+	const { t } = useTranslation();
 
 	const posts = data?.pages.flatMap(page => page.items) || [];
 
@@ -22,13 +24,11 @@ export default function FollowersPostsFeed() {
 					hasNextPage && !isFetchingNextPage && fetchNextPage()
 				}
 			>
-				{
-					posts.length == 0 && status === 'success' && !hasNextPage && (
-						<div className='col-span-full py-8 text-center text-muted-foreground'>
-							No posts yet
-						</div>
-					)
-				}
+				{posts.length == 0 && status === 'success' && !hasNextPage && (
+					<div className='col-span-full py-8 text-center text-muted-foreground'>
+						{t('profile.posts.noPosts')}
+					</div>
+				)}
 				{posts.map(post => (
 					<PostCardPreview key={post.id} post={post} />
 				))}
@@ -37,7 +37,7 @@ export default function FollowersPostsFeed() {
 				)}
 				{!hasNextPage && posts.length > 0 && (
 					<div className='col-span-full py-8 text-center text-muted-foreground'>
-						You&apos;ve reached the end
+						{t('bloggers.endReached')}
 					</div>
 				)}
 			</InfiniteScrollContainer>

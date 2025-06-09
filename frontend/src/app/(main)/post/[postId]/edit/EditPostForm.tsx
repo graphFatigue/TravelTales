@@ -4,7 +4,7 @@ import { PostForm } from '@/components/post/PostForm';
 import PostLoader from '@/components/post/PostLoader';
 import { usePost } from '@/hooks/posts/usePost';
 import { useSession } from 'next-auth/react';
-import { useParams } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 
 export function EditPostForm() {
 	const { postId } = useParams();
@@ -12,10 +12,8 @@ export function EditPostForm() {
 	const { data: post, isLoading, error } = usePost(Number(postId));
 
 	if (isLoading) return <PostLoader />;
-	if (!session || session.user.blogger?.id !== post?.bloggerId)
-		return <div>Unauthorized</div>;
-	if (error) return <div>Error loading post</div>;
-	if (!post) return <div>Post not found</div>;
+	if (!session || session.user.blogger?.id !== post?.bloggerId || error) throw new Error('Unauthorized');
+	if (!post) return notFound();
 
 	return <PostForm post={post} isEditing />;
 }

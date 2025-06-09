@@ -40,13 +40,7 @@ export default function FollowPage({
 		);
 	}
 
-	if (isError) {
-		return (
-			<div className='flex h-screen items-center justify-center'>
-				<p className='text-destructive'>Failed to load bloggers</p>
-			</div>
-		);
-	}
+	if (isError) throw new Error('Failed to load bloggers');
 
 	return (
 		<>

@@ -15,10 +15,12 @@ import { redirect } from 'next/navigation';
 import { useNotificationContext } from './NotificationProvider';
 import { ScrollArea } from '../ui/scroll-area';
 import UserAvatar from '../user/UserAvatar';
+import { useTranslation } from 'react-i18next';
 
 export const NotificationDropdown = () => {
 	const { notifications, unreadCount, markAsRead, markAllAsRead } =
 		useNotificationContext();
+	const {t} = useTranslation();
 
 	const handleNotificationClick = async (notification: Notification) => {
 		if (!notification.isRead) {
@@ -31,10 +33,10 @@ export const NotificationDropdown = () => {
 
 	const getNotificationContent = (notification: Notification) => {
 		if (notification.commentId) {
-			return `commented on your post`;
+			return t('notifications.comment');
 		}
 		if (notification.likeId) {
-			return `liked your post`;
+			return t('notifications.like');
 		}
 		return notification.message;
 	};
@@ -53,7 +55,7 @@ export const NotificationDropdown = () => {
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className='w-80 p-0' align='end'>
 				<div className='flex items-center justify-between border-b px-3 py-2'>
-					<h2 className='font-semibold'>Notifications</h2>
+					<h2 className='font-semibold'>{t('notifications.title')}</h2>
 					{unreadCount > 0 && (
 						<Button
 							variant='link'
@@ -61,7 +63,7 @@ export const NotificationDropdown = () => {
 							className='h-6 text-sm'
 							onClick={() => markAllAsRead()}
 						>
-							Mark all as read
+							{t('notifications.markAllAsRead')}
 						</Button>
 					)}
 				</div>
@@ -99,7 +101,7 @@ export const NotificationDropdown = () => {
 						))
 					) : (
 						<div className='py-6 text-center text-sm text-muted-foreground'>
-							No notifications yet
+							{t('notifications.noNotif')}
 						</div>
 					)}
 				</ScrollArea>

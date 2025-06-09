@@ -4,6 +4,7 @@ import api from '@/lib/api/api';
 import { toast } from 'sonner';
 import ConfirmationDialog from '../ConfirmationDialog';
 import { redirect } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 interface DeleteBloggerButtonProps {
 	bloggerId: number;
@@ -12,6 +13,7 @@ interface DeleteBloggerButtonProps {
 export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 	const queryClient = useQueryClient();
 	const { data: session } = useSession();
+	const { t } = useTranslation();
 
 	const deleteBloggerMutation = useMutation({
 		mutationFn: async () => {
@@ -19,14 +21,14 @@ export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 		},
 		onSuccess: async () => {
 			await queryClient.removeQueries({ queryKey: ['blogger', bloggerId] });
-
+			toast.success(t('profile.deleteProfile.successedDelete'));
 			queryClient.invalidateQueries({ queryKey: ['bloggers'] });
 			queryClient.invalidateQueries({ queryKey: ['users'] });
 		},
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		onError: (error: any) => {
 			console.error('Failed to delete blogger:', error);
-			toast.error('Failed to delete blogger.');
+			toast.error(t('profile.deleteProfile.failedDelete'));
 		},
 	});
 
@@ -42,8 +44,8 @@ export function DeleteBloggerButton({ bloggerId }: DeleteBloggerButtonProps) {
 
 	return (
 		<ConfirmationDialog
-			title='Delete Profile'
-			description='Are you sure you want to delete your profile? This action cannot be undone.'
+			title={t('profile.deleteProfile.title')}
+			description={t('profile.deleteProfile.description')}
 			remove={handleDelete}
 			className={
 				'bg-destructive px-5 py-1.5 text-sm font-medium text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'

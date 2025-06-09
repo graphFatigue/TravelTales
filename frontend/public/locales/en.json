@@ -14,7 +14,8 @@
 		"error": "Error",
 		"success": "Success",
 		"more": "more",
-		"view": "View"
+		"view": "View",
+		"retry": "Retry"
 	},
 	"validation": {
 		"required": "{{field}} is required",
@@ -59,7 +60,10 @@
 		"attachments": {
 			"max": "Maximum 10 attachments allowed",
 			"fileSize": "File size must be less than {{maxSize}}MB",
-			"fileType": "Only JPEG, PNG, MP4, and MOV files are allowed"
+			"fileType": "Only JPEG, PNG, MP4, and MOV files are allowed",
+			"notSupported": "Your browser does not support the video tag.",
+			"attachment": "Attachment",
+			"download": "Download"
 		},
 		"name": {
 			"required": "Name is required",
@@ -142,7 +146,73 @@
 		"bio": "Bio",
 		"bioPlaceholder": "Tell us about yourself...",
 		"updateError": "Error updating profile",
-		"updateSuccess": "Profile updated successfully"
+		"updateSuccess": "Profile updated successfully",
+		"overview": "Overview",
+		"statistics": "Statistics",
+		"about": {
+			"title": "About",
+			"fullName": "Full Name",
+			"gender": {
+				"title": "Gender",
+				"male": "Male",
+				"female": "Female",
+				"other": "Other"
+			},
+			"birthDate": "Date of Birth",
+			"location": "Location",
+			"noData": "No data",
+			"bio": "Bio"
+		},
+		"travelerRating": {
+			"title": "Traveler Rating",
+			"levels": {
+				"1": {
+					"title": "Beginner Explorer",
+					"range": "1-5 cities",
+					"description": "Travelers in this category have visited up to 5 cities. They are just starting their journey and usually share first impressions and beginner travel tips."
+				},
+				"2": {
+					"title": "Adventurous Wanderer",
+					"range": "6-15 cities",
+					"description": "These travelers have explored a moderate number of cities, showcasing a growing passion for travel. Their experiences often include varied adventures, detailed itineraries, and travel hacks."
+				},
+				"3": {
+					"title": "Seasoned Traveler",
+					"range": "16-30 cities",
+					"description": "Travelers in this group are experienced with extensive knowledge of diverse destinations. They offer in-depth reviews, cultural insights, and specialized travel advice."
+				},
+				"4": {
+					"title": "Globe-Trotter",
+					"range": "31-50 cities",
+					"description": "Representing a broad range of travel experiences, these travelers have explored many corners of the world. They typically highlight unique and less-traveled destinations, inspiring a wide audience."
+				},
+				"5": {
+					"title": "World Explorer",
+					"range": "50+ cities",
+					"description": "This elite category includes travelers who have visited an exceptional number of cities. Their experiences often focus on comprehensive global travel, sharing expert-level insights and inspiring stories."
+				}
+			}
+		},
+		"places": {
+			"title": "Places",
+			"countriesVisited": "Countries Visited",
+			"totalCountries": "{{count}} countries in total",
+			"citiesExplored": "Cities Explored",
+			"totalCities": "{{count}} cities in total"
+		},
+		"posts": {
+			"title": "Posts",
+			"recentPosts": "Recent Posts",
+			"viewAll": "View all {{count}} posts",
+			"noPosts": "No posts to display",
+			"createPost": "Create a Post"
+		},
+		"deleteProfile": {
+			"title": "Delete Profile",
+			"description": "Are you sure you want to delete your profile? This action cannot be undone.",
+			"failedDelete": "Failed to delete blogger",
+			"successedDelete": "Profile deleted successfully"
+		}
 	},
 	"post": {
 		"title": "Post",
@@ -154,13 +224,6 @@
 		"selectCountry": "Select country",
 		"city": "City",
 		"selectCity": "Select city",
-		"budget": {
-			"low": "0 - 100",
-			"medium": "100 - 500",
-			"high": "500 - 2000",
-			"veryHigh": "2000 - 5000",
-			"luxury": "5000+"
-		},
 		"selectBudget": "Select budget level",
 		"tags": "Tags",
 		"addTags": "Add tags (press Enter or Space to add)",
@@ -266,5 +329,12 @@
 			"confirm": "Delete",
 			"cancel": "Cancel"
 		}
+	},
+	"notifications": {
+		"like": " liked your post",
+		"comment": " commented on your post",
+		"title": "Notifications",
+		"markAllAsRead": "Mark all as read",
+		"noNotif": "No notifications yet"
 	}
 }

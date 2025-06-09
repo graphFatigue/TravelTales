@@ -13,6 +13,7 @@ import { Loader2 } from 'lucide-react';
 import UserAvatar from '../user/UserAvatar';
 import { useBlogger } from '@/hooks/bloggers/useBlogger';
 import { useTranslation } from 'react-i18next';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const CommentsSection = ({
 	post,
@@ -22,8 +23,9 @@ export const CommentsSection = ({
 	changeCommentsAmount: React.Dispatch<React.SetStateAction<number>>;
 }) => {
 	const { data: session } = useSession();
-	const { t } = useTranslation();
-
+	const { t, i18n } = useTranslation();
+	const currentLanguage = i18n.language;
+	const queryClient = useQueryClient();
 	const { data: blogger } = useBlogger(session?.user.blogger?.id);
 
 	const {
@@ -50,6 +52,9 @@ export const CommentsSection = ({
 		await send(comment);
 		setContent('');
 		changeCommentsAmount(prev => prev + 1);
+		queryClient.invalidateQueries({
+			queryKey: ['blogger', 'statistics', post.bloggerId],
+		});
 	};
 
 	return (
@@ -70,7 +75,7 @@ export const CommentsSection = ({
 												{comment.bloggerName || 'Deleted User'}
 											</p>
 											<p className='text-xs text-muted-foreground'>
-												{formatDate(comment.createdAt)}
+												{formatDate(comment.createdAt, currentLanguage)}
 											</p>
 										</div>
 										<p className='text-sm text-foreground'>{comment.content}</p>

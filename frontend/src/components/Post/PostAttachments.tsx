@@ -3,6 +3,7 @@ import { Attachment } from '@/types/types';
 import { Paperclip } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 export default function PostAttachments({
 	attachments,
@@ -21,6 +22,7 @@ export default function PostAttachments({
 		},
 		classname,
 	);
+	const {t} = useTranslation();
 	return (
 		<>
 			{attachments?.map(attachment => {
@@ -45,7 +47,7 @@ export default function PostAttachments({
 									src={attachment.uri}
 									type={`video/${attachment.uri.split('.').pop()}`}
 								/>
-								Your browser does not support the video tag.
+								{t('validation.attachments.notSupported')}
 							</video>
 						) : (
 							<div className='flex h-full items-center justify-center p-4'>
@@ -53,7 +55,8 @@ export default function PostAttachments({
 									<Paperclip className='h-8 w-8 text-muted-foreground' />
 									<div className='overflow-hidden'>
 										<p className='truncate font-medium'>
-											Attachment {attachment.number} ({fileType})
+											{t('validation.attachments.attachment')} {attachment.number} (
+											{fileType})
 										</p>
 										<Link
 											href={attachment.uri}
@@ -61,7 +64,7 @@ export default function PostAttachments({
 											target='_blank'
 											rel='noopener noreferrer'
 										>
-											Download
+											{t('validation.attachments.download')}
 										</Link>
 									</div>
 								</div>

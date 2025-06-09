@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { DeleteBloggerButton } from '@/components/bloggers/DeleteBloggerButton';
 import { Star } from 'lucide-react';
 import { useTravelerRating } from '@/hooks/useTravelRating';
+import { useTranslation } from 'react-i18next';
 
 interface ProfilePageClientProps {
 	initialBlogger: Blogger;
@@ -27,6 +28,8 @@ export default function ProfilePageClient({
 	});
 
 	const travelerRating = useTravelerRating(blogger?.visitedCities?.length || 0);
+
+	const { t } = useTranslation();
 
 	if (!blogger) return null;
 
@@ -45,7 +48,6 @@ export default function ProfilePageClient({
 					)}
 				</div>
 
-				{/* User Info */}
 				<div className='flex-1 space-y-4'>
 					<div>
 						<h1 className='text-3xl font-bold'>
@@ -53,19 +55,20 @@ export default function ProfilePageClient({
 						</h1>
 					</div>
 
-					{/* Stats */}
 					<div className='flex gap-6'>
 						<div className='text-center'>
 							<div className='text-2xl font-bold'>
 								{blogger.posts?.length || 0}
 							</div>
-							<div className='text-sm text-muted-foreground'>Posts</div>
+							<div className='text-sm text-muted-foreground'>
+								{t('profile.posts.title')}
+							</div>
 						</div>
 						<div className='text-center'>
 							<div className='text-2xl font-bold'>{blogger.followerCount}</div>
 							<Link href={`/blogger/${blogger.id}/followers`}>
 								<div className='text-sm text-muted-foreground hover:underline'>
-									Followers
+									{t('profile.followers')}
 								</div>
 							</Link>
 						</div>
@@ -73,7 +76,7 @@ export default function ProfilePageClient({
 							<div className='text-2xl font-bold'>{blogger.followingCount}</div>
 							<Link href={`/blogger/${blogger.id}/following`}>
 								<div className='text-sm text-muted-foreground hover:underline'>
-									Followings
+									{t('profile.following')}
 								</div>
 							</Link>
 						</div>
@@ -85,9 +88,11 @@ export default function ProfilePageClient({
 						))} */}
 						<Star className='h-6 w-6 text-yellow-500' />
 						<div>
-							<h3 className='text-lg font-bold'>{travelerRating.title}</h3>
+							<h3 className='text-lg font-bold'>
+								{t(`profile.travelerRating.levels.${travelerRating.id}.title`)}
+							</h3>
 							<p className='text-sm text-muted-foreground'>
-								{travelerRating.range}
+								{t(`profile.travelerRating.levels.${travelerRating.id}.range`)}
 							</p>
 						</div>
 					</div>

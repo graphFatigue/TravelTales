@@ -48,7 +48,6 @@ export function StatisticsTab({ bloggerId }: { bloggerId: number }) {
 					</CardTitle>
 				</CardHeader>
 				<CardContent className='grid gap-6'>
-					{/* Stats Overview */}
 					<div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2'>
 						<StatCard
 							title={t('stats.totalLikes')}
@@ -64,7 +63,6 @@ export function StatisticsTab({ bloggerId }: { bloggerId: number }) {
 						/>
 					</div>
 
-					{/* Most Popular Post */}
 					<div className='mt-4'>
 						<h3 className='mb-4 flex items-center gap-2 text-lg font-semibold'>
 							<ArrowUp className='h-5 w-5 text-yellow-500' />

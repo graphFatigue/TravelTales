@@ -8,6 +8,7 @@ import BloggerCard from './BloggerCard';
 import SearchBloggers from '@/components/bloggers/SearchBlogger';
 import { useSearchParams } from 'next/navigation';
 import { memo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const BloggersPage = () => {
 	const searchParams = useSearchParams();
@@ -22,6 +23,7 @@ const BloggersPage = () => {
 		isError,
 		refetch,
 	} = useInfiniteBloggers(6, searchTerm);
+	const { t } = useTranslation();
 
 	const bloggers = data?.pages.flatMap(page => page.items) || [];
 
@@ -30,7 +32,7 @@ const BloggersPage = () => {
 			<div className='flex h-screen items-center justify-center'>
 				<p className='text-destructive'>Failed to load bloggers</p>
 				<Button variant='outline' onClick={() => refetch()} className='ml-4'>
-					Retry
+					{t('common.retry')}
 				</Button>
 			</div>
 		);
@@ -66,7 +68,7 @@ const BloggersPage = () => {
 
 					{!hasNextPage && bloggers.length > 0 && (
 						<div className='col-span-full py-8 text-center text-muted-foreground'>
-							You&apos;ve reached the end
+							{t('bloggers.endReached')}
 						</div>
 					)}
 				</InfiniteScrollContainer>
@@ -81,7 +83,7 @@ const BloggersPage = () => {
 							: 'No bloggers found'}
 					</p>
 					<Button variant='outline' onClick={() => refetch()}>
-						Refresh
+						{t('bloggers.refresh')}
 					</Button>
 				</div>
 			)}

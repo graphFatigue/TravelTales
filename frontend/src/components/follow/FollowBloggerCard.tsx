@@ -9,7 +9,7 @@ import {
 import UserAvatar from '@/components/user/UserAvatar';
 import { FollowBlogger } from '@/types/types';
 import { redirect } from 'next/navigation';
-import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function FollowBloggerCard({
 	blogger,
@@ -18,6 +18,8 @@ export default function FollowBloggerCard({
 	blogger: FollowBlogger;
 	followStatus: 'following' | 'followers';
 }) {
+	const { t } = useTranslation();
+
 	return (
 		<Card className='group transition-all duration-300 hover:shadow-lg'>
 			<CardHeader className='relative pb-10'>
@@ -52,7 +54,7 @@ export default function FollowBloggerCard({
 						);
 					}}
 				>
-					See
+					{t('bloggers.viewProfile')}
 				</Button>
 			</CardFooter>
 		</Card>

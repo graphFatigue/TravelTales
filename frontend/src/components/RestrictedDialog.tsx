@@ -8,15 +8,18 @@ import {
 	DialogTitle,
 } from './ui/dialog';
 import { Button } from './ui/button';
+import { useTranslation } from 'react-i18next';
 
 export default function RestrictedDialog({ open, setOpen }: { open: boolean; setOpen: (open: boolean) => void }) {
+	const { t } = useTranslation();
+	
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Restricted</DialogTitle>
+					<DialogTitle>{t('dialog.restricted.title')}</DialogTitle>
 					<DialogDescription>
-						You must be logged in to perform this action.
+						{t('dialog.restricted.description')}
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter>
@@ -24,13 +27,13 @@ export default function RestrictedDialog({ open, setOpen }: { open: boolean; set
 						className='bg-primary text-primary-foreground hover:bg-primary/90'
 						onClick={() => redirect('/login')}
 					>
-						Login
+						{t('auth.login')}
 					</Button>
 					<Button
 						className='bg-muted text-muted-foreground hover:bg-muted/90'
 						onClick={() => redirect('/signup')}
 					>
-						Sign Up
+						{t('auth.signup')}
 					</Button>
 				</DialogFooter>
 			</DialogContent>

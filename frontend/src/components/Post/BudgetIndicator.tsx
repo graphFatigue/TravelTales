@@ -32,7 +32,7 @@ export function BudgetIndicator({
 
 	return (
 		<div
-			className={`flex items-center rounded-full px-3 py-1 text-sm font-medium min-w-fit ${budgetInfo.class} ${className}`}
+			className={`flex min-w-fit items-center rounded-full px-3 py-1 text-sm font-medium ${budgetInfo.class} ${className}`}
 			title={t('post.budgetLevel', { level })}
 		>
 			<DollarSign className='mr-1 h-4 w-4' />

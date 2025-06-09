@@ -7,6 +7,7 @@ import FollowBloggerCard from './FollowBloggerCard';
 import { FollowBlogger } from '@/types/types';
 import { InfiniteData, UseInfiniteQueryResult } from '@tanstack/react-query';
 import { FollowBloggersResponse } from '@/hooks/bloggers/useInfiniteBloggers';
+import { useTranslation } from 'react-i18next';
 
 export default function FollowPage({
 	followType,
@@ -18,6 +19,7 @@ export default function FollowPage({
 		Error
 	>;
 }) {
+	const { t } = useTranslation();
 	const {
 		data,
 		fetchNextPage,
@@ -74,7 +76,7 @@ export default function FollowPage({
 
 				{!hasNextPage && bloggers.length > 0 && (
 					<div className='col-span-full py-8 text-center text-muted-foreground'>
-						You&apos;ve reached the end
+						{t('bloggers.endReached')}
 					</div>
 				)}
 			</InfiniteScrollContainer>
@@ -82,8 +84,8 @@ export default function FollowPage({
 			{!isLoading && bloggers.length === 0 && (
 				<div className='flex flex-col items-center justify-center gap-4 py-16'>
 					<Globe className='h-12 w-12 text-muted-foreground' />
-					<p className='text-lg text-muted-foreground'>No bloggers found</p>
-					<Button variant='outline'>Refresh</Button>
+					<p className='text-lg text-muted-foreground'>{t('bloggers.noResults')}</p>
+					<Button variant='outline'>{t('bloggers.refresh')}</Button>
 				</div>
 			)}
 		</>

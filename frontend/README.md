@@ -1,4 +1,3 @@
-
 Run the development server:
 
 ```bash
@@ -7,21 +6,24 @@ npm install --legacy-peer-deps
 npm run dev
 ```
 
+Run the production server:
 
-## TO DO
+```bash
+npm install --legacy-peer-deps
 
+npm run build
 
-### Logic
+npm run start
+```
 
-- [x] Registration/authorization
-- [x]  profile editing
-- [x] profile displaying
-- [ ] Displaying posts on the main page (pagination)
-- [ ] Creating, editing, deleting own posts
-- [ ] authorization via Gmail
-- [ ] Password recovery
-- [ ] Comments + likes + Notifications
-- [ ] Filtering and search
-- [ ] Statistics integration
-- [ ] Administrator logic
-- [ ] Localization
+need to have .env file with variables:
+
+GOOGLE_CLIENT_ID
+
+GOOGLE_CLIENT_SECRET
+
+NEXT_PUBLIC_API_BASE_URL
+
+NEXTAUTH_SECRET
+
+NEXTAUTH_URL

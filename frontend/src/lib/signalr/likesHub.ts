@@ -1,4 +1,3 @@
-// lib/signalr/likesHub.ts
 import * as signalR from '@microsoft/signalr';
 import { getSession } from 'next-auth/react';
 

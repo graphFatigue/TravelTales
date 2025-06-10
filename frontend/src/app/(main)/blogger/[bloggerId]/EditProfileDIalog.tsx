@@ -8,7 +8,7 @@ import {
 import { Form } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
-import {  useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Blogger } from '@/types/types';
 import { useProfileMutations } from '@/hooks/bloggers/useProfileMutations';
@@ -39,7 +39,7 @@ export default function EditBloggerProfileDialog({
 		undefined,
 	);
 
-	const {t} = useTranslation();
+	const { t } = useTranslation();
 	const mutation = useProfileMutations(blogger.id);
 
 	const form = useForm<UpdateBloggerProfileValues>({

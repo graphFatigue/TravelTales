@@ -338,6 +338,21 @@
 			"cancel": "Cancel"
 		}
 	},
+	"notFound": {
+		"general": {
+			"title": "404 - Page not found",
+			"description": "The page you are looking for could not be found."
+		},
+		"post": {
+			"title": "Post not found",
+			"description": "The post you are looking for could not be found."
+		},
+		"blogger": {
+			"title": "Blogger not found",
+			"description": "The blogger you are looking for could not be found."
+		},
+		"returnHome": "Return Home"
+	},
 	"notifications": {
 		"like": " liked your post",
 		"comment": " commented on your post",

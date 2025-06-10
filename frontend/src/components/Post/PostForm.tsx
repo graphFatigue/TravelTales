@@ -19,11 +19,11 @@ import { getPostFormSchema, PostFormValues } from '@/lib/validation';
 import api from '@/lib/api/api';
 import { Post } from '@/types/types';
 import { getFileType } from '@/lib/utils';
-import { LocationFields } from './PostFormFields/LocationFields';
-import { BudgetField } from './PostFormFields/BudgetField';
-import { CategoriesField } from './PostFormFields/CategoriesField';
-import { TagsField } from './PostFormFields/TagsField';
-import { AttachmentsField } from './PostFormFields/AttachmentsField';
+import { LocationFields } from './postFormFields/LocationFields';
+import { BudgetField } from './postFormFields/BudgetField';
+import { CategoriesField } from './postFormFields/CategoriesField';
+import { TagsField } from './postFormFields/TagsField';
+import { AttachmentsField } from './postFormFields/AttachmentsField';
 
 interface PostFormProps {
 	post?: Post;

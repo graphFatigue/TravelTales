@@ -11,6 +11,7 @@ namespace TravelTales.Application.DTOs.Notification
         public long? TriggeredByBloggerId { get; set; }
         public BloggerDto TriggeredByBlogger { get; set; }
         public long? PostId { get; set; }
+        public long? LikeId { get; set; }
         public long? CommentId { get; set; }
         public bool IsRead { get; set; }
         public DateTime CreatedAt { get; set; }

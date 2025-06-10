@@ -10,7 +10,10 @@ namespace TravelTales.Persistence.EntityConfigurations
         {
             builder.ToTable("likes");
 
-            builder.HasKey(l => new { l.BloggerId, l.PostId });
+            builder.HasKey(l => l.Id);
+
+            builder.Property(l => l.Id)
+                .HasColumnName("like_id");
 
             builder.Property(l => l.BloggerId)
                 .HasColumnName("blogger_id");
@@ -32,8 +35,8 @@ namespace TravelTales.Persistence.EntityConfigurations
             // Add inverse navigation
             builder.HasOne(l => l.Notification)
                 .WithOne(n => n.PostLike)
-                .HasForeignKey<Notification>(n => new { n.LikedPostId, n.LikedBloggerId })
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey<Notification>(n => n.LikeId)
+                .OnDelete(DeleteBehavior.ClientCascade);
         }
     }
 }

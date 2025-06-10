@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
 using TravelTales.Domain.Entities;
+using TravelTales.Domain.Enums;
+using System.Text.Json;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace TravelTales.Persistence.EntityConfigurations
 {
@@ -35,6 +38,25 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .HasColumnName("blogger_id");
 
             builder
+                .Property(p => p.Budget)
+                .HasColumnName("budget_level")
+                .HasDefaultValue(BudgetLevel.NotSpecified);
+
+            builder.Property(p => p.Tags)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => JsonSerializer.Deserialize<ICollection<string>>(v, (JsonSerializerOptions)null) ?? new List<string>(),
+                    new ValueComparer<ICollection<string>>(
+                        (c1, c2) => c1.SequenceEqual(c2),
+                        c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                        c => c.ToList()
+                    )
+                )
+                .HasColumnType("nvarchar(max)")
+                .HasColumnName("tags")
+                .HasDefaultValue(new List<string>());
+
+            builder
                 .Property(p => p.CreatedAt)
                 .HasColumnName("created_at");
 
@@ -45,6 +67,16 @@ namespace TravelTales.Persistence.EntityConfigurations
             builder
                 .Property(p => p.IsDeleted)
                 .HasColumnName("is_deleted");
+
+            builder.HasOne(p => p.City)
+                .WithMany()
+                .HasForeignKey(p => p.CityId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(p => p.Country)
+                .WithMany()
+                .HasForeignKey(p => p.CountryId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder
                .HasOne(p => p.Blogger)

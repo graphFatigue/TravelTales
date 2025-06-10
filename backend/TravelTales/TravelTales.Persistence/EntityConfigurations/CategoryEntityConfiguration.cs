@@ -20,6 +20,15 @@ public class CategoryEntityConfiguration : IEntityTypeConfiguration<Category>
             .HasMaxLength(500)
             .HasColumnName("description");
 
+        builder.Property(c => c.NameUa)
+            .IsRequired()
+            .HasMaxLength(100)
+            .HasColumnName("name_ua");
+
+        builder.Property(c => c.DescriptionUa)
+            .HasMaxLength(500)
+            .HasColumnName("description_ua");
+
         builder.Property(c => c.CreatedAt)
             .HasColumnName("created_at");
 

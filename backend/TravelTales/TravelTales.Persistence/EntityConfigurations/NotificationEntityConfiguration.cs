@@ -45,11 +45,10 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .HasForeignKey(n => n.CommentId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // Corrected PostLike relationship
             builder.HasOne(n => n.PostLike)
-                .WithOne(pl => pl.Notification)
-                .HasForeignKey<PostLike>(pl => new { pl.PostId, pl.BloggerId })
-                .OnDelete(DeleteBehavior.Cascade);
+                .WithMany()
+                .HasForeignKey(n => n.LikeId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Property(p => p.CreatedAt)
                 .HasColumnName("created_at");

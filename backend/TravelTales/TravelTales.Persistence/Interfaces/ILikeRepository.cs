@@ -1,4 +1,5 @@
-﻿using TravelTales.Domain.Entities;
+﻿using System.Linq.Expressions;
+using TravelTales.Domain.Entities;
 
 namespace TravelTales.Persistence.Interfaces
 {
@@ -8,10 +9,14 @@ namespace TravelTales.Persistence.Interfaces
 
         Task RemoveLikeAsync(PostLike postLike);
 
+        Task RemoveLikeAsync(long postId, long bloggerId);
+
         Task<bool> IsLikedAsync(long postId, long bloggerId);
 
         Task<int> CountLikesByPostIdAsync(long postId);
 
         Task<List<PostLike>> GetLikesByPostIdAsync(long postId, CancellationToken cancellationToken = default);
+
+        Task<List<PostLike>> GetAllAsync(Expression<Func<PostLike, bool>> predicate, CancellationToken cancellationToken = default);
     }
 }

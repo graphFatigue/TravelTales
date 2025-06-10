@@ -1,4 +1,5 @@
 ﻿using TravelTales.Application.DTOs.Attachment;
+using TravelTales.Domain.Enums;
 
 namespace TravelTales.Application.DTOs.Post
 {
@@ -7,6 +8,11 @@ namespace TravelTales.Application.DTOs.Post
         public string Title { get; set; }
         public string Content { get; set; }
         public long BloggerId { get; set; }
+        public long? CityId { get; set; }
+        public long? CountryId { get; set; }
+        public BudgetLevel? Budget { get; set; }
+        public ICollection<long> CategoryIds { get; set; }
         public ICollection<UploadAttachmentDto>? Attachments { get; set; }
+        public ICollection<string> Tags { get; set; } = new List<string>();
     }
 }

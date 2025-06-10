@@ -1,5 +1,6 @@
 ﻿using TravelTales.Persistence.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace TravelTales.Persistence
 {
@@ -26,6 +27,11 @@ namespace TravelTales.Persistence
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return this.dbContext.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync()
+        {
+            return await dbContext.Database.BeginTransactionAsync();
         }
 
         T IUnitOfWork.GetRepository<T>()

@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Sieve.Models;
 using TravelTales.Application.DTOs.Comment;
 using TravelTales.Application.DTOs.Notification;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
-using TravelTales.Persistence.Repositories;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Application.Services
 {
@@ -17,22 +18,29 @@ namespace TravelTales.Application.Services
         private readonly INotificationService notificationService;
         private readonly IValidator<CreateCommentDto> createValidator;
         private readonly IValidator<UpdateCommentDto> updateValidator;
+        private readonly IContextAccessor contextAccessor;
+        private readonly IBloggerService bloggerService;
+
 
         public CommentService(
             IUnitOfWork unitOfWork,
             IMapper mapper,
             INotificationService notificationService,
             IValidator<CreateCommentDto> createValidator,
-            IValidator<UpdateCommentDto> updateValidator)
+            IValidator<UpdateCommentDto> updateValidator,
+            IContextAccessor contextAccessor,
+            IBloggerService bloggerService)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
             this.notificationService = notificationService;
             this.createValidator = createValidator;
             this.updateValidator = updateValidator;
+            this.contextAccessor = contextAccessor;
+            this.bloggerService = bloggerService;
         }
 
-        public async Task<CommentDto> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
+        public async Task<(CommentBroadcastDto comment, NotificationDto? notification)> CreateCommentAsync(CreateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
         {
             await createValidator.ValidateAndThrowAsync(commentDto);
 
@@ -43,50 +51,52 @@ namespace TravelTales.Application.Services
             await this.unitOfWork.GetRepository<ICommentRepository>().AddAsync(comment);
             await this.unitOfWork.SaveChangesAsync();
 
-            var post = await this.unitOfWork.GetRepository<IPostRepository>().GetByIdAsync(commentDto.PostId);
-            if (post != null && post.BloggerId != bloggerId)
+            // Eager load related entities for mapping
+            comment.Post = await unitOfWork.GetRepository<IPostRepository>().GetByIdAsync(commentDto.PostId);
+            comment.Blogger = await unitOfWork.GetRepository<IBloggerRepository>().GetByIdAsync(bloggerId);
+
+            if (comment.Post != null && comment.Post.BloggerId != bloggerId)
             {
-                var isBlocked = await this.unitOfWork.GetRepository<IBloggerBlockRepository>().ExistsAsync(post.BloggerId, bloggerId, cancellationToken);
+                var isBlocked = await unitOfWork.GetRepository<IBloggerBlockRepository>()
+                    .ExistsAsync(comment.Post.BloggerId, bloggerId, cancellationToken);
                 if (!isBlocked)
                 {
                     var notificationDto = new CreateNotificationDto
                     {
                         Message = "New comment on your post",
-                        RecipientBloggerId = (long)post.BloggerId,
+                        RecipientBloggerId = (long)comment.Post.BloggerId,
                         TriggeredByBloggerId = bloggerId,
-                        PostId = post.Id,
+                        PostId = comment.Post.Id,
                         CommentId = comment.Id
                     };
                     var notification = await this.notificationService.CreateNotificationAsync(notificationDto);
-
-                    // Access the blogger name through the DTO
-                    var triggeredByName = notification.TriggeredByBlogger != null
-                        ? $"{notification.TriggeredByBlogger.FirstName} {notification.TriggeredByBlogger.LastName}"
-                        : "Anonymous";
-
-                    // Use this name in your real-time notification if needed
+                    return (mapper.Map<CommentBroadcastDto>(comment), notification);
                 }
             }
 
-            return mapper.Map<CommentDto>(comment);
+            return (mapper.Map<CommentBroadcastDto>(comment), null);
         }
 
-        public async Task UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
+        public async Task<CommentBroadcastDto> UpdateCommentAsync(long commentId, UpdateCommentDto commentDto, long bloggerId, CancellationToken cancellationToken = default)
         {
             await updateValidator.ValidateAndThrowAsync(commentDto);
 
-            var comment = await GetCommentWithAuthorization(commentId, bloggerId);
+            var comment = await GetCommentWithAuthorization(commentId);
+            await this.EnsureUserCanModifyCommentAsync(comment);
 
             comment.Content = commentDto.Content;
             comment.ModifiedAt = DateTime.UtcNow;
 
             unitOfWork.GetRepository<ICommentRepository>().Update(comment);
             await unitOfWork.SaveChangesAsync();
+
+            return mapper.Map<CommentBroadcastDto>(comment);
         }
 
         public async Task DeleteCommentAsync(long commentId, long bloggerId, CancellationToken cancellationToken = default)
         {
-            var comment = await GetCommentWithAuthorization(commentId, bloggerId);
+            var comment = await GetCommentWithAuthorization(commentId);
+            await this.EnsureUserCanDeleteCommentAsync(comment);
 
             unitOfWork.GetRepository<ICommentRepository>().Delete(comment);
             await unitOfWork.SaveChangesAsync();
@@ -100,10 +110,43 @@ namespace TravelTales.Application.Services
             return mapper.Map<List<CommentDto>>(comments);
         }
 
-        private async Task<Comment> GetCommentWithAuthorization(long commentId, long bloggerId, CancellationToken cancellationToken = default)
+        public async Task<PagedList<CommentBroadcastDto>> GetCommentsWithFilterAsync(SieveModel sieveModel, CancellationToken cancellationToken = default)
+        {
+            var pagedList = await this.unitOfWork.GetRepository<ICommentRepository>()
+                .GetAllWithFilterAsync(sieveModel, cancellationToken);
+
+            var filteredComments = this.mapper.Map<List<CommentBroadcastDto>>(pagedList.Items)
+                .Where(c => !c.IsDeleted)
+                .ToList();
+
+            return PagedList<CommentBroadcastDto>.Copy(pagedList, filteredComments);
+        }
+
+        private async Task EnsureUserCanDeleteCommentAsync(Comment comment)
+        {
+            var bloggerId = await this.bloggerService.GetCurrentBloggerId();
+            var userRoles = this.contextAccessor.GetCurrentUserRoles();
+
+            if (comment.BloggerId != bloggerId && !userRoles.Contains("Admin") && comment.Post.BloggerId != bloggerId)
+            {
+                throw new PermissionsException("You don't have permission to delete this comment");
+            }
+        }
+
+        private async Task EnsureUserCanModifyCommentAsync(Comment comment)
+        {
+            var bloggerId = await this.bloggerService.GetCurrentBloggerId();
+
+            if (comment.BloggerId != bloggerId)
+            {
+                throw new PermissionsException("You don't have permission to modify this comment");
+            }
+        }
+
+        private async Task<Comment> GetCommentWithAuthorization(long commentId, CancellationToken cancellationToken = default)
         {
             var comment = await unitOfWork.GetRepository<ICommentRepository>()
-                .GetByIdAsync(commentId);
+                .GetByIdFullAsync(commentId);
 
             if (comment == null)
                 throw new NotFoundException("Comment not found");

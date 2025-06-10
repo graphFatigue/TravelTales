@@ -4,19 +4,46 @@ namespace TravelTales.Application.DTOs.Attachment
 {
     public class UploadAttachmentDto
     {
-        public long PostId { get; set; }
+        [JsonIgnore]
+        public long PostId { get; set; } = 0;
 
         public int Number { get; set; }
 
         [JsonIgnore]
         public byte[]? AttachmentBytes { get; set; }
 
+        [JsonIgnore]
+        public string? MimeType { get; set; }
+
         public string? Base64Attachment
         {
             get => null;
-            set => AttachmentBytes = !string.IsNullOrEmpty(value)
-                ? Convert.FromBase64String(value.Split(',')[1])
-                : null;
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    AttachmentBytes = null;
+                    MimeType = null;
+                    return;
+                }
+
+                if (value.StartsWith("data:video/"))
+                {
+                    MimeType = value.Split(';')[0].Split('/')[1];
+                }
+                else if (value.StartsWith("data:image/"))
+                {
+                    MimeType = value.Split(';')[0].Split('/')[1];
+                }
+                else
+                {
+                    MimeType = "jpeg";
+                }
+
+                AttachmentBytes = !string.IsNullOrEmpty(value)
+                    ? Convert.FromBase64String(value.Split(',')[1])
+                    : null;
+            }
         }
     }
 }

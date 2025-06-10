@@ -1,4 +1,6 @@
-﻿namespace TravelTales.Persistence.Interfaces
+﻿using Microsoft.EntityFrameworkCore.Storage;
+
+namespace TravelTales.Persistence.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
@@ -6,5 +8,7 @@
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         T GetRepository<T>()
             where T : class;
+
+        Task<IDbContextTransaction> BeginTransactionAsync();
     }
 }

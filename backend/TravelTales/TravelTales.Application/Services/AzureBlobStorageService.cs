@@ -1,5 +1,6 @@
 ﻿using Azure.Storage;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using Microsoft.Extensions.Configuration;
 using TravelTales.Application.Interfaces;
@@ -34,6 +35,28 @@ namespace TravelTales.Application.Services
             return blobUri;
         }
 
+        public async Task<string> UploadAsync(
+            Stream file,
+            string containerName,
+            string fileName,
+            string contentType)
+        {
+            var blobContainerClient = GetBlobContainerClient(containerName);
+            var blobClient = blobContainerClient.GetBlobClient(fileName);
+
+            var blobHttpHeaders = new BlobHttpHeaders
+            {
+                ContentType = GetContentType(contentType)
+            };
+
+            await blobClient.UploadAsync(
+                file,
+                new BlobUploadOptions { HttpHeaders = blobHttpHeaders },
+                cancellationToken: default);
+
+            return blobClient.Uri.ToString();
+        }
+
         public Task<string> GetSasTokenAsync(
             string containerName,
             string fileName)
@@ -59,6 +82,22 @@ namespace TravelTales.Application.Services
             var blobClient = blobContainerClient.GetBlobClient(blobFilename);
 
             await blobClient.DeleteIfExistsAsync();
+        }
+
+
+        private static string GetContentType(string mimeType)
+        {
+            return mimeType?.ToLower() switch
+            {
+                "mp4" => "video/mp4",
+                "mov" => "video/quicktime",
+                "avi" => "video/x-msvideo",
+                "webm" => "video/webm",
+                "jpg" or "jpeg" => "image/jpeg",
+                "png" => "image/png",
+                "gif" => "image/gif",
+                _ => "application/octet-stream"
+            };
         }
 
         private BlobContainerClient GetBlobContainerClient(string blobContainerName)

@@ -6,7 +6,7 @@ using TravelTales.Application.Interfaces;
 
 namespace TravelTales.API.Controllers
 {
-    [Authorize]
+    [AllowAnonymous]
     [ApiController, Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
@@ -57,6 +57,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(post);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreatePostDto createPostDto, CancellationToken cancellationToken)
         {
@@ -67,16 +68,18 @@ namespace TravelTales.API.Controllers
             return this.Ok(post);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(long id, [FromBody] UpdatePostDto updatePostDto, CancellationToken cancellationToken)
         {
             this.logger.LogTrace("Starting Update action in PostsController for post ID {Id}", id);
 
-            await this.postService.UpdatePostAsync(id, updatePostDto, cancellationToken);
+            var post = await this.postService.UpdatePostAsync(id, updatePostDto, cancellationToken);
             this.logger.LogInformation("Post with ID {Id} updated successfully", id);
-            return this.NoContent();
+            return this.Ok(post);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {
@@ -86,6 +89,20 @@ namespace TravelTales.API.Controllers
             this.logger.LogInformation("Post with ID {Id} deleted successfully", id);
             return this.NoContent();
 
+        }
+
+        [Authorize]
+        [HttpGet("followed")]
+        public async Task<IActionResult> GetFollowedBloggersPosts(
+            [FromQuery] SieveModel sieveModel,
+            CancellationToken cancellationToken)
+        {
+            logger.LogTrace("Starting GetFollowedBloggersPosts action in PostsController");
+
+            var posts = await postService.GetFollowedBloggersPostsAsync(sieveModel, cancellationToken);
+            logger.LogInformation("Successfully retrieved posts from followed bloggers");
+
+            return Ok(posts);
         }
     }
 }

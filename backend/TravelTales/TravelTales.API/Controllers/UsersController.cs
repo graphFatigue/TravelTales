@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Sieve.Models;
 using TravelTales.Application.DTOs.User;
 using TravelTales.Application.Interfaces;
 
@@ -70,6 +72,39 @@ namespace TravelTales.API.Controllers
             await this.userService.AssignRoleToUserAsync(assignRoleDto, cancellationToken);
             this.logger.LogInformation("Role assigned to user ID {UserId} successfully", assignRoleDto.UserId);
             return this.NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetFilteredUsers(
+            [FromQuery] SieveModel sieveModel,
+            CancellationToken cancellationToken)
+        {
+            this.logger.LogTrace("Starting GetFilteredUsers action");
+
+            var result = await this.userService.GetUsersWithFilterAsync(sieveModel, cancellationToken);
+            this.logger.LogInformation($"Retrieved filtered users");
+            return this.Ok(result);
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUserAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            logger.LogTrace("Starting DeleteUserAsync for user ID {Id}", id);
+
+            try
+            {
+                await userService.DeleteUserAsync(id, cancellationToken);
+
+                logger.LogInformation("User with ID {Id} deleted successfully", id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error deleting user with ID {Id}", id);
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

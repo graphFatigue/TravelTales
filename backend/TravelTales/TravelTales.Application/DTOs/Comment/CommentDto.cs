@@ -8,7 +8,6 @@ namespace TravelTales.Application.DTOs.Comment
         public long Id { get; set; }
         public string Content { get; set; }
         public long PostId { get; set; }
-        public PostDto Post { get; set; }
         public long BloggerId { get; set; }
         public BloggerDto Blogger { get; set; }
         public DateTime? CreatedAt { get; set; }

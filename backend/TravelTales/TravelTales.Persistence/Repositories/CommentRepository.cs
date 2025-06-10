@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
 using Sieve.Services;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Persistence.Repositories
 {
@@ -16,9 +18,55 @@ namespace TravelTales.Persistence.Repositories
         {
             return await this.DbSet
                 .Include(c => c.Blogger)
+                .Include(s => s.Post)
                 .Where(c => c.PostId == postId && !c.IsDeleted)
                 .OrderByDescending(c => c.CreatedAt)
                 .ToListAsync();
+        }
+
+        public async Task<Comment?> GetByIdFullAsync(long id, CancellationToken cancellationToken = default)
+        {
+            return await this.DbSet
+                .Include(x => x.Post)
+                .Include(s => s.Blogger)
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken);
+        }
+
+        public override void Delete(Comment comment)
+        {
+            // Delete notifications related to this comment first
+            var notifications = this.context.Notifications
+                .Where(n => n.CommentId == comment.Id)
+                .ToList();
+
+            this.context.Notifications.RemoveRange(notifications);
+
+            // Then delete the comment
+            base.Delete(comment);
+        }
+
+        public override async Task<PagedList<Comment>> GetAllWithFilterAsync(
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
+        {
+
+            // Base query with includes for navigation properties
+            var query = DbSet
+                .Where(x => !x.IsDeleted)
+                .Include(s => s.Blogger)
+                .Include(s => s.Post)
+                .AsQueryable();
+
+            //// Apply Sieve filters/sorts
+            var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
+
+            //// Apply pagination if needed
+            //if (sieveModel.Page != null && sieveModel.PageSize != null)
+            //{
+            //    filteredQuery = sieveProcessor.Apply(sieveModel, filteredQuery, applyFiltering: false, applySorting: false);
+            //}
+
+            return await PagedList<Comment>.ToPagedListAsync(filteredQuery, sieveModel);
         }
     }
 

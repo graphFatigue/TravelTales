@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TravelTales.Application.Exceptions;
 using TravelTales.Application.Interfaces;

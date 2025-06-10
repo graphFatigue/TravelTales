@@ -12,10 +12,18 @@ namespace TravelTales.Domain.Entities
         public Sex? Sex { get; set; }
         public string? Bio { get; set; }
         public string? Image { get; set; }
+        public long? CityId { get; set; }
+        public City? City { get; set; }
+        public long? CountryId { get; set; }
+        public Country? Country { get; set; }
         public Guid UserId { get; set; }
         public User User { get; set; }
         public ICollection<BloggerBlock>? BlockedBloggers { get; }
         public ICollection<BloggerBlock>? BlockedByBloggers { get; }
+        public ICollection<BloggerFollow> Followers { get; } = new List<BloggerFollow>();
+        public ICollection<BloggerFollow> Following { get; } = new List<BloggerFollow>();
+        public ICollection<City> VisitedCities { get; } = new List<City>();
+        public ICollection<Country> VisitedCountries { get; } = new List<Country>();
         public ICollection<Post>? Posts { get; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }

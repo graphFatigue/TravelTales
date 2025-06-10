@@ -9,9 +9,17 @@ namespace TravelTales.Application.MappingProfiles
         public BloggerMappingProfile()
         {
             //this.CreateMap<Blogger, BloggerDto>();
-            this.CreateMap<Blogger, BloggerDto>()
-                .ForMember(dest => dest.Posts, opt => opt.Ignore());
+            CreateMap<Blogger, BloggerDto>()
+            //.ForMember(dest => dest.Posts, opt => opt.Ignore())
+            .ForMember(dest => dest.FollowerCount, opt => opt.MapFrom(src => src.Followers.Count))
+            .ForMember(dest => dest.FollowingCount, opt => opt.MapFrom(src => src.Following.Count))
+            .ForMember(dest => dest.IsFollowing, opt => opt.Ignore());
             this.CreateMap<CreateBloggerDto, Blogger>();
+
+            CreateMap<Blogger, BloggerShortInfoDto>()
+                .ForMember(dest => dest.FollowerCount, opt => opt.MapFrom(src => src.Followers.Count))
+                .ForMember(dest => dest.FollowingCount, opt => opt.MapFrom(src => src.Following.Count))
+                .ForMember(dest => dest.IsFollowing, opt => opt.Ignore());
         }
     }
 }

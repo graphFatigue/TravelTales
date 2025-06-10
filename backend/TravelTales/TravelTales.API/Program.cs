@@ -14,7 +14,7 @@ builder.Logging.AddConsole();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        //options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
@@ -52,12 +52,18 @@ builder.Services.AddCors(options => options.AddPolicy(
     policy => policy
         .AllowAnyMethod()
         .AllowAnyHeader()
-        .WithOrigins("https://localhost:4200")
+        .WithOrigins("http://localhost:3000")
         .AllowCredentials()));
 
 builder.Services.AddAuthorization();
 builder.Services.ConfigureApplicationLayerDependencies(builder.Configuration);
 builder.Services.ConfigurePersistenceLayerDependencies(builder.Configuration);
+
+//builder.WebHost.ConfigureKestrel(serverOptions =>
+//{
+//    serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(5);
+//    serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(2);
+//});
 
 var app = builder.Build();
 

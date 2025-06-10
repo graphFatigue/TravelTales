@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Sieve.Models;
 using Sieve.Services;
+using System.Linq.Expressions;
 using TravelTales.Domain.Entities.Abstract;
 using TravelTales.Persistence.Interfaces;
 using TravelTales.Persistence.SharedFiles;
@@ -15,7 +16,7 @@ namespace TravelTales.Persistence.Repositories
 
         protected readonly ISieveProcessor sieveProcessor;
 
-        private readonly AppDbContext context;
+        protected readonly AppDbContext context;
 
         public GenericRepository(AppDbContext context, ISieveProcessor sieveProcessor)
         {
@@ -32,6 +33,16 @@ namespace TravelTales.Persistence.Repositories
         public virtual async Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
         {
             return await this.DbSet.Where(x => !x.IsDeleted).ToListAsync(cancellationToken);
+        }
+
+        public virtual async Task<List<TEntity>> GetAllAsync(
+            Expression<Func<TEntity, bool>> predicate,
+            CancellationToken cancellationToken = default)
+        {
+            return await this.DbSet
+                .Where(predicate)
+                .Where(x => !x.IsDeleted)
+                .ToListAsync(cancellationToken);
         }
 
         public IQueryable<TEntity> GetAllAsQueryable()

@@ -6,7 +6,6 @@ using TravelTales.Application.Interfaces;
 
 namespace TravelTales.API.Controllers
 {
-    [Authorize]
     [ApiController, Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
@@ -19,6 +18,7 @@ namespace TravelTales.API.Controllers
             this.logger = logger;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken = default)
         {
@@ -29,6 +29,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(categories);
         }
 
+        [AllowAnonymous]
         [HttpGet("filter")]
         public async Task<IActionResult> GetAllWithFilter([FromQuery] SieveModel sieveModel, CancellationToken cancellationToken = default)
         {
@@ -39,6 +40,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(categories);
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(long id, CancellationToken cancellationToken)
         {
@@ -57,6 +59,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(category);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateCategoryDto createCategoryDto, CancellationToken cancellationToken)
         {
@@ -67,6 +70,7 @@ namespace TravelTales.API.Controllers
             return this.Ok(category);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(long id, [FromBody] UpdateCategoryDto updateCategoryDto, CancellationToken cancellationToken)
         {
@@ -77,6 +81,7 @@ namespace TravelTales.API.Controllers
             return this.NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
         {

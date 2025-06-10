@@ -6,5 +6,7 @@ namespace TravelTales.Persistence.Interfaces
     {
         //Task AddCommentAsync(Comment comment);
         Task<List<Comment>> GetCommentsByPostIdAsync(long postId);
+
+        Task<Comment?> GetByIdFullAsync(long id, CancellationToken cancellationToken = default);
     }
 }

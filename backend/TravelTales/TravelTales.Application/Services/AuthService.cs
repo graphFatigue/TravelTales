@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Azure.Core;
 using FluentValidation;
 using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using TravelTales.Application.DTOs.Auth;
 using TravelTales.Application.DTOs.User;
 using TravelTales.Application.Exceptions;
@@ -20,6 +22,7 @@ namespace TravelTales.Application.Services
         private readonly IMapper mapper;
         private readonly IUnitOfWork unitOfWork;
         private readonly IValidator<SignupDto> signupDtoValidator;
+        private readonly IEmailService emailService;
 
         public AuthService(
             UserManager<User> userManager,
@@ -27,7 +30,8 @@ namespace TravelTales.Application.Services
             IJwtService jwtService,
             IMapper mapper,
             IUnitOfWork unitOfWork,
-            IValidator<SignupDto> signupDtoValidator)
+            IValidator<SignupDto> signupDtoValidator,
+            IEmailService emailService)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
@@ -35,6 +39,7 @@ namespace TravelTales.Application.Services
             this.mapper = mapper;
             this.unitOfWork = unitOfWork;
             this.signupDtoValidator = signupDtoValidator;
+            this.emailService = emailService;
         }
 
         public async Task<AuthResponseDto> LoginAsync(LoginDto loginDto)
@@ -51,11 +56,13 @@ namespace TravelTales.Application.Services
             // Generate token for the new user
             var jwtAccessToken = await this.GenerateTokenAsync(user);
             var userDto = this.mapper.Map<UserDto>(user);
+            var roles = await userManager.GetRolesAsync(user);
 
             return new AuthResponseDto
             {
                 AccessToken = jwtAccessToken,
-                User = userDto
+                User = userDto,
+                Role = roles.FirstOrDefault()
             };
         }
 
@@ -87,10 +94,15 @@ namespace TravelTales.Application.Services
                     UserId = user.Id,
                     FirstName = payload.GivenName,
                     LastName = payload.FamilyName,
+                    BirthDate = DateTime.UtcNow.AddYears(-25),
                     CreatedAt = DateTime.UtcNow
                 };
 
                 await unitOfWork.GetRepository<IBloggerRepository>().AddAsync(blogger);
+
+                user.Blogger = blogger;
+
+                this.unitOfWork.GetRepository<IUserRepository>().Update(user);
                 await unitOfWork.SaveChangesAsync();
 
                 // Add Google login
@@ -114,13 +126,25 @@ namespace TravelTales.Application.Services
             }
 
             var accessToken = await jwtService.GenerateTokenAsync(user);
+            user = await this.unitOfWork.GetRepository<IUserRepository>().GetByIdFullAsync(user.Id);
             var userDto = mapper.Map<UserDto>(user);
+            var roles = await userManager.GetRolesAsync(user);
 
             return new AuthResponseDto
             {
                 AccessToken = accessToken,
-                User = userDto
+                User = userDto,
+                Role = roles.FirstOrDefault()
             };
+        }
+
+        public async Task ForgotPasswordAsync(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if (user == null) return; // Don't reveal if user exists
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            await this.emailService.SendPasswordResetEmailAsync(email, token);
         }
 
         public async Task ChangePasswordAsync(string userId, PasswordChangeDto passwordChangeDto)
@@ -162,13 +186,10 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException("User not found");
             }
 
-            var result = await userManager.ResetPasswordAsync(
-                user,
-                passwordResetDto.Token,
-                passwordResetDto.NewPassword
-            );
+            var decodedToken = Uri.UnescapeDataString(passwordResetDto.Token);
+            var result = await userManager.ResetPasswordAsync(user, decodedToken, passwordResetDto.NewPassword);
 
-            if (!result.Succeeded)
+            if (result.Errors.Any())
             {
                 throw new IdentityException("Password reset failed", result.Errors);
             }
@@ -200,11 +221,13 @@ namespace TravelTales.Application.Services
             var jwtAccessToken = await this.GenerateTokenAsync(user);
 
             var userDto = this.mapper.Map<UserDto>(user);
+            var roles = await userManager.GetRolesAsync(user);
 
             return new AuthResponseDto
             {
                 AccessToken = jwtAccessToken,
                 User = userDto,
+                Role = roles.FirstOrDefault()
             };
         }
 

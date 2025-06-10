@@ -1,6 +1,9 @@
-﻿using Sieve.Services;
+﻿using Microsoft.EntityFrameworkCore;
+using Sieve.Models;
+using Sieve.Services;
 using TravelTales.Domain.Entities;
 using TravelTales.Persistence.Interfaces;
+using TravelTales.Persistence.SharedFiles;
 
 namespace TravelTales.Persistence.Repositories
 {
@@ -9,6 +12,47 @@ namespace TravelTales.Persistence.Repositories
         public UserRepository(AppDbContext context, ISieveProcessor sieveProcessor)
             : base(context, sieveProcessor)
         {
+        }
+
+        public async Task<User?> GetByIdFullAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await this.DbSet
+                .Include(x => x.Blogger)
+                .FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken);
+        }
+
+        public override async Task<PagedList<User>> GetAllWithFilterAsync(
+            SieveModel sieveModel,
+            CancellationToken cancellationToken = default)
+        {
+            var query = DbSet
+                .Where(x => !x.IsDeleted)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.City)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.Country)
+                .AsQueryable();
+
+            var filteredQuery = sieveProcessor.Apply(sieveModel, query, applyPagination: false);
+
+            return await PagedList<User>.ToPagedListAsync(filteredQuery, sieveModel);
+        }
+
+        public async Task<List<User>> GetAllFullAsync(CancellationToken cancellationToken = default)
+        {
+            return await this.DbSet
+                .Where(x => !x.IsDeleted)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.City)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.Country)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.VisitedCities)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.VisitedCountries)
+                .Include(x => x.Blogger)
+                    .ThenInclude(b => b.Posts)
+                .ToListAsync(cancellationToken);
         }
     }
 }

@@ -4,10 +4,12 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SendGrid;
 using Sieve.Models;
 using Sieve.Services;
 using System.Text;
@@ -18,6 +20,8 @@ using TravelTales.Application.MappingProfiles;
 using TravelTales.Application.Options;
 using TravelTales.Application.Services;
 using TravelTales.Application.Sieve;
+using TravelTales.Application.Sieve.Filters;
+using TravelTales.Application.Sieve.Sorts;
 using TravelTales.Application.Utility;
 using TravelTales.Application.Validation.Post;
 using TravelTales.Domain.Entities;
@@ -142,7 +146,10 @@ namespace TravelTales.Application
             services.AddScoped<IRoleService, RoleService>();
             services.AddScoped<IBloggerBlockService, BloggerBlockService>();
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IStorageService, AzureBlobStorageService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<ICommentService, CommentService>();
             services.AddSignalR();
         }
 
@@ -167,6 +174,8 @@ namespace TravelTales.Application
             IConfiguration configuration)
         {
             services.AddScoped(_ => new BlobServiceClient(configuration.GetSection("Azure:Blob:ConnectionString").Value));
+            services.AddSingleton<ISendGridClient>(sp =>
+                new SendGridClient(configuration["SendGrid:ApiKey"]));
         }
 
         private static void ConfigureJwtAuthentication(
@@ -203,7 +212,11 @@ namespace TravelTales.Application
                     options.ClientId = clientId;
                     options.ClientSecret = clientSecret;
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                    options.CallbackPath = "/api/auth/signin-google-callback";
+                    options.CallbackPath = new PathString("/api/auth/callback/google");
+
+                    // For development with HTTPS
+                    //options.AuthorizationEndpoint += "?prompt=consent";
+                    //options.AccessType = "offline";
                     options.SaveTokens = true;
                     options.Events = new OAuthEvents
                     {
@@ -250,6 +263,8 @@ namespace TravelTales.Application
 
         private static void AddSieveServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<ISieveCustomFilterMethods, SieveCustomFilterMethods>();
+            services.AddScoped<ISieveCustomSortMethods, SieveCustomSortMethods>();
             services.Configure<SieveOptions>(configuration.GetSection("Sieve"));
             services.AddScoped<ISieveProcessor, ApplicationSieveProcessor>();
         }

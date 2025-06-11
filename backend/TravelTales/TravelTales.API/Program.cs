@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text.Json.Serialization;
@@ -14,7 +15,6 @@ builder.Logging.AddConsole();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        //options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
@@ -59,27 +59,23 @@ builder.Services.AddAuthorization();
 builder.Services.ConfigureApplicationLayerDependencies(builder.Configuration);
 builder.Services.ConfigurePersistenceLayerDependencies(builder.Configuration);
 
-//builder.WebHost.ConfigureKestrel(serverOptions =>
-//{
-//    serverOptions.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(5);
-//    serverOptions.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(2);
-//});
-
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await context.Database.MigrateAsync();
     var serviceProvider = scope.ServiceProvider;
     await TravelTales.Application.DependencyRegistar.CreateUserRolesAsync(serviceProvider, builder.Configuration);
 }
 
 app.UseExceptionHandlingMiddleware();
 
-if (app.Environment.IsDevelopment())
-{
+// if (app.Environment.IsDevelopment())
+// {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

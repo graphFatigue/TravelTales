@@ -147,7 +147,6 @@ namespace TravelTales.Application.Services
             catch (NotAuthorizedException)
             {
                 // For unauthorized users, return post without block check
-                // You might want to add additional public visibility checks here
             }
 
             var postDto = this.mapper.Map<PostDto>(post);

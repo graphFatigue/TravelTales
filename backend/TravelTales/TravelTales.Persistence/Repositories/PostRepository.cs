@@ -30,10 +30,8 @@ namespace TravelTales.Persistence.Repositories
                 .Include(x => x.Likes)
                 .Include(s => s.Blogger)
                 .Include(p => p.Categories)
-                //.Include(p => p.Comments)
                 .Include(p => p.Country)
                 .Include(p => p.City)
-                //.Include(p => p.Tags)
                 .Include(p => p.Attachments)
                 .FirstOrDefaultAsync(c => c.Id == id, cancellationToken: cancellationToken);
         }
@@ -47,7 +45,6 @@ namespace TravelTales.Persistence.Repositories
                 .Include(x => x.Likes)
                 .Include(s => s.Blogger)
                 .Include(p => p.Categories)
-                //.Include(p => p.Comments)
                 .Include(p => p.Country)
                 .Include(s => s.Attachments)
                 .Include(p => p.City);
@@ -79,13 +76,12 @@ namespace TravelTales.Persistence.Repositories
             // Base query with includes for navigation properties
             var query = DbSet
                 .Where(x => !x.IsDeleted)
-                .Include(p => p.Country)  // Include Country
-                .Include(p => p.City)     // Include City
+                .Include(p => p.Country)
+                .Include(p => p.City)
                 .Include(p => p.Categories)
                 .Include(s => s.Blogger)
                 .Include(s => s.Attachments)
                 .Include(s => s.Likes)
-                //.Include(s => s.Comments)
                 .AsQueryable();
 
             // Apply Sieve filters/sorts

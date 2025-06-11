@@ -42,16 +42,13 @@ namespace TravelTales.Application.Services
 
         private async Task<NotificationDto?> CreateNotificationForLike(PostLike like, CancellationToken cancellationToken = default)
         {
-            // Load post with author information
             var post = await this.unitOfWork.GetRepository<IPostRepository>()
                 .GetByIdFullAsync(like.PostId, cancellationToken);
 
             if (post == null) return null;
 
-            // Skip notification if user is liking their own post
             if (post.BloggerId == like.BloggerId) return null;
 
-            // Check if author has blocked the liker
             var isBlocked = await this.unitOfWork.GetRepository<IBloggerBlockRepository>()
                 .ExistsAsync(post.BloggerId, like.BloggerId, cancellationToken);
 
@@ -82,8 +79,6 @@ namespace TravelTales.Application.Services
 
             if (await this.IsLikedAsync(createPostLikeDto.PostId, createPostLikeDto.BloggerId))
             {
-                //await this.likeRepository.RemoveLikeAsync(like);
-                //await unitOfWork.SaveChangesAsync(cancellationToken);
                 await this.likeRepository.RemoveLikeAsync(
                     createPostLikeDto.PostId,
                     createPostLikeDto.BloggerId);

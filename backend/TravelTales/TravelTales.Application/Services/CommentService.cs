@@ -151,9 +151,6 @@ namespace TravelTales.Application.Services
             if (comment == null)
                 throw new NotFoundException("Comment not found");
 
-            //if (comment.BloggerId != bloggerId)
-            //    throw new PermissionException("You don't have permission to modify this comment");
-
             return comment;
         }
     }

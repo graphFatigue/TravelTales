@@ -42,7 +42,6 @@ namespace TravelTales.Persistence.Repositories
                 .Include(bf => bf.Follower)
                 .Include(bf => bf.Following)
                 .Where(bf => bf.FollowingId == bloggerId && !bf.IsDeleted);
-                //.OrderByDescending(bf => bf.CreatedAt);
 
             return await ToFilteredPagedListAsync(query, sieveModel, cancellationToken);
         }
@@ -56,7 +55,6 @@ namespace TravelTales.Persistence.Repositories
                 .Include(bf => bf.Follower)
                 .Include(bf => bf.Following)
                 .Where(bf => bf.FollowerId == bloggerId && !bf.IsDeleted);
-                //.OrderByDescending(bf => bf.CreatedAt);
 
             return await ToFilteredPagedListAsync(query, sieveModel, cancellationToken);
         }

@@ -6,7 +6,7 @@ namespace TravelTales.Persistence.Repositories
 {
     public class BloggerBlockRepository : IBloggerBlockRepository
     {
-        private readonly AppDbContext context; // or your specific DbContext
+        private readonly AppDbContext context;
         public BloggerBlockRepository(AppDbContext context)
         {
             this.context = context;

@@ -214,15 +214,12 @@ namespace TravelTales.Application
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                     options.CallbackPath = new PathString("/api/auth/callback/google");
 
-                    // For development with HTTPS
-                    //options.AuthorizationEndpoint += "?prompt=consent";
-                    //options.AccessType = "offline";
                     options.SaveTokens = true;
                     options.Events = new OAuthEvents
                     {
                         OnCreatingTicket = context =>
                         {
-                            // Add custom claims here if needed
+                            // Add custom claims here
                             return Task.CompletedTask;
                         }
                     };

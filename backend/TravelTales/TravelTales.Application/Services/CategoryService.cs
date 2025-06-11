@@ -14,8 +14,7 @@ namespace TravelTales.Application.Services
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
-        //private readonly IValidator<CreatePostDto> createPostDtoValidator;
-        ///private readonly IValidator<UpdatePostDto> updatePostDtoValidator;
+
         private readonly IContextAccessor contextAccessor;
 
         public CategoryService(
@@ -30,8 +29,6 @@ namespace TravelTales.Application.Services
 
         public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto createCategoryDto, CancellationToken cancellationToken = default)
         {
-            //await this.createPostDtoValidator.ValidateAndThrowAsync(createPostDto, cancellationToken: cancellationToken);
-
             var category = this.mapper.Map<Category>(createCategoryDto);
 
             await this.unitOfWork.GetRepository<ICategoryRepository>().AddAsync(category, cancellationToken);
@@ -50,7 +47,6 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException($"Category with ID {id} was not found.");
             }
 
-            //this.EnsureUserCanModifyCategory(category);
 
             this.unitOfWork.GetRepository<ICategoryRepository>().Delete(category);
             await this.unitOfWork.SaveChangesAsync(cancellationToken);
@@ -90,8 +86,6 @@ namespace TravelTales.Application.Services
 
         public async Task UpdateCategoryAsync(long id, UpdateCategoryDto updateCategoryDto, CancellationToken cancellationToken = default)
         {
-            //await this.updatePostDtoValidator.ValidateAndThrowAsync(updatePostDto, cancellationToken: cancellationToken);
-
             var category = await this.unitOfWork.GetRepository<ICategoryRepository>()
                 .GetByIdAsync(id, cancellationToken);
 
@@ -100,7 +94,6 @@ namespace TravelTales.Application.Services
                 throw new NotFoundException($"Category with ID {id} was not found.");
             }
 
-            //this.EnsureUserCanModifyCategory(category);
             ArgumentNullException.ThrowIfNull(updateCategoryDto);
 
             category.Name = updateCategoryDto.Name;

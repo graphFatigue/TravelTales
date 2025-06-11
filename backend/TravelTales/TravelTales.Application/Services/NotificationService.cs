@@ -38,7 +38,6 @@ namespace TravelTales.Application.Services
             await unitOfWork.GetRepository<INotificationRepository>().AddAsync(notification, cancellationToken);
             await unitOfWork.SaveChangesAsync(cancellationToken);
 
-            // Load related data for proper mapping
             var createdNotification = await unitOfWork.GetRepository<INotificationRepository>()
                 .GetByIdFullAsync(notification.Id, cancellationToken);
 
@@ -53,7 +52,6 @@ namespace TravelTales.Application.Services
             var blockedIds = await blockerRepository.GetBlockedBloggerIdsAsync(bloggerId, cancellationToken);
             var dtos = mapper.Map<List<NotificationDto>>(notifications);
 
-            // Mask blocked users
             foreach (var dto in dtos)
             {
                 if (dto.TriggeredByBlogger != null && blockedIds.Contains(dto.TriggeredByBlogger.Id))

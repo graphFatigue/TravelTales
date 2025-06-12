@@ -35,13 +35,13 @@ export function PostCardPreview({ post }: { post: Post }) {
 	return (
 		<Card className='mx-auto'>
 			<CardHeader className='space-y-4'>
-				<div className='flew-wrap flex items-start justify-between'>
+				<div className='flew-wrap flex flex-col items-start justify-between sm:flex-row'>
 					<div className='flex items-center gap-3'>
-						<Link href={`/blogger/${post.blogger.id}`}>
-							<UserAvatar size={40} avatarUrl={post.blogger.image} />
+						<Link href={`/blogger/${post.blogger.id}`} className='hidden sm:block'>
+							<UserAvatar size={50} avatarUrl={post.blogger.image} />
 						</Link>
 						<Link href={`/post/${post.id}`}>
-							<h2 className='text-2xl font-bold hover:text-primary hover:underline'>
+							<h2 className='text-xl sm:text-2xl font-bold hover:text-primary hover:underline'>
 								{post.title}
 							</h2>
 						</Link>

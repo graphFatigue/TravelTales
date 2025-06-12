@@ -31,23 +31,23 @@ export default function UserProfile({ blogger }: { blogger: Blogger }) {
 	const dateLocale = i18n.language === 'uk' ? uk : enUS;
 
 	return (
-		<div className='container mx-auto max-w-5xl px-4 py-8'>
+		<div className='container mx-auto max-w-5xl py-8'>
 			<Tabs
 				defaultValue='overview'
 				value={activeTab}
 				onValueChange={setActiveTab}
 				className='w-full'
 			>
-				<TabsList className='grid grid-cols-4 md:w-[400px]'>
-					<TabsTrigger value='overview'>{t('profile.overview')}</TabsTrigger>
-					<TabsTrigger value='places'>{t('profile.places.title')}</TabsTrigger>
-					<TabsTrigger value='posts'>{t('profile.posts.title')}</TabsTrigger>
-					<TabsTrigger value='statistics'>
+				<TabsList className='grid grid-cols-4 w-full md:w-full'>
+					<TabsTrigger value='overview' className='text-sm'>{t('profile.overview')}</TabsTrigger>
+					<TabsTrigger value='places' className='text-sm'>{t('profile.places.title')}</TabsTrigger>
+					<TabsTrigger value='posts' className='text-sm'>{t('profile.posts.title')}</TabsTrigger>
+					<TabsTrigger value='statistics' className='text-sm'>
 						{t('profile.statistics')}
 					</TabsTrigger>
 				</TabsList>
 
-				<TabsContent value='overview' className='mt-6 space-y-6'>
+				<TabsContent value='overview' className='mt-4 space-y-4'>
 					<Card>
 						<CardHeader>
 							<CardTitle>{t('profile.about.title')}</CardTitle>

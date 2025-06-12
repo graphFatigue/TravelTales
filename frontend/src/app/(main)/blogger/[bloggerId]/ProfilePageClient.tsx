@@ -50,12 +50,12 @@ export default function ProfilePageClient({
 
 				<div className='flex-1 space-y-4'>
 					<div>
-						<h1 className='text-3xl font-bold'>
+						<h1 className='text-3xl font-bold text-center sm:text-start'>
 							{`${blogger.firstName} ${blogger.lastName}`}
 						</h1>
 					</div>
 
-					<div className='flex gap-6'>
+					<div className='flex gap-6 justify-center sm:justify-start'>
 						<div className='text-center'>
 							<div className='text-2xl font-bold'>
 								{blogger.posts?.length || 0}

@@ -20,7 +20,7 @@ export default function UserAvatar({
 			width={size ?? 48}
 			height={size ?? 48}
 			className={cn(
-				'aspect-square h-fit flex-none rounded-full bg-secondary object-cover',
+				'aspect-square h-fit flex-none rounded-full bg-secondary object-cover z-10',
 				className
 			)}
 		/>

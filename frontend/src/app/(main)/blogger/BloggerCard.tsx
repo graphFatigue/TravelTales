@@ -19,7 +19,9 @@ export default function BloggerCard({ blogger }: { blogger: Blogger }) {
 				<div className='absolute inset-0 rounded-t-lg bg-gradient-to-br from-primary/5 to-secondary/5' />
 
 				<div className='relative z-10 -mt-16 flex justify-center'>
-					<UserAvatar avatarUrl={blogger.image} size={120} />
+					<div className='relative'>
+						<UserAvatar avatarUrl={blogger.image} size={120} />
+					</div>
 				</div>
 			</CardHeader>
 

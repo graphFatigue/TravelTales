@@ -56,7 +56,7 @@ export default function ForgotPasswordPage() {
 	};
 
 	return (
-		<div className='flex min-h-[80vh] items-center justify-center'>
+		<div className='flex min-h-screen items-center justify-center p-4'>
 			<Card className='relative w-full max-w-md'>
 				<Link href={'/login'} className='absolute right-5 top-5'>
 					<X />

@@ -25,7 +25,7 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .HasOne(l => l.Post)
                 .WithMany(p => p.Attachments)
                 .HasForeignKey(l => l.PostId)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade delete when Post is deleted
+                .OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }

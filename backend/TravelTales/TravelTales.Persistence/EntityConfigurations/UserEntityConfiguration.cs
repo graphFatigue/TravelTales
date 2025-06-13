@@ -30,7 +30,7 @@ namespace TravelTales.Persistence.EntityConfigurations
                .HasOne(u => u.Blogger)
                .WithOne(b => b.User)
                .HasForeignKey<Blogger>(b => b.UserId)
-               .OnDelete(DeleteBehavior.Cascade); // User deletion cascades to Blogger
+               .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

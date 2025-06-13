@@ -32,7 +32,6 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .HasForeignKey(l => l.PostId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Add inverse navigation
             builder.HasOne(l => l.Notification)
                 .WithOne(n => n.PostLike)
                 .HasForeignKey<Notification>(n => n.LikeId)

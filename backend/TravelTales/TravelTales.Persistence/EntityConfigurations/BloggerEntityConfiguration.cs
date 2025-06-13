@@ -63,13 +63,13 @@ namespace TravelTales.Persistence.EntityConfigurations
                .HasMany(u => u.Posts)
                .WithOne(p => p.Blogger)
                .HasForeignKey(p => p.BloggerId)
-               .OnDelete(DeleteBehavior.SetNull); // Blogger deletion sets BloggerId in Post to null
+               .OnDelete(DeleteBehavior.SetNull);
 
             builder
                .HasOne(b => b.User)
                .WithOne(u => u.Blogger)
                .HasForeignKey<Blogger>(b => b.UserId)
-               .OnDelete(DeleteBehavior.NoAction); // Blogger deletion does not delete User
+               .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(b => b.VisitedCities)
                .WithMany()

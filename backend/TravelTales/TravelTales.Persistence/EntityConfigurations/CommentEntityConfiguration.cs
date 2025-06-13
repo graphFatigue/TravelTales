@@ -45,7 +45,7 @@ namespace TravelTales.Persistence.EntityConfigurations
             builder.HasOne(c => c.Post)
                 .WithMany(p => p.Comments)
                 .HasForeignKey(c => c.PostId)
-                .OnDelete(DeleteBehavior.ClientCascade);  // Changed to client-side cascade
+                .OnDelete(DeleteBehavior.ClientCascade);  
 
             builder.HasOne(c => c.Blogger)
                 .WithMany()

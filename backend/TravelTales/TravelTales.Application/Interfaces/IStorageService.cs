@@ -10,5 +10,7 @@
            string contentType);
         Task<string> GetSasTokenAsync(string containerName, string fileName);
         Task DeleteAsync(string containerName, string blobFilename);
+
+        (string containerName, string fileName) ExtractBlobInfo(string uri);
     }
 }

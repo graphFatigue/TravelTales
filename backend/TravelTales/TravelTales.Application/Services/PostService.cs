@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using Sieve.Models;
 using TravelTales.Application.DTOs.Comment;
 using TravelTales.Application.DTOs.Post;
@@ -21,6 +22,8 @@ namespace TravelTales.Application.Services
         private readonly IValidator<UpdatePostDto> updatePostDtoValidator;
         private readonly IContextAccessor contextAccessor;
         private readonly IAttachmentService attachmentService;
+        private readonly IStorageService blobStorageService;
+        private readonly ILogger<PostService> logger;
 
         public PostService(
             IUnitOfWork unitOfWork,
@@ -29,7 +32,9 @@ namespace TravelTales.Application.Services
             IValidator<CreatePostDto> createPostDtoValidator,
             IValidator<UpdatePostDto> updatePostDtoValidator,
             IContextAccessor contextAccessor,
-            IAttachmentService attachmentService)
+            IAttachmentService attachmentService,
+            IStorageService blobStorageService,
+            ILogger<PostService> logger)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
@@ -38,6 +43,8 @@ namespace TravelTales.Application.Services
             this.updatePostDtoValidator = updatePostDtoValidator;
             this.contextAccessor = contextAccessor;
             this.attachmentService = attachmentService;
+            this.blobStorageService = blobStorageService;
+            this.logger = logger;
         }
 
         public async Task<PostDto> CreatePostAsync(CreatePostDto createPostDto, CancellationToken cancellationToken = default)
@@ -110,16 +117,58 @@ namespace TravelTales.Application.Services
         {
             var post = await this.unitOfWork
                 .GetRepository<IPostRepository>()
-                .GetByIdAsync(id, cancellationToken);
-            if (post is null)
+                .GetByIdFullAsync(id, cancellationToken);
+
+            if (post is null || post.IsDeleted)
             {
                 throw new NotFoundException($"Post with ID {id} was not found.");
             }
 
             await this.EnsureUserCanDeletePostAsync(post);
 
-            this.unitOfWork.GetRepository<IPostRepository>().Delete(post);
-            await this.unitOfWork.SaveChangesAsync(cancellationToken);
+            var attachmentUris = post.Attachments?
+                .Where(a => !string.IsNullOrEmpty(a.Uri))
+                .Select(a => a.Uri)
+                .ToList() ?? new List<string>();
+
+            using var transaction = await this.unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                // Delete attachments from database
+                if (post.Attachments?.Count > 0)
+                {
+                    foreach (var attachment in post.Attachments.ToList())
+                    {
+                        this.unitOfWork.GetRepository<IAttachmentRepository>().Delete(attachment);
+                    }
+                }
+
+                this.unitOfWork.GetRepository<IPostRepository>().Delete(post);
+                await this.unitOfWork.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+            }
+            catch
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
+
+            foreach (var uri in attachmentUris)
+            {
+                try
+                {
+                    var (containerName, fileName) = this.blobStorageService.ExtractBlobInfo(uri);
+                    if (!string.IsNullOrEmpty(containerName) && !string.IsNullOrEmpty(fileName))
+                    {
+                        await this.blobStorageService.DeleteAsync(containerName, fileName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, "Failed to delete blob for URI: {Uri}", uri);
+                }
+            }
         }
 
         public async Task<PostDto?> GetPostByIdAsync(long id, CancellationToken cancellationToken = default)

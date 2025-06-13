@@ -9,15 +9,15 @@ namespace TravelTales.Application.Services
 {
     public class AzureBlobStorageService : IStorageService
     {
-        private readonly BlobServiceClient _blobServiceClient;
-        private readonly string _blobAccessKey;
+        private readonly BlobServiceClient blobServiceClient;
+        private readonly string blobAccessKey;
 
         public AzureBlobStorageService(
             BlobServiceClient blobServiceClient,
             IConfiguration configuration)
         {
-            _blobServiceClient = blobServiceClient;
-            _blobAccessKey = configuration.GetSection("Azure:Blob:AccountKey").Value!;
+            this.blobServiceClient = blobServiceClient;
+            this.blobAccessKey = configuration.GetSection("Azure:Blob:AccountKey").Value!;
         }
 
         public async Task<string> UploadAsync(
@@ -71,7 +71,7 @@ namespace TravelTales.Application.Services
             blobSasBuilder.SetPermissions(BlobSasPermissions.Read);
 
             var sasToken = blobSasBuilder.ToSasQueryParameters(
-                new StorageSharedKeyCredential(_blobServiceClient.AccountName, _blobAccessKey)).ToString();
+                new StorageSharedKeyCredential(blobServiceClient.AccountName, blobAccessKey)).ToString();
 
             return Task.FromResult(sasToken);
         }
@@ -102,12 +102,12 @@ namespace TravelTales.Application.Services
 
         private BlobContainerClient GetBlobContainerClient(string blobContainerName)
         {
-            var containerClient = _blobServiceClient.GetBlobContainerClient(blobContainerName);
+            var containerClient = blobServiceClient.GetBlobContainerClient(blobContainerName);
             containerClient.CreateIfNotExists();
             return containerClient;
         }
 
-        private static (string containerName, string fileName) ExtractBlobInfo(string uri)
+        public (string containerName, string fileName) ExtractBlobInfo(string uri)
         {
             try
             {

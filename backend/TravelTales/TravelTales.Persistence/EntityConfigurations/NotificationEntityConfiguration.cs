@@ -24,7 +24,6 @@ namespace TravelTales.Persistence.EntityConfigurations
                 .HasDefaultValue(false)
                 .HasColumnName("is_read");
 
-            // Relationships
             builder.HasOne(n => n.RecipientBlogger)
                 .WithMany()
                 .HasForeignKey(n => n.RecipientBloggerId)

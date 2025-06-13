@@ -78,7 +78,6 @@ namespace TravelTales.Persistence.SharedFiles
             if (sieveModel == null)
                 throw new ArgumentNullException(nameof(sieveModel));
 
-            // Determine whether EF Core can do async
             bool isAsyncProvider = (source.Provider is IAsyncQueryProvider);
 
             int count;
@@ -86,7 +85,6 @@ namespace TravelTales.Persistence.SharedFiles
 
             if (isAsyncProvider)
             {
-                // EF Core async path
                 count = await source.CountAsync(cancellationToken).ConfigureAwait(false);
 
                 sieveModel.Page ??= 1;
@@ -101,7 +99,6 @@ namespace TravelTales.Persistence.SharedFiles
             }
             else
             {
-                // In‐memory fallback path (e.g. after AsEnumerable)
                 count = source.Count();
 
                 sieveModel.Page ??= 1;
